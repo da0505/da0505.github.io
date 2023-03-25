@@ -1,0 +1,52 @@
+html, body, div, span, h1, h2, h3, h4, h5, h6,
+p, em, small, strong, dl, dt, dd, ol, ul, li{
+  margin: 0;
+  padding: 0;
+}
+*{
+	font: 12px "microsoft yahei";
+}
+em, strong, i {
+  font-style: normal;
+}
+h1, h2, h3, h4, h5, h6 {
+  font-weight: normal;
+}
+body {
+  font-family: "Microsoft Yahei";
+}
+ul, ol {
+  list-style: none;
+}
+a {
+  display: inline-block;
+  color: #333;
+  text-decoration: none;
+  font-size: 13px;
+}
+img{
+	display: block;
+}
+.clearfloat:after{
+	content: "";
+	display: block;
+	visibility: hidden;
+	clear: both;
+}
+.w1300 {
+	width: 1300px;
+	margin: 0 auto;
+}
+input::-webkit-input-placeholder { /* WebKit, Blink, Edge */
+    color: #CCCCCC;
+}
+input:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+   color: #CCCCCC;
+}
+input::-moz-placeholder { /* Mozilla Firefox 19+ */
+   color: #CCCCCC;
+}
+input:-ms-input-placeholder { /* Internet Explorer 10-11 */
+   color: #CCCCCC;
+}
+

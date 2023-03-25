@@ -1,0 +1,153 @@
+﻿<html>  
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+<meta name="viewport" content="initial-scale=1">
+<meta name="keywords" content="扫雷, HTML游戏">
+<meta name="description" content="本站提供了经典扫雷游戏，并略作改进，在电脑或手机上打开网页就可以玩，无需下载安装。增加了满屏级别，自适应屏幕大小。成绩榜实时显示大家的扫雷成绩。">
+<title>在线扫雷</title>
+
+<style>
+input{height:1.5rem;font-size:1.1rem;width:4rem;}
+
+#face{
+	border:2px solid #808080;
+	border-left-color: #fff;
+	border-top-color: #fff;
+	width:21px;
+	height:21px;
+}
+#face:active{
+	border:2px solid #808080;
+	border-bottom:1px solid #808080; 
+	border-right:1px solid #808080; 
+
+}
+
+#footer{
+	border-top:solid 1px #cccccc;padding-top:2rem;margin-top:6rem;width:100%;text-align:center;
+}
+
+table{
+border-collapse:collapse;
+}
+
+.pad{
+border:2px solid #808080;
+border-right-color: #fff;
+border-bottom-color: #fff;
+}
+b{
+	color: white;
+}
+a{
+	color: white;
+}
+p{
+	text-align:center;
+	color: white;
+}
+body{
+background: url(images/two.jpg) no-repeat;
+background-size:100% 100%;
+}
+
+</style>
+<base target="_top">
+<link href="images\透明logo.png" rel="shortcut icon">
+
+</head>  
+
+<body bgcolor="f7f7f0" style="margin:0;" onload="start()">
+
+<center>
+<br>
+<div style="margin-top:0.8rem;">
+<b>在线扫雷</b><!--  <small>→<a href="about.html">说明</a></small> -->
+</div>
+
+<div style="margin-top:0.8rem;">
+<a href="javascript:_123(1)">基础</a>
+&nbsp;
+<a href="javascript:_123(2)">中级</a>
+&nbsp;
+<a href="javascript:_123(3)">专家</a>
+&nbsp;
+<a href="javascript:_123(4)">满屏</a>
+&nbsp;
+<a href="javascript:_123(5)">自定义</a>
+</div>
+<div id="custom" style="display:none">
+<b>横向：</b><input id="hm" type="number" value="40">
+<b>竖向：</b><input id="vm" type="number" value="24">
+<b>雷数：</b><input id="mm" type="number" value="199">
+<!-- <input type="button" onclick="udf()" value="确定"> -->
+<a type="button" onclick="udf()" value="确定">确定</a>
+</div>
+<table style="margin-top:0.8rem;border-radius:6px;background:#cccccc">
+<tr><td style="padding:9px;">
+
+<table id="p42" class="pad" style="height:34px"><tr>
+<td width="50%"><canvas id="rm" height="23" width="39"></canvas>
+<!--img><img><img-->
+</td>
+<td align="center"><img onmouseup="_45()" id="face">
+</td><td width="50%" align="right">
+<canvas id="es" height="23" width="39"></canvas>
+<!--img><img><img-->
+</td>
+</tr></table>
+
+<!--table style="margin-top:6px;" class=pad id=paf></table-->
+<canvas id="paf" class="pad" style="margin-top:6px;" width="0" height="0"></canvas>
+
+</td></tr><tr><td align="right">
+</td></tr></table>
+
+
+<div style="margin-top:2rem;">
+</div>
+
+
+
+
+<div style="width:90%;text-align:left;margin-top:3rem;">
+<b>还原经典扫雷，让你回味无穷！</b><!-- <a href="touch2.html">设置</a> -->
+
+
+</div>
+
+
+<div id="zz" style="margin-top:4rem;">
+</div>
+
+
+
+<div style="margin-top:5rem;">
+<br>
+<span id="uid" style="color:#f7f7f0"></span>
+</div>
+
+
+<script src="static/js/gfs.js"></script>
+<script src="static/js/ms3.5.js"></script>
+<script src="static/js/zz4.js"></script>
+
+
+
+
+
+
+<br><br>
+</div>
+
+</center>
+</div>
+
+<div id="footer">
+<p>在线扫雷</p>
+</div>
+
+<br><br>
+</body>
+
+</html>

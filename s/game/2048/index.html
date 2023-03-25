@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>炫酷2048</title>
+    <meta name="keywords" content="炫酷,2048,在线,网页小游戏" />
+    <meta name="description" content="炫酷2048" /> 
+    <link rel="stylesheet" href="static/css/reset.css">
+    <link rel="stylesheet" href="static/css/index.css">
+    <link rel="stylesheet" href="static/css/style.css">
+</head>
+
+<body>
+    <canvas></canvas>
+    <div class="main">
+        <div class="game_title">2048
+            <div></div>
+        </div>
+        <div class="new_game" id="new_game"><a href="javascript:numgame.gameStart()" id="newToAgain">新游戏</a>
+            <div class="try_again" id="try_again">
+                <a href="javascript:numgame.gameStart()" id="try_again_a">新游戏</a>
+                <a href="javascript:numgame.gamePause()" id="pause_a">暂停</a>
+            </div>
+        </div>
+        <div class="score">得分：<span id="user_score">0</span></div>
+        <div class="diamonds_container">
+            <div class="diamonds" id="diamonds_0_0"></div>
+            <div class="diamonds" id="diamonds_0_1"></div>
+            <div class="diamonds" id="diamonds_0_2"></div>
+            <div class="diamonds" id="diamonds_0_3"></div>
+            <div class="diamonds" id="diamonds_1_0"></div>
+            <div class="diamonds" id="diamonds_1_1"></div>
+            <div class="diamonds" id="diamonds_1_2"></div>
+            <div class="diamonds" id="diamonds_1_3"></div>
+            <div class="diamonds" id="diamonds_2_0"></div>
+            <div class="diamonds" id="diamonds_2_1"></div>
+            <div class="diamonds" id="diamonds_2_2"></div>
+            <div class="diamonds" id="diamonds_2_3"></div>
+            <div class="diamonds" id="diamonds_3_0"></div>
+            <div class="diamonds" id="diamonds_3_1"></div>
+            <div class="diamonds" id="diamonds_3_2"></div>
+            <div class="diamonds" id="diamonds_3_3"></div>
+            <div class="diamonds_container_game_over" id="diamonds_container_game_over">
+                <div class="game_over">游戏结束
+                    <p>最终得分：<span id="fianl_score"></span></p>
+                </div>
+            </div>
+            <div class="game_pauce" id="game_pauce">
+                <div class="game_pause_w">暂停中</div>
+            </div>
+        </div>
+    </div>
+    <script src="static/js/particleeffect1.js"></script>
+    <script src="static/js/particleeffect2.js"></script>
+    <script src="static/js/2048main.js"></script>
+</body>
+
+</html>
