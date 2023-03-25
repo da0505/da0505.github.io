@@ -1,0 +1,50 @@
+﻿<html>
+<head>
+<meta charset="utf-8">
+<title>HTML5网页在线编辑器</title>
+
+<link rel="stylesheet" href="codemirror/lib/codemirror.css">
+<link rel="stylesheet" href="codemirror/theme/monokai.css">
+<style>
+body {
+	margin: 0;
+	padding: 0;
+	background: #222;
+}
+
+/* Codemirror */
+.Codemirror {
+	width: 100%;
+	height: 100%;
+	font-size: 20px;
+}
+
+</style>
+<link href="images\透明logo.png" rel="shortcut icon">
+</head>
+<body>
+
+<script src="codemirror/lib/codemirror.js"></script>
+<script src="codemirror/addon/edit/closetag.js"></script>
+<script src="codemirror/mode/xml/xml.js"></script>
+<script src="codemirror/mode/javascript/javascript.js"></script>
+<script src="codemirror/mode/css/css.js"></script>
+<script src="codemirror/mode/htmlmixed/htmlmixed.js"></script>
+<!-- 雪花 -->
+<!-- <script src="code-blast.js"></script> -->
+
+<script>
+window.cm = CodeMirror(document.body, {
+	lineNumbers: true,
+	mode:  "htmlmixed",
+	theme: 'monokai',
+	lineWrapping: true,
+	autofocus: true,
+	tabSize: 4,
+	value: '<article class="HTML5网页在线编辑器"></article>',
+	autoCloseTags: true,
+	blastCode: { effect: 2 },
+});
+</script>
+</body>
+</html>
