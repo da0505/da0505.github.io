@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>会员登录</title>
+    <link rel="stylesheet" href="登录.css">
+</head>
+<body>
+    <div class="login">
+        <h1>Login</h1>
+        <p>区分大小写</p>
+        <!-- <form action="./首页.html">  -->
+            <!-- <label for="username">用户名</label> -->
+            <input type="text" id="uname" value="" placeholder="用户名gy"/><br>
+            <input type="password" id="pwd" value="" placeholder="密码123"/><br>
+            <input type="submit" id="but" value="登录" onclick="return checkuser()"/> 
+            <!-- 返回了true就会打开页面  -->
+        </form> 
+    </div>
+</body> 
+ 
+<script type="text/javascript"> 
+    function getValue(id) { 
+        return document.getElementById(id).value; 
+        // 查找元素
+    } 
+    function checkuser() { 
+        // 刘在拓
+        if(getValue('uname') == "Liuzaituo" && getValue('pwd') == "123")  { 
+            window.location.href='lztindex.html'
+            return true; 
+        }
+        // 李科瑶
+        if(getValue('uname') == "提一盏灯" && getValue('pwd') == "xc108115")  { 
+            window.location.href='lkyindex.html'
+            return true; 
+        }
+        else { 
+            alert("登录名或密码错误！")
+            // 警告框
+            return false; 
+        } 
+
+    } 
+</script> 
+</html>
