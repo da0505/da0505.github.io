@@ -47,6 +47,11 @@
             window.location.href='lshindex.html'
             return true; 
         }
+        // 管理员
+        if(getValue('uname') == "L" && getValue('pwd') == "L")  { 
+            window.location.href='no1index.htm'
+            return true; 
+        }
         else { 
             alert("登录名或密码错误！")
             // 警告框
