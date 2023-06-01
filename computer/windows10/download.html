@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>win悦系统</title>
+    <link href="悦系统.png" rel="shortcut icon">
+    <!-- <link rel="stylesheet" type="text/css" href="css/style.css" /> -->
+    <script type="text/javascript">
+    var system = {};
+    var p = navigator.platform;
+    system.win = p.indexOf("Win") == 0;
+    system.mac = p.indexOf("Mac") == 0;
+    system.x11 = (p == "X11") || (p.indexOf("Linux") == 0);
+    if {  
+      //如果是手机,跳转到
+      window.location.href = "an.html";
+    }
+  </script>
+
+    <style>
+        *{
+            padding: 0;
+            margin: 0;
+            font-family: "楷体";
+        }
+        header{
+            
+            height: 100vh;
+            background-size: cover;
+            background-position: center;
+        }
+    
+        ul{
+            float: right;
+            list-style-type: none;
+            margin: 15px;
+        }
+        ul li{
+            display: inline-block;
+        }
+    
+        ul li a{
+            text-decoration: none;
+            color: #fff;
+            padding: 5px 20px;
+            border: 1px solid transparent;
+            transition: .6s ease;
+            border-radius: 20px;
+        }
+    
+        ul li a:hover{
+            background-color: #fff;
+            color: #000;
+        }
+        ul li.active a{
+            background-color: #fff;
+            color: #000;
+        }
+        .title{
+            position: absolute;
+            top:50%;
+            left:50%;
+            transform: translate(-50%,-50%);
+        }
+        .title h1{
+            color: #fff;
+            font-size: 70px;
+            /*font-family: Century Gothic;*/
+        }
+        p{
+            color: #fff;
+            font-size: 20px;
+            /*font-family: Century Gothic;*/
+        }
+        a {
+         color:#fff;
+         /*text-decoration: none;*/
+         text-align: center;
+
+
+     }
+     body{
+        background-image:linear-gradient(rgba(0,0,0,0.5),rgba(0,0,0,0.5)), url(win悦系统.png);
+     }
+     .xieyi{
+        text-decoration: none;
+     }
+
+    </style>
+
+</head>
+
+<body>
+    <header>
+        <div class="main">
+            <ul>
+                <li class="active"><a href="/">首页</a></li>
+                <li><a href="#" target="_blank">Windows10悦系统</a></li>
+<!--                 <li><a href="https://www.china.com" target="_blank">中华网</a></li>
+                <li><a href="https://blog.csdn.net" target="_blank"><span style="color: crimson;">C</span>SDN官网</a></li> -->
+                
+            </ul>
+        </div>
+        <div class="title">
+            <h1><!-- <span style="color: crimson;">My</span> --> 感谢你下载win悦系统</h1>
+            <br>
+            <br>
+                <!-- <p style="text-align: center;">如果30秒内没有下载，请<a href="">点击下载</a></p> -->
+                <p style="text-align: center;">如果30内没有自动下载,请<a id="Download"href="1.exe">点击此处</a>手动下载</p>
+<script>
+var blob = new Blob([''],{type:'application/exe'});
+var a = document.createElement('a');
+a.href = window.URL.createObjectURL(blob);
+a.download =  '';
+a.click();
+</script>
+
+                <br>
+                <br>
+
+<footer>
+    <p style="text-align: center;">你下载即同意<a class="xieyi" href="../../software/index.html" >《软件许可使用协议》</a></p>
+</footer>
+
+
+
+
+           
+</header>
+</body>
+</html>
