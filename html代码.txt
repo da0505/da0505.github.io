@@ -70,3 +70,6 @@ document.oncontextmenu=Click;
 </div>
 
 </div>
+
+4.修改标题
+<script>document.addEventListener('visibilitychange', function () {if (document.visibilityState == 'hidden') {normal_title = document.title;document.title = '这么着急就走啦，也不再逛逛？';} else document.title = normal_title;});</script>
