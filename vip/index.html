@@ -55,9 +55,14 @@
             window.location.href='lshindex.html'
             return true; 
         }
+        // 刘明辉
+        if(getValue('uname') == "liben" && getValue('pwd') == "")  { 
+            window.location.href='lmhindex.html'
+            return true; 
+        }
         // 管理员
-        if(getValue('uname') == "L" && getValue('pwd') == "L")  { 
-            window.location.href='no1index.htm'
+        if(getValue('uname') == "vip" && getValue('pwd') == "pwd")  { 
+            window.location.href='vip1index.htm'
             return true; 
         }
         else { 
