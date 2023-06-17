@@ -1,0 +1,346 @@
+					<div class="col-md-3">
+						<!-- tree steps hosting plan -->
+						<div class="tree-steps-hosting-plans first">
+							<div class="tree-steps-hosting-plans-header">
+								<i class="fas fa-fire tree-steps-hosting-plans-icon"></i>
+								<h5 class="tree-steps-hosting-plans-title">普通会员 <small>适合没有特殊需求的人&nbsp;&nbsp;</small>
+								</h5>
+								<!-- steps hosting plan title -->
+								<span class="tree-steps-hosting-plans-price monthly">
+									<!-- steps hosting plan price -->
+									<b class="monthly">0<small>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/永久</small></b>
+								</span>
+								<!-- steps hosting plan price -->
+							</div>
+
+							<div id="zero-plan-hosting-steps-content" class="tree-steps-hosting-plans-body first-plan-hosting-steps">
+								<!-- steps hosting plan body -->
+								<div class="loader-tree-steps-hosting-plans-body">
+									<!-- steps hosting plan loader -->
+									<i class="fas fa-circle-notch rotate360icon"></i>
+								</div>
+								<!-- end steps hosting plan loader -->
+								<ul class="tree-steps-hosting-plans-list">
+									<!-- steps hosting plan features list -->
+									<li class="checked">免费下载部分pdf</li>
+                                    <li class="checked">配套当学期英语听力</li>
+									<li class="checked">部分试卷免费下载</li>
+									<li class="not-checked"><img src="static/picture/logo-qq.png" style="width: 18px; margin-top: -2px;margin-right: 3px;">1对1专属客服</li>
+									<li class="not-checked">专属vip网站</li>
+									<li class="not-checked">专属视频课程</li>
+									<li class="not-checked">专属内卷自习室</li>
+								</ul>
+								<!-- end steps hosting plan features list -->
+
+								<div class="tree-steps-hosting-plans-payment">
+									<!-- steps hosting plan login form -->
+
+									<!-- back to previous steps button -->
+									<span onclick="resetTid()" id="zero-plan-hosting" data-toggle="tooltip" data-placement="bottom" title="" class="tree-steps-hosting-plans-footer-btn-back step-two-hosting"
+									 data-original-title="关闭">
+										<span class="first-stright"></span>
+										<span class="second-stright"></span>
+									</span>
+									<!-- end back to previous steps button -->
+
+									<h5 class="tree-steps-hosting-plans-payment-title">抱歉 <small>不支持在线使用
+										</small></h5>
+
+									<div class="tree-steps-hosting-plans-error">
+										<i class="far fa-times-circle"></i>
+									</div>
+
+								</div>
+								<!-- end steps hosting plan login form -->
+
+							</div>
+							<!-- end steps hosting plan body -->
+
+							<div class="tree-steps-hosting-plans-footer text-center">
+								<!-- start steps hosting plan footer -->
+
+								<a id="zero-plan-hosting-steps" class="tree-steps-hosting-plans-footer-btn first-step-hosting" onclick="tidFunc(&#39;1166&#39;)"href="./vip/index.html">
+									<!-- go to previous next step button -->
+									<span class="first-step-hosting-text">
+										<small>立&nbsp;&nbsp;即&nbsp;&nbsp;使&nbsp;&nbsp;用</small>
+										<i class="fas fa-angle-right"></i>
+									</span>
+									<!-- end go to previous next step button -->
+
+									<!-- login button -->
+									<span class="second-step-hosting-text">
+
+										点&nbsp;&nbsp;击&nbsp;&nbsp;跳&nbsp;&nbsp;转
+									</span>
+									<!-- end login button -->
+								</a>
+
+							</div>
+							<!-- end steps hosting plan footer -->
+
+						</div>
+					</div>
+					<!--------------------------------------------- first plan --------------------------------------------->
+					<div class="col-md-3">
+						<!-- tree steps hosting plan -->
+						<div class="tree-steps-hosting-plans first">
+							<div class="tree-steps-hosting-plans-header">
+								<i class="fas fa-fire tree-steps-hosting-plans-icon" style="color: #007bff"></i>
+								<h5 class="tree-steps-hosting-plans-title">铂金会员<small>适合新老用户</small>
+								</h5>
+								<!-- steps hosting plan title -->
+								<span class="tree-steps-hosting-plans-price monthly">
+									<!-- steps hosting plan price -->
+									<b class="monthly">450<small>&nbsp;&nbsp;积分/月</small></b>
+								</span>
+								<!-- steps hosting plan price -->
+							</div>
+
+							<div id="first-plan-hosting-steps-content" class="tree-steps-hosting-plans-body first-plan-hosting-steps">
+								<!-- steps hosting plan body -->
+								<div class="loader-tree-steps-hosting-plans-body">
+									<!-- steps hosting plan loader -->
+									<i class="fas fa-circle-notch rotate360icon"></i>
+								</div>
+								<!-- end steps hosting plan loader -->
+								<ul class="tree-steps-hosting-plans-list">
+									<!-- steps hosting plan features list -->
+									<li class="checked">免费下载全部pdf</li>
+                                    <li class="checked">配套当学期英语听力</li>
+									<li class="checked">部分试卷免费下载</li>
+									<li class="not-checked"><img src="static/picture/logo-qq.png" style="width: 18px; margin-top: -2px;margin-right: 3px;">1对1专属客服</li>
+									<li class="checked">专属vip网站</li>
+									<li class="not-checked">专属视频课程</li>
+									<li class="not-checked">专属内卷自习室</li>
+								</ul>
+								<!-- end steps hosting plan features list -->
+
+
+								<div class="tree-steps-hosting-plans-payment">
+									<!-- steps hosting plan login form -->
+
+									<!-- back to previous steps button -->
+									<span onclick="resetTid()" id="first-plan-hosting" data-toggle="tooltip" data-placement="bottom" title=""
+									 class="tree-steps-hosting-plans-footer-btn-back step-two-hosting" data-original-title="关闭">
+										<span class="first-stright"></span>
+										<span class="second-stright"></span>
+									</span>
+									<!-- end back to previous steps button -->
+									<h5 class="tree-steps-hosting-plans-payment-title">抱歉 <small>不支持在线购买
+										</small></h5>
+
+									<div class="tree-steps-hosting-plans-error">
+										<i class="far fa-times-circle"></i>
+										<p>暂不支持在线购买，需找<a target="_blank" href="https://wpa.qq.com/msgrd?v=3&amp;uin=2086925025&amp;site=qq&amp;menu=yes">
+												人工客服</a></p>
+									</div>
+
+								</div>
+								<!-- end steps hosting plan login form -->
+
+							</div>
+							<!-- end steps hosting plan body -->
+
+							<div class="tree-steps-hosting-plans-footer text-center">
+								<!-- start steps hosting plan footer -->
+
+								<a id="first-plan-hosting-steps" class="tree-steps-hosting-plans-footer-btn first-step-hosting" onclick="tidFunc(&#39;1167&#39;)"
+								 >
+									<!-- go to previous next step button -->
+									<span class="first-step-hosting-text">
+										<small>立&nbsp;&nbsp;即&nbsp;&nbsp;购&nbsp;&nbsp;买</small>
+										<i class="fas fa-angle-right"></i>
+									</span>
+									<!-- end go to previous next step button -->
+
+									<!-- login button -->
+									<span class="second-step-hosting-text">
+										联&nbsp;&nbsp;系&nbsp;&nbsp;客&nbsp;&nbsp;服
+									</span>
+									<!-- end login button -->
+								</a>
+
+							</div>
+							<!-- end steps hosting plan footer -->
+							<!-- end steps hosting plan footer -->
+
+						</div>
+					</div>
+
+					<!--------------------------------------------- second plan --------------------------------------------->
+					<div class="col-md-3">
+						<!-- tree steps hosting plan -->
+						<div class="tree-steps-hosting-plans second">
+							<span class="tree-steps-hosting-plans-best">超级会员</span>
+							<div class="tree-steps-hosting-plans-header">
+								<i class="fas fa-fire tree-steps-hosting-plans-icon"></i>
+								<h5 class="tree-steps-hosting-plans-title">超级会员 <small>至臻尊享系统无上级</small>
+								</h5>
+								<!-- steps hosting plan title -->
+								<span class="tree-steps-hosting-plans-price monthly">
+									<!-- steps hosting plan price -->
+									<b class="monthly">4500<small>&nbsp;&nbsp;积分/月</small></b>
+								</span>
+								<!-- steps hosting plan price -->
+							</div>
+
+							<div id="second-plan-hosting-steps-content" class="tree-steps-hosting-plans-body">
+								<!-- steps hosting plan body -->
+								<div class="loader-tree-steps-hosting-plans-body">
+									<!-- steps hosting plan loader -->
+									<i class="fas fa-circle-notch rotate360icon"></i>
+								</div>
+								<!-- end steps hosting plan loader -->
+								<ul class="tree-steps-hosting-plans-list">
+									<!-- steps hosting plan features list -->
+									<li class="checked">免费下载全部pdf</li>
+                                    <li class="checked">配套当学期英语听力</li>
+									<li class="checked">全部试卷免费下载</li>
+									<li class="checked"><img src="static/picture/logo-qq.png" style="width: 18px; margin-top: -2px;margin-right: 3px;">1对1专属客服</li>
+									<li class="checked">专属vip网站</li>
+									<li class="checked">专属视频课程</li>
+									<li class="checked">专属内卷自习室</li>
+								</ul>
+								<!-- end steps hosting plan features list -->
+
+								<div class="tree-steps-hosting-plans-payment">
+									<!-- steps hosting plan login form -->
+
+									<!-- back to previous steps button -->
+									<span onclick="resetTid()" id="second-plan-hosting" data-toggle="tooltip" data-placement="bottom" title=""
+									 class="tree-steps-hosting-plans-footer-btn-back step-two-hosting" data-original-title="关闭">
+										<span class="first-stright"></span>
+										<span class="second-stright"></span>
+									</span>
+									<!-- end back to previous steps button -->
+
+									<h5 class="tree-steps-hosting-plans-payment-title">抱歉 <small>不支持在线购买
+										</small></h5>
+
+									<div class="tree-steps-hosting-plans-error">
+										<i class="far fa-times-circle"></i>
+										<p>暂不支持在线购买，需找<a target="_blank" href="https://wpa.qq.com/msgrd?v=3&amp;uin=2086925025&amp;site=qq&amp;menu=yes">
+												人工客服</a></p>
+									</div>
+
+								</div>
+								<!-- end steps hosting plan login form -->
+
+							</div>
+							<!-- end steps hosting plan body -->
+
+							<div class="tree-steps-hosting-plans-footer text-center">
+								<!-- start steps hosting plan footer -->
+
+								<a id="second-plan-hosting-steps" class="tree-steps-hosting-plans-footer-btn first-step-hosting" onclick="tidFunc('1168')">
+									<!-- go to previous next step button -->
+									<span class="first-step-hosting-text">
+										<small>立&nbsp;&nbsp;即&nbsp;&nbsp;购&nbsp;&nbsp;买</small>
+										<i class="fas fa-angle-right"></i>
+									</span>
+									<!-- end go to previous next step button -->
+
+									<!-- login button -->
+									<span class="second-step-hosting-text">
+										联&nbsp;&nbsp;系&nbsp;&nbsp;客&nbsp;&nbsp;服
+									</span>
+									<!-- end login button -->
+								</a>
+
+							</div>
+							<!-- end steps hosting plan footer -->
+
+						</div>
+					</div>
+
+					<!--------------------------------------------- third plan --------------------------------------------->
+					<div class="col-md-3">
+						<!-- tree steps hosting plan -->
+						<div class="tree-steps-hosting-plans third">
+							<div class="tree-steps-hosting-plans-header">
+								<i class="fas fa-fire tree-steps-hosting-plans-icon" style="color: #2bd8cb"></i>
+								<h5 class="tree-steps-hosting-plans-title">钻石会员<small>适合专业人员</small>
+								</h5>
+								<!-- steps hosting plan title -->
+								<span class="tree-steps-hosting-plans-price monthly">
+									<!-- steps hosting plan price -->
+									<b class="monthly">2180<small>积分/月</small></b>
+								</span>
+								<!-- steps hosting plan price -->
+							</div>
+
+							<div id="third-plan-hosting-steps-content" class="tree-steps-hosting-plans-body">
+								<!-- steps hosting plan body -->
+								<div class="loader-tree-steps-hosting-plans-body">
+									<!-- steps hosting plan loader -->
+									<i class="fas fa-circle-notch rotate360icon"></i>
+								</div>
+								<!-- end steps hosting plan loader -->
+								<ul class="tree-steps-hosting-plans-list">
+									<!-- steps hosting plan features list -->
+									<li class="checked">免费下载全部pdf</li>
+                                    <li class="checked">配套当学期英语听力</li>
+									<li class="checked">部分试卷免费下载</li>
+									<li class="checked"><img src="static/picture/logo-qq.png" style="width: 18px; margin-top: -2px;margin-right: 3px;">1对1专属客服</li>
+									<li class="checked">专属vip网站</li>
+									<li class="not-checked">专属视频课程</li>
+									<li class="checked">专属内卷自习室</li>
+								</ul>
+								<!-- end steps hosting plan features list -->
+
+								<div class="tree-steps-hosting-plans-payment">
+									<!-- steps hosting plan login form -->
+
+									<!-- back to previous steps button -->
+									<span id="third-plan-hosting" data-toggle="tooltip" data-placement="bottom" title="" class="tree-steps-hosting-plans-footer-btn-back step-two-hosting"
+									 data-original-title="关闭">
+										<span class="first-stright"></span>
+										<span class="second-stright"></span>
+									</span>
+									<!-- end back to previous steps button -->
+
+
+
+									<h5 class="tree-steps-hosting-plans-payment-title">抱歉 <small>外包不支持在线购买
+										</small></h5>
+
+									<div class="tree-steps-hosting-plans-error">
+										<i class="far fa-times-circle"></i>
+										<p>暂不支持在线购买，需找<a target="_blank" href="https://wpa.qq.com/msgrd?v=3&amp;uin=2086925025&amp;site=qq&amp;menu=yes">
+												人工客服</a></p>
+									</div>
+
+								</div>
+								<!-- end steps hosting plan login form -->
+
+							</div>
+							<!-- end steps hosting plan body -->
+
+							<div class="tree-steps-hosting-plans-footer text-center">
+								<!-- start steps hosting plan footer -->
+
+								<a id="third-plan-hosting-steps" class="tree-steps-hosting-plans-footer-btn first-step-hosting">
+									<!-- go to previous next step button -->
+									<span class="first-step-hosting-text">
+										<small>立&nbsp;&nbsp;即&nbsp;&nbsp;购&nbsp;&nbsp;买</small>
+										<i class="fas fa-angle-right"></i>
+									</span>
+									<!-- end go to previous next step button -->
+
+									<!-- login button -->
+									<span class="second-step-hosting-text" onclick="window.location=&#39;https://wpa.qq.com/msgrd?v=3&amp;uin=3066575950&amp;site=qq&amp;menu=yes&#39;"
+									 >
+										联&nbsp;&nbsp;系&nbsp;&nbsp;客&nbsp;&nbsp;服
+									</span>
+									<!-- end login button -->
+								</a>
+
+							</div>
+							<!-- end steps hosting plan footer -->
+
+						</div>
+					</div>
+
+				</div>
+			</div>
+		</section>
