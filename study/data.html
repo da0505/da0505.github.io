@@ -1,77 +1,815 @@
-<!DOCTYPE html>
-<html>
-
+﻿<!DOCTYPE html>
+<html lang="en">
 	<head>
-		<meta charset="UTF-8">
-		<title>加载中</title>
-		 <link href="static\images\透明logo.png" rel="shortcut icon">
-		<style>
-			/* 加载中-转圈圈 */
-			.lay-loader .lay-loader-inner:before {
-				content: "";
-				top: 5px;
-				left: 5px;
-				right: 5px;
-				bottom: 5px;
-				animation: spin 3s linear infinite;
-			}
-			
-			.lay-loader .lay-loader-inner:after {
-				content: "";
-				top: 15px;
-				left: 15px;
-				right: 15px;
-				bottom: 15px;
-				animation: spin 1.5s linear infinite;
-			}
-			
-			.lay-loader .lay-loader-inner {
-				display: block;
-				left: 0;
-				top: 0;
-				right: 0;
-				bottom: 0;
-				width: 150px;
-				height: 150px;
-				margin: auto;
-				animation: spin 2s linear infinite;
-			}
-			
-			.lay-loader .lay-loader-inner,
-			.lay-loader .lay-loader-inner:before,
-			.lay-loader .lay-loader-inner:after {
-				position: absolute;
-				border-radius: 50%;
-				border: 3px solid transparent;
-				border-top-color: #03c5b3;
-			}
-			
-			.lay-loader {
-				position: fixed;
-				top: 0;
-				left: 0;
-				width: 100%;
-				height: 100%;
-				background-color: #ffffff;
-				z-index: 9999999999;
-			}
-			
-			@keyframes spin {
-				0% {
-					transform: rotate(0deg);
-				}
-				to {
-					transform: rotate(1turn);
-				}
-			}
-		</style>
-	</head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<meta name="study" content="悦智学">
+		<title>学习专区</title>
+		<meta name="keywords" content="悦智学-学习专区">
+		<meta name="description" content="悦智学-学习专区">
+		<link href="static/css/downv1.css" rel="stylesheet">
+		<link href="static/css/bootstrap.min1.css" rel="stylesheet">
+		<link href="static/css/flaticon.css" rel="stylesheet">
+		<link href="static/css/flaticon.css" rel="stylesheet">
+		<link href="static/css/main.css" rel="stylesheet">
+		<link href="static/css/bootstrap.offcanvas.min.css" rel="stylesheet">
+		<link href="static/css/fontawesome-all.min.css" rel="stylesheet">
+		<link href="static/css/animate.css" rel="stylesheet">
+		<link href="static/css/responsive.css" rel="stylesheet">
+		<link href="static/css/font-awesome.min.css" rel="stylesheet">
+		<link rel="stylesheet" href="static/css/flickity.min.css">
+		<link rel="stylesheet" href="static/css/modal-video.min.css">
+		<link rel="stylesheet" href="static/css/owl.carousel.min.css">
+		<link rel="stylesheet" href="static/css/owl.theme.default.min.css">
+		<link rel="stylesheet" href="static/css/flaticon.css">
+        <link href="static/css/font-awesome.min.css" rel="stylesheet"> 
+        <style>
+        	.footer {
+            margin-top: -50px;
+            height: 50px;
+            background-color: #eee;
+            z-index: 9999;
+        }
 
-	<body>
-		<!-- 加载中 转圈圈 -->
-		<div class="lay-loader">
-			<div class="lay-loader-inner"></div>
+        </style>
+
+            <link href="static\images\透明logo.png" rel="shortcut icon">
+	</head>                                       
+	<body class="">
+		<div id="header" class="homepagetwostyle d-flex mx-auto flex-column not-index-header">
+			<!-- start search block -->
+			<!-- end search block -->
+
+    <!-- start header animations -->
+    <div class="header-animation">
+	         <div id="particles-bg"></div>
+        <div class="video-bg-nuhost-header">
+            <div id="video_cover"></div>
+<!--                -->
+                
+        </div>
+				<span class="courve-gb-hdr-top"></span>
+				
+				<!------- end header support ring ------->
+			</div>
+    <!-- start main header section -->
+    <div class="top-header-nav-home mb-auto">
+        <div class="container">
+            <nav class="navbar navbar-expand-md navbar-light header-nav-algo-coodiv header-nav-algo-coodiv-v2">
+                <!-- start logo place -->
+                <a class="navbar-brand" >
+                    <!-- <img class="black-bg-logo" src="static/picture/logo11.png" alt=""/> -->
+                    <!-- black background logo -->
+                    <!-- <img class="white-bg-logo" src="static/picture/logo22.png" alt=""/> -->
+                    <!-- white background logo -->
+                    <span>专注学习教育</span>
+                </a>
+                <!-- end logo place -->
+                <button class="navbar-toggle offcanvas-toggle menu-btn-span-bar ml-auto" data-toggle="offcanvas"
+                        data-target="#offcanvas-menu-home">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+						<!-- start collapse navbar -->
+						<div class="collapse navbar-collapse navbar-offcanvas" id="offcanvas-menu-home">
+						    <ul class="navbar-nav ml-auto">
+						    	<li class="nav-item">
+						    		<a class="nav-link" href="index.html#fhelp">常见问题</a>
+						    	</li>
+						    	<li class="nav-item">
+						    		<a class="xy_back nav-link" href="/">返回首页</a>
+						    	</li>
+						    </ul>
+						</div>
+					</nav>
+				</div><!-- end container -->
+			</div><!-- end main header section -->
+
+			<main class="inner cover header-heeadline-title mb-auto">
+				<!-- start main header text -->
+
+				<h5><span class="blok-on-phon">学习&amp;下载中心</span></h5>
+				<p>专注学习，只为让你变得更优秀！</p>
+
+				<div class="container">
+					<nav aria-label="breadcrumb">
+						<ol class="breadcrumb not-index-breadcrumb-header justify-content-center">
+							<li class="breadcrumb-item">专业</li>
+							<li class="breadcrumb-item">稳定</li>
+							<li class="breadcrumb-item">内卷</li>
+						</ol>
+					</nav>
+				</div>
+
+			</main><!-- end main header text -->
+			<div class="mt-auto"></div>
+		</div><!-- end header -->
+		<!--style="padding-top: 100px;padding-bottom: 40px;"-->
+<!-- 		<section class="padding-40-0">
+			<div class="container">
+				<div class="row  mr-tp-70">
+					<div class="col-md-4 reseller-hosting-features">
+						<a href="#beichen">
+							<div class="reseller-hosting-features-icon">
+								<i class="fas fa-shopping-cart"></i>
+							</div>
+							<div class="reseller-hosting-features-comments">
+								<span class="reseller-hosting-features-title">1.查看类型</span>
+								<span class="reseller-hosting-features-text">选择适合自己的分站类型，然后点击购买，联系客服QQ </span>
+							</div>
+						</a>
+					</div>
+
+
+					<div class="col-md-4 reseller-hosting-features">
+						<a href="#beichen">
+							<div class="reseller-hosting-features-icon">
+								<i class="fas fa-check"></i>
+							</div>
+							<div class="reseller-hosting-features-comments">
+								<span class="reseller-hosting-features-title">2.人工搭建</span>
+								<span class="reseller-hosting-features-text">添加客服QQ3066575950，向其说明要搭建的站点，选择付款方式完成搭建 </span>
+							</div>
+						</a>
+					</div>
+
+
+					<div class="col-md-4 reseller-hosting-features">
+						<a href="#beichen">
+							<div class="reseller-hosting-features-icon">
+								<i class="far fa-dollar-sign"></i>
+							</div>
+							<div class="reseller-hosting-features-comments">
+								<span class="reseller-hosting-features-title">3.开始营收</span>
+								<span class="reseller-hosting-features-text">完成搭建后的网站+APP可直接运作上线进行售卖，后续更新以及搭建售后我们将持续提供 </span>
+							</div>
+						</a>
+					</div>
+
+
+				</div>
+			</div>
+		</section> -->
+		<section class="second-items-home" style="margin-top: 50px;padding-top:0;margin-bottom: 40px;">
+			<div class="container">
+				<div class="row justify-content-center"><!-- 会员 -->
+					<!--------------------------------------------- zero plan会员 --------------------------------------------->
+										<div class="col-md-3">
+						<!-- tree steps hosting plan -->
+						<div class="tree-steps-hosting-plans first">
+							<div class="tree-steps-hosting-plans-header">
+								<i class="fas fa-fire tree-steps-hosting-plans-icon"></i>
+								<h5 class="tree-steps-hosting-plans-title">普通会员 <small>适合没有特殊需求的人&nbsp;&nbsp;</small>
+								</h5>
+								<!-- steps hosting plan title -->
+								<span class="tree-steps-hosting-plans-price monthly">
+									<!-- steps hosting plan price -->
+									<b class="monthly">0<small>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/永久</small></b>
+								</span>
+								<!-- steps hosting plan price -->
+							</div>
+
+							<div id="zero-plan-hosting-steps-content" class="tree-steps-hosting-plans-body first-plan-hosting-steps">
+								<!-- steps hosting plan body -->
+								<div class="loader-tree-steps-hosting-plans-body">
+									<!-- steps hosting plan loader -->
+									<i class="fas fa-circle-notch rotate360icon"></i>
+								</div>
+								<!-- end steps hosting plan loader -->
+								<ul class="tree-steps-hosting-plans-list">
+									<!-- steps hosting plan features list -->
+									<li class="checked">免费下载部分pdf</li>
+                                    <li class="checked">配套当学期英语听力</li>
+									<li class="checked">部分试卷免费下载</li>
+									<li class="not-checked"><img src="static/picture/logo-qq.png" style="width: 18px; margin-top: -2px;margin-right: 3px;">1对1专属客服</li>
+									<li class="not-checked">专属vip网站</li>
+									<li class="not-checked">专属视频课程</li>
+									<li class="not-checked">专属内卷自习室</li>
+								</ul>
+								<!-- end steps hosting plan features list -->
+
+								<div class="tree-steps-hosting-plans-payment">
+									<!-- steps hosting plan login form -->
+
+									<!-- back to previous steps button -->
+									<span onclick="resetTid()" id="zero-plan-hosting" data-toggle="tooltip" data-placement="bottom" title="" class="tree-steps-hosting-plans-footer-btn-back step-two-hosting"
+									 data-original-title="关闭">
+										<span class="first-stright"></span>
+										<span class="second-stright"></span>
+									</span>
+									<!-- end back to previous steps button -->
+
+									<h5 class="tree-steps-hosting-plans-payment-title">抱歉 <small>不支持在线使用
+										</small></h5>
+
+									<div class="tree-steps-hosting-plans-error">
+										<i class="far fa-times-circle"></i>
+									</div>
+
+								</div>
+								<!-- end steps hosting plan login form -->
+
+							</div>
+							<!-- end steps hosting plan body -->
+
+							<div class="tree-steps-hosting-plans-footer text-center">
+								<!-- start steps hosting plan footer -->
+
+								<a id="zero-plan-hosting-steps" class="tree-steps-hosting-plans-footer-btn first-step-hosting" onclick="tidFunc(&#39;1166&#39;)"href="#download">
+									<!-- go to previous next step button -->
+									<span class="first-step-hosting-text">
+										<small>立&nbsp;&nbsp;即&nbsp;&nbsp;使&nbsp;&nbsp;用</small>
+										<i class="fas fa-angle-right"></i>
+									</span>
+									<!-- end go to previous next step button -->
+
+									<!-- login button -->
+									<span class="second-step-hosting-text">
+
+										点&nbsp;&nbsp;击&nbsp;&nbsp;跳&nbsp;&nbsp;转
+									</span>
+									<!-- end login button -->
+								</a>
+
+							</div>
+							<!-- end steps hosting plan footer -->
+
+						</div>
+					</div>
+					<!--------------------------------------------- first plan --------------------------------------------->
+					<div class="col-md-3">
+						<!-- tree steps hosting plan -->
+						<div class="tree-steps-hosting-plans first">
+							<div class="tree-steps-hosting-plans-header">
+								<i class="fas fa-fire tree-steps-hosting-plans-icon" style="color: #007bff"></i>
+								<h5 class="tree-steps-hosting-plans-title">铂金会员<small>适合新老用户</small>
+								</h5>
+								<!-- steps hosting plan title -->
+								<span class="tree-steps-hosting-plans-price monthly">
+									<!-- steps hosting plan price -->
+									<b class="monthly">450<small>&nbsp;&nbsp;积分/月</small></b>
+								</span>
+								<!-- steps hosting plan price -->
+							</div>
+
+							<div id="first-plan-hosting-steps-content" class="tree-steps-hosting-plans-body first-plan-hosting-steps">
+								<!-- steps hosting plan body -->
+								<div class="loader-tree-steps-hosting-plans-body">
+									<!-- steps hosting plan loader -->
+									<i class="fas fa-circle-notch rotate360icon"></i>
+								</div>
+								<!-- end steps hosting plan loader -->
+								<ul class="tree-steps-hosting-plans-list">
+									<!-- steps hosting plan features list -->
+									<li class="checked">免费下载全部pdf</li>
+                                    <li class="checked">配套当学期英语听力</li>
+									<li class="checked">部分试卷免费下载</li>
+									<li class="not-checked"><img src="static/picture/logo-qq.png" style="width: 18px; margin-top: -2px;margin-right: 3px;">1对1专属客服</li>
+									<li class="checked">专属vip网站</li>
+									<li class="not-checked">专属视频课程</li>
+									<li class="not-checked">专属内卷自习室</li>
+								</ul>
+								<!-- end steps hosting plan features list -->
+
+
+								<div class="tree-steps-hosting-plans-payment">
+									<!-- steps hosting plan login form -->
+
+									<!-- back to previous steps button -->
+									<span onclick="resetTid()" id="first-plan-hosting" data-toggle="tooltip" data-placement="bottom" title=""
+									 class="tree-steps-hosting-plans-footer-btn-back step-two-hosting" data-original-title="关闭">
+										<span class="first-stright"></span>
+										<span class="second-stright"></span>
+									</span>
+									<!-- end back to previous steps button -->
+									<h5 class="tree-steps-hosting-plans-payment-title">抱歉 <small>不支持在线购买
+										</small></h5>
+
+									<div class="tree-steps-hosting-plans-error">
+										<i class="far fa-times-circle"></i>
+										<p>暂不支持在线购买，需找<a target="_blank" href="https://wpa.qq.com/msgrd?v=3&amp;uin=2086925025&amp;site=qq&amp;menu=yes">
+												人工客服</a></p>
+									</div>
+
+								</div>
+								<!-- end steps hosting plan login form -->
+
+							</div>
+							<!-- end steps hosting plan body -->
+
+							<div class="tree-steps-hosting-plans-footer text-center">
+								<!-- start steps hosting plan footer -->
+
+								<a id="first-plan-hosting-steps" class="tree-steps-hosting-plans-footer-btn first-step-hosting" onclick="tidFunc(&#39;1167&#39;)"
+								 >
+									<!-- go to previous next step button -->
+									<span class="first-step-hosting-text">
+										<small>立&nbsp;&nbsp;即&nbsp;&nbsp;购&nbsp;&nbsp;买</small>
+										<i class="fas fa-angle-right"></i>
+									</span>
+									<!-- end go to previous next step button -->
+
+									<!-- login button -->
+									<span class="second-step-hosting-text">
+										联&nbsp;&nbsp;系&nbsp;&nbsp;客&nbsp;&nbsp;服
+									</span>
+									<!-- end login button -->
+								</a>
+
+							</div>
+							<!-- end steps hosting plan footer -->
+							<!-- end steps hosting plan footer -->
+
+						</div>
+					</div>
+
+					<!--------------------------------------------- second plan --------------------------------------------->
+					<div class="col-md-3">
+						<!-- tree steps hosting plan -->
+						<div class="tree-steps-hosting-plans second">
+							<span class="tree-steps-hosting-plans-best">超级会员</span>
+							<div class="tree-steps-hosting-plans-header">
+								<i class="fas fa-fire tree-steps-hosting-plans-icon"></i>
+								<h5 class="tree-steps-hosting-plans-title">超级会员 <small>至臻尊享系统无上级</small>
+								</h5>
+								<!-- steps hosting plan title -->
+								<span class="tree-steps-hosting-plans-price monthly">
+									<!-- steps hosting plan price -->
+									<b class="monthly">4500<small>&nbsp;&nbsp;积分/月</small></b>
+								</span>
+								<!-- steps hosting plan price -->
+							</div>
+
+							<div id="second-plan-hosting-steps-content" class="tree-steps-hosting-plans-body">
+								<!-- steps hosting plan body -->
+								<div class="loader-tree-steps-hosting-plans-body">
+									<!-- steps hosting plan loader -->
+									<i class="fas fa-circle-notch rotate360icon"></i>
+								</div>
+								<!-- end steps hosting plan loader -->
+								<ul class="tree-steps-hosting-plans-list">
+									<!-- steps hosting plan features list -->
+									<li class="checked">免费下载全部pdf</li>
+                                    <li class="checked">配套当学期英语听力</li>
+									<li class="checked">全部试卷免费下载</li>
+									<li class="checked"><img src="static/picture/logo-qq.png" style="width: 18px; margin-top: -2px;margin-right: 3px;">1对1专属客服</li>
+									<li class="checked">专属vip网站</li>
+									<li class="checked">专属视频课程</li>
+									<li class="checked">专属内卷自习室</li>
+								</ul>
+								<!-- end steps hosting plan features list -->
+
+								<div class="tree-steps-hosting-plans-payment">
+									<!-- steps hosting plan login form -->
+
+									<!-- back to previous steps button -->
+									<span onclick="resetTid()" id="second-plan-hosting" data-toggle="tooltip" data-placement="bottom" title=""
+									 class="tree-steps-hosting-plans-footer-btn-back step-two-hosting" data-original-title="关闭">
+										<span class="first-stright"></span>
+										<span class="second-stright"></span>
+									</span>
+									<!-- end back to previous steps button -->
+
+									<h5 class="tree-steps-hosting-plans-payment-title">抱歉 <small>不支持在线购买
+										</small></h5>
+
+									<div class="tree-steps-hosting-plans-error">
+										<i class="far fa-times-circle"></i>
+										<p>暂不支持在线购买，需找<a target="_blank" href="https://wpa.qq.com/msgrd?v=3&amp;uin=2086925025&amp;site=qq&amp;menu=yes">
+												人工客服</a></p>
+									</div>
+
+								</div>
+								<!-- end steps hosting plan login form -->
+
+							</div>
+							<!-- end steps hosting plan body -->
+
+							<div class="tree-steps-hosting-plans-footer text-center">
+								<!-- start steps hosting plan footer -->
+
+								<a id="second-plan-hosting-steps" class="tree-steps-hosting-plans-footer-btn first-step-hosting" onclick="tidFunc('1168')">
+									<!-- go to previous next step button -->
+									<span class="first-step-hosting-text">
+										<small>立&nbsp;&nbsp;即&nbsp;&nbsp;购&nbsp;&nbsp;买</small>
+										<i class="fas fa-angle-right"></i>
+									</span>
+									<!-- end go to previous next step button -->
+
+									<!-- login button -->
+									<span class="second-step-hosting-text">
+										联&nbsp;&nbsp;系&nbsp;&nbsp;客&nbsp;&nbsp;服
+									</span>
+									<!-- end login button -->
+								</a>
+
+							</div>
+							<!-- end steps hosting plan footer -->
+
+						</div>
+					</div>
+
+					<!--------------------------------------------- third plan --------------------------------------------->
+					<div class="col-md-3">
+						<!-- tree steps hosting plan -->
+						<div class="tree-steps-hosting-plans third">
+							<div class="tree-steps-hosting-plans-header">
+								<i class="fas fa-fire tree-steps-hosting-plans-icon" style="color: #2bd8cb"></i>
+								<h5 class="tree-steps-hosting-plans-title">钻石会员<small>适合专业人员</small>
+								</h5>
+								<!-- steps hosting plan title -->
+								<span class="tree-steps-hosting-plans-price monthly">
+									<!-- steps hosting plan price -->
+									<b class="monthly">2180<small>积分/月</small></b>
+								</span>
+								<!-- steps hosting plan price -->
+							</div>
+
+							<div id="third-plan-hosting-steps-content" class="tree-steps-hosting-plans-body">
+								<!-- steps hosting plan body -->
+								<div class="loader-tree-steps-hosting-plans-body">
+									<!-- steps hosting plan loader -->
+									<i class="fas fa-circle-notch rotate360icon"></i>
+								</div>
+								<!-- end steps hosting plan loader -->
+								<ul class="tree-steps-hosting-plans-list">
+									<!-- steps hosting plan features list -->
+									<li class="checked">免费下载全部pdf</li>
+                                    <li class="checked">配套当学期英语听力</li>
+									<li class="checked">部分试卷免费下载</li>
+									<li class="checked"><img src="static/picture/logo-qq.png" style="width: 18px; margin-top: -2px;margin-right: 3px;">1对1专属客服</li>
+									<li class="checked">专属vip网站</li>
+									<li class="not-checked">专属视频课程</li>
+									<li class="checked">专属内卷自习室</li>
+								</ul>
+								<!-- end steps hosting plan features list -->
+
+								<div class="tree-steps-hosting-plans-payment">
+									<!-- steps hosting plan login form -->
+
+									<!-- back to previous steps button -->
+									<span id="third-plan-hosting" data-toggle="tooltip" data-placement="bottom" title="" class="tree-steps-hosting-plans-footer-btn-back step-two-hosting"
+									 data-original-title="关闭">
+										<span class="first-stright"></span>
+										<span class="second-stright"></span>
+									</span>
+									<!-- end back to previous steps button -->
+
+
+
+									<h5 class="tree-steps-hosting-plans-payment-title">抱歉 <small>外包不支持在线购买
+										</small></h5>
+
+									<div class="tree-steps-hosting-plans-error">
+										<i class="far fa-times-circle"></i>
+										<p>暂不支持在线购买，需找<a target="_blank" href="https://wpa.qq.com/msgrd?v=3&amp;uin=2086925025&amp;site=qq&amp;menu=yes">
+												人工客服</a></p>
+									</div>
+
+								</div>
+								<!-- end steps hosting plan login form -->
+
+							</div>
+							<!-- end steps hosting plan body -->
+
+							<div class="tree-steps-hosting-plans-footer text-center">
+								<!-- start steps hosting plan footer -->
+
+								<a id="third-plan-hosting-steps" class="tree-steps-hosting-plans-footer-btn first-step-hosting">
+									<!-- go to previous next step button -->
+									<span class="first-step-hosting-text">
+										<small>立&nbsp;&nbsp;即&nbsp;&nbsp;购&nbsp;&nbsp;买</small>
+										<i class="fas fa-angle-right"></i>
+									</span>
+									<!-- end go to previous next step button -->
+
+									<!-- login button -->
+									<span class="second-step-hosting-text" onclick="window.location=&#39;https://wpa.qq.com/msgrd?v=3&amp;uin=3066575950&amp;site=qq&amp;menu=yes&#39;"
+									 >
+										联&nbsp;&nbsp;系&nbsp;&nbsp;客&nbsp;&nbsp;服
+									</span>
+									<!-- end login button -->
+								</a>
+
+							</div>
+							<!-- end steps hosting plan footer -->
+
+						</div>
+					</div>
+
+				</div>
+			</div>
+		</section>
+					
+		<!-- <section class="padding-100-0 gray-background">
+			<div class="container">
+				<h5 class="title-left-bold text-center">为什么选择我们？ <span>如今学习内卷太快了<br>部分人根本追不上
+					</span>
+				</h5>
+
+				<div class="row mr-tp-80">
+					<div class="col-md-3">
+						<div class="container-features-about-us">
+							<div class="features-about-us-number">
+								<div class="bulb-bllue-number">1</div>
+							</div>
+							<div class="features-about-us-text">
+								<h5>资深老牌,<br> 已稳定运营超8年</h5>
+								<p>爱准挂自2018年创立至今稳定运营，未断挂，未跑单，未泄漏，在业内已无法找到这样数据的代挂商，历史长久有目共睹，上万Q友共同见证史书般的稳定性.</p>
+							</div>
+						</div>
+					</div>
+
+					<div class="col-md-3">
+						<div class="container-features-about-us">
+							<div class="features-about-us-number">
+								<div class="bulb-bllue-number">2</div>
+							</div>
+							<div class="features-about-us-text">
+								<h5>绝对性价,<br> 同行业里最低售价</h5>
+								<p>爱准挂在不断实现创新技术如"支持设备锁"，"下单秒挂"与"安卓APP"上还做到了价格的绝对让利，把价格控制在了行业内绝对的低价，利润只给合作伙伴.</p>
+							</div>
+						</div>
+					</div>
+
+
+					<div class="col-md-3">
+						<div class="container-features-about-us">
+							<div class="features-about-us-number">
+								<div class="bulb-bllue-number">3</div>
+							</div>
+							<div class="features-about-us-text">
+								<h5>坚若磐石,<br> 全站企业级数据加密</h5>
+								<p>爱准挂坚持安全第一的原则，系统从外到内，从网站登录到密码更新，从用户下单到后台进行同步代挂全程采用企业3DES加密传输，绝对的安全性实现了北辰代挂网数据0泄漏.</p>
+							</div>
+						</div>
+					</div>
+
+
+					<div class="col-md-3">
+						<div class="container-features-about-us">
+							<div class="features-about-us-number">
+								<div class="bulb-bllue-number">4</div>
+							</div>
+							<div class="features-about-us-text">
+								<h5>焕新不止,<br> 高频率更新保活力</h5>
+								<p>爱准挂一直保持着1周1更的程序高更新频率，这样不仅保持了合作伙伴能用上最新最美观的程序，和最新的加速协议，也保持了加速能最快速度支持QQ的加速新项目.</p>
+							</div>
+						</div>
+					</div>
+
+
+				</div>
+			</div>
+		</section> -->
+
+
+		<div class="padding-100-0" id="download">
+			<div class="container">
+				<div class="tittle-simple-one">
+					<h5>下载中心<!-- <span>加盟后会发现网赚是如此简单，且远不止这些...<br> It's So Easy.</span> -->
+					</h5>
+				</div><!-- title -->
+
+				<div class="row mr-tp-50">
+					<div class="col-md-4">
+						<div class="main-service-box mt-20 text-center">
+							<i class="fa fa-shopping-cart grandient-blue-text-color"></i>
+							<a href="1.pdf">
+								<h4> 《黄金八套》作文下载 </h4>
+							</a>
+							<!-- <p>您可以在互联网甚至线下售卖您的代挂服务，可以将生成的代挂卡密放至发卡网进行自动售卖，实现躺着赚钱的方式.</p> -->
+						</div>
+					</div>
+
+
+					<!-- <div class="col-md-4">
+						<div class="main-service-box mt-20 text-center">
+							<i class="fas fa-window-restore grandient-red-text-color"></i>
+							<a href="#beichen">
+								<h4> 售卖旗下分站 </h4>
+							</a>
+							<p>当您为主站规模以上的网站时，您可以向其他人进行再出售分站来收取利润，且网站开设无上限无收费，所赚利润归您全得.</p>
+						</div>
+					</div>
+
+
+					<div class="col-md-4">
+						<div class="main-service-box mt-20 text-center">
+							<i class="fa fa-cube grandient-yellow-text-color"></i>
+							<a href="#beichen">
+								<h4> 售卖代挂APP </h4>
+							</a>
+							<p>站内集成APP自动生成系统，您可以额外付费成为APP代理商，然后低价生成代挂APP，将其卖给你的下级，从中收取差价利润.</p>
+						</div>
+					</div>
+
+
+					<div class="col-md-4">
+						<div class="main-service-box mt-20 text-center">
+							<i class="fas fa-sitemap grandient-green-text-color"></i>
+							<a href="#beichen">
+								<h4> 发展下级 </h4>
+							</a>
+							<p>站内自带代理系统，分级别设置，上级可吃下级利润，可以将网站开放注册，让你旗下代理不花搭建钱即可成为你的代理为您赚钱.</p>
+						</div>
+					</div>
+
+
+					<div class="col-md-4">
+						<div class="main-service-box mt-20 text-center">
+							<svg t="1589881739148" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="10608" width="40" height="40"><path d="M0 512c0 282.8 229.2 512 512 512s512-229.2 512-512S794.8 0 512 0 0 229.2 0 512z m0 0" fill="#D8A96F" p-id="10609"></path><path d="M967.7 512c0.7-205.8-136.9-386.3-335.5-440.2C433.6 18 223.6 104.3 120.3 282.2l763.5 491.5c54.5-76.4 83.8-167.9 83.9-261.7z m0 0" fill="#E3CD82" p-id="10610"></path><path d="M56.3 512c-0.4 189.6 116.7 359.5 294 426.6 177.3 67.1 377.6 17.2 502.8-125.2 10.9-12.8 21.1-26.2 30.7-39.7L120.3 282.2c-16.4 26.7-29.9 55-40.3 84.5-15.4 46.9-23.4 95.9-23.7 145.3z m0 0" fill="#DBB470" p-id="10611"></path><path d="M945.9 396.2c-13.4-0.2-25.3-8.6-30.1-21.1-38-107.3-115.9-195.8-217.6-247-15.9-7.9-22.4-27.3-14.4-43.2 8-15.9 27.3-22.4 43.2-14.4C843.1 128.8 932.3 229.6 976 352c3.1 8 2.7 16.8-0.9 24.6-3.6 7.7-10.2 13.6-18.3 16.4-3.4 1.7-7.1 2.8-10.9 3.2z m0 0" fill="#FFFFFF" p-id="10612"></path><path d="M538.6 531c49.7-24.9 84.2-74.6 84.2-133.9 0-80.4-67-145.5-149.3-145.5-80.4 1.9-145.4 67-145.4 147.4-0.3 56.7 32.6 108.4 84.2 132-99.5 26.8-176.1 112.9-185.6 220.1-1.9 11.5 7.6 21.1 19.1 21.1h457.4c11.5 0 21.1-9.6 19.1-21.1-7.7-107.2-84.2-193.3-183.7-220.1z" fill="#BD9A62" p-id="10613"></path><path d="M823.7 712.8c-7.7-86.1-67-156.9-147.4-181.8-1.9 0-3.8-3.8 0-5.7 0 0 1.9 0 1.9-1.9 38.3-23 63.1-63.2 63.1-109.1 0-70.8-57.4-128.2-128.2-128.2h1.9-5.8c-1.9 0-1.9 1.9 0 3.8 34.5 23 45.9 72.7 47.8 118.7 0 49.8-24.9 91.8-65.1 116.7-3.8 1.9-3.8 7.6 1.9 9.6 7.6 1.9 15.7 4.8 21.1 7.7 50.6 27.3 128.2 101.4 135.9 185.6 0 0 0 3.8 3.8 3.8h55.5c5.9-2 13.6-9.6 13.6-19.2z m0 0" fill="#BD9A62" p-id="10614"></path><path d="M512.5 511c49.7-24.9 84.2-74.6 84.2-133.9 0-80.4-67-145.5-149.3-145.5C367 233.5 302 298.6 302 379c-0.3 56.7 32.6 108.4 84.2 132-99.6 26.8-176.1 112.9-185.7 220-1.9 11.5 7.6 21.1 19.1 21.1H677c11.5 0 21.1-9.6 19.1-21.1-7.6-107.1-84.1-193.2-183.6-220z" fill="#FFFFFF" p-id="10615"></path><path d="M797.6 692.8c-7.7-86.1-67-156.9-147.4-181.8-1.9 0-3.8-3.8 0-5.7 0 0 1.9 0 1.9-1.9 38.3-23 63.1-63.2 63.1-109.1 0-70.8-57.4-128.2-128.2-128.2h1.9-5.8c-1.9 0-1.9 1.9 0 3.8 34.5 23 45.9 72.7 47.8 118.7 0 49.8-24.9 91.8-65.1 116.7-3.8 1.9-3.8 7.6 1.9 9.6 7.6 1.9 15.7 4.8 21.1 7.7C639.4 549.9 717 624 724.7 708.2c0 0 0 3.8 3.8 3.8H784c5.9-2 13.6-9.6 13.6-19.2z m0 0" fill="#FFFFFF" p-id="10616"></path></svg>
+							<a href="#beichen">
+								<h4> 售卖代理等级 </h4>
+							</a>
+							<p>站内的代理系统自带VIP等级1-5级，不同等级可设置不同提卡价格，开通/升级VIP的费用归您所得，收多少也是您自己设置.</p>
+						</div>
+					</div>
+
+					<div class="col-md-4">
+						<div class="main-service-box mt-20 text-center">
+							<i class="fa fa-github-alt grandient-blue-th-text-color"></i>
+							<a href="#beichen">
+								<h4> 售卖机器人 </h4>
+							</a>
+							<p>站内可售卖机器人，此机器人可实现直接在Q群里代挂查询补挂和改密等更多操作，需额外付费成为机器人代理商，然后卖下级机器人赚差价.</p>
+						</div>
+					</div>
+ -->
+				</div>
+			</div>
 		</div>
-	</body>
 
+
+		<section class="padding-90-0-100 gray-background position-relative overflow-hidden" id="fhelp">
+			<span class="section-with-moon-back-under"></span>
+			<span class="section-with-moon-men-quastions-under"></span>
+			<div class="container">
+				<div class="tittle-simple-one">
+					<h5>还有些疑问？<span>如果您还是对会员或下载有问题，可以在这检索有无您的问题并点击知悉.</span>
+					</h5>
+				</div>
+
+				<div class="row justify-content-left mr-tp-50">
+					<div class="col-md-6">
+						<div class="nuhost-filter-container">
+							<!-- start q&a filter -->
+							<i class="fas fa-search"></i>
+							<input type="text" id="nuhost-filter-input" onkeyup="FilterListSection()" placeholder="搜索相关问题..">
+							<!-- q&a filter input -->
+						</div>
+						<div class="nuhost-filter-list-container">
+							<!-- q&a filter list container -->
+							<div class="filter-content-box" id="go-to-qst-01-content"> <!-- start q&a second content box -->
+                        <span class="filter-content-close" data-toggle="tooltip" data-placement="bottom"
+                              data-original-title="关闭">
+                            <span class="first-stright"></span>
+                            <span class="second-stright"></span>
+                        </span>
+                        <h5>会员可以包年吗 ?</h5>
+                        <p>非常感谢各位对会员的支持，我们暂时不支持包年购买的
+                            </p>
+                    </div>
+							 <!-- q&a filter list container -->
+							<div class="filter-content-box" id="go-to-qst-02-content"> <!-- start q&a second content box -->
+                        <span class="filter-content-close" data-toggle="tooltip" data-placement="bottom"
+                              data-original-title="关闭">
+                            <span class="first-stright"></span>
+                            <span class="second-stright"></span>
+                        </span>
+                        <h5>购买后需要再次付费吗 ?</h5>
+                        <p>购买后，按照购买时间，到期后可自行选择是否付费
+                            </p>
+                    </div>
+                    <!-- q&a filter list container -->
+							<div class="filter-content-box" id="go-to-qst-03-content"> <!-- start q&a second content box -->
+                        <span class="filter-content-close" data-toggle="tooltip" data-placement="bottom"
+                              data-original-title="关闭">
+                            <span class="first-stright"></span>
+                            <span class="second-stright"></span>
+                        </span>
+                        <h5>会员支持退订吗 ?</h5>
+                        <p>会员在购买后立即生效，不支持退款
+                            </p>
+                    </div>
+                    <!-- q&a filter list container -->
+							<div class="filter-content-box" id="go-to-qst-04-content"> <!-- start q&a second content box -->
+                        <span class="filter-content-close" data-toggle="tooltip" data-placement="bottom"
+                              data-original-title="关闭">
+                            <span class="first-stright"></span>
+                            <span class="second-stright"></span>
+                        </span>
+                        <h5>会员没有生效怎么办 ?</h5>
+                        <p>非常感谢各位对会员的支持，网络可能会存在延迟，请稍等片刻
+                            </p>
+                    </div>
+                    <!-- q&a filter list container -->
+							<div class="filter-content-box" id="go-to-qst-05-content"> <!-- start q&a second content box -->
+                        <span class="filter-content-close" data-toggle="tooltip" data-placement="bottom"
+                              data-original-title="关闭">
+                            <span class="first-stright"></span>
+                            <span class="second-stright"></span>
+                        </span>
+                        <h5>购买多种会员后怎么生效 ?</h5>
+                        <p>当您购买多种会员时，按照先高后低的顺序，依次为您使用，如若购买了多次同级会员，那么会增加你的会员时长
+                            </p>
+                    </div>
+                    <!-- q&a filter list container -->
+							<div class="filter-content-box" id="go-to-qst-05-content"> <!-- start q&a second content box -->
+                        <span class="filter-content-close" data-toggle="tooltip" data-placement="bottom"
+                              data-original-title="关闭">
+                            <span class="first-stright"></span>
+                            <span class="second-stright"></span>
+                        </span>
+                        <h5>会员购买后可以注销账号吗 ?</h5>
+                        <p>购买会员后可以注销账号（注意：注销后会清除你的全部记录、云盘数据，请谨慎处理）不支持退款
+                            </p>
+                    </div>
+                     <!-- end q&a second content box -->
+
+                    <div class="filter-content-box" id="go-to-qst-09-content"> <!-- start q&a second content box -->
+                        <span class="filter-content-close" data-toggle="tooltip" data-placement="bottom"
+                              data-original-title="关闭">
+                            <span class="first-stright"></span>
+                            <span class="second-stright"></span>
+                        </span>
+
+
+
+
+
+                    </div> <!-- end q&a second content box -->
+
+                    <ul id="nuhost-filter-list"> <!-- start q&a filter item list -->
+                        <!-- <li><a id="go-to-qst-01">购买之后还有无其他收费 ? <i class="fas fa-angle-right"></i></a></li> -->
+                        <!-- filter item -->
+                        <li><a id="go-to-qst-01">会员可以包年吗 ? <i class="fas fa-angle-right"></i></a></li>
+                        <!-- filter item -->
+                        <li><a id="go-to-qst-02">购买后需要再次付费吗 ? <i class="fas fa-angle-right"></i></a></li>
+                        <!-- filter item -->
+                        <li><a id="go-to-qst-03">会员没有生效怎么办 ? <i class="fas fa-angle-right"></i></a></li>
+                        <!-- filter item -->
+                        <li><a id="go-to-qst-04">会员没有生效怎么办 ? <i class="fas fa-angle-right"></i></a></li>
+                        <!-- filter item -->
+                        <li><a id="go-to-qst-05">购买多种会员后怎么生效 ? <i class="fas fa-angle-right"></i></a></li>
+                        <!-- filter item -->
+                        <li><a id="go-to-qst-06">会员购买后可以注销账号吗 ? <i class="fas fa-angle-right"></i></a></li>
+                        <!-- filter item -->
+                  
+                        </li> <!-- filter item -->
+							</ul> <!-- end q&a filter item list -->
+						</div> <!-- end q&a filter -->
+					</div>
+				</div>
+
+			</div>
+		</section>
+
+
+		<!-- <section class="footer-coodiv-thm" id="ffot">
+			<div class="container">
+				<div class="row justify-content-center">
+
+					<div class="">
+						<p class="footer-title-simple">下载中心 2023</p>
+						
+					</div> -->
+				<footer class="footer">
+				<p>sc study 2023</p>
+			</footer>
+  					
+
+
+					
+		</section>
+		<img class="headerBox" id="downIco" src="static/picture/down.png">
+		<script type="text/javascript" src="static/js/jquery.min.js"></script>
+		<script src="static/js/layer.js"></script>
+		<script src="static/js/popper.min.js"></script>
+		<script src="static/js/bootstrap.min1.js"></script>
+		<script src="static/js/waypoints.min.js"></script>
+		<script src="static/js/jquery.counterup.min.js"></script>
+		<script src="static/js/particles-code.js"></script>
+		<script src="static/js/typed.js"></script>
+		<script src="static/js/owl.carousel.min.js"></script>
+		<script src="static/js/parallax.min.js"></script>
+		<script src="static/js/bootstrap.offcanvas.min.js"></script>
+		<script src="static/js/flickity.pkgd.min.js"></script>
+		<script src="static/js/scripts.js"></script>
+		<script src="static/js/mailer.js"></script>
+		<script src="static/js/jquery.countdown.min.js"></script>
+		<script src="static/js/modal-video.min.js"></script>
+		<script src="static/js/particles.js"></script>
+		<script src="static/js/mixitup.min.js"></script>
+		<script src="static/js/beichen3.js"></script>
+		<script src="static/js/instant.page-5.1.0.js" type="module"></script>
+		<div id="toTop" class="btn" style="display: none;"><span class="fa fa-chevron-up"></span></div>
+		<script type="text/javascript">
+			$(document).ready(function(){
+			    $(".xy_back").click(function () {
+			        window.history.back();
+			    });
+			})	
+	</body>
 </html>
