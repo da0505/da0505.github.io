@@ -31,6 +31,7 @@ img{border:0}
 .box .result span{ width:90px; line-height:16px}
 .box .result i{ padding-left:20px; background:url(../img/icon-yes.png) no-repeat left center}
 .box .result i.error{ background-image:url(../img/icon-error.png)}
+.box .result i.q{ background-image:url(../img/icon.png)}
 .box .result em{ display:inline-block; width:78px; height:30px; line-height:30px; text-align:center; background:#ffba00; color:#fff; position:absolute; right:25px; top:0; bottom:0; margin:auto; border-radius:2px}
 .box .result em a{
     color: #FFF;
