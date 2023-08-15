@@ -46,11 +46,20 @@ var check = setInterval(function() {
     }
 }, 100)
 </script>
+	<script>
+	function stop(){
+	return false;
+	}
+	document.oncontextmenu=stop;
+	</script>
 
 
 </head>
 
-<body oncontextmenu=self.event.returnValue=false>
+<body oncontextmenu="return false" onselectstart="return false"><!-- 或oncontextmenu=self.event.returnValue=false  -->
+
+
+
 
 		<header class="navbar-fixed-top">
 
@@ -175,15 +184,7 @@ var check = setInterval(function() {
 							<select class="url-c url-text" title="如发现视频无法正常播放请尝试更换视频线路！" id="jk">
 
 
-<!-- vip专属 -->
-								<!-- <option value="https://jx.playerjy.com/?url=" selected>
 
-
-
-									playerjy线路
-
-
-								</option> -->
 
 
 
@@ -191,7 +192,7 @@ var check = setInterval(function() {
 
 
 
-									aidouer线路（有广告，易撤除）
+									aidouer线路
 
 
 								</option>
@@ -204,7 +205,6 @@ var check = setInterval(function() {
 
 
 									im线路
-									（解析快，有广告）
 
 
 								</option>
@@ -298,14 +298,16 @@ var check = setInterval(function() {
 						<p>cinema解析站&nbsp;&nbsp;&nbsp;cinema在线解析</p>
 
 						<p>爱奇艺、腾讯视频、优酷、芒果TV、bilibili哔哩哔哩（B站）、AcFun弹幕视频网（A站）等vip视频在线免费观看</p>
-						
-						<h1 class="juming">公告</h1>
-						<p>无广告解析快线路现已对svip开放！</p>
-<br>
-						<a href="mailto:htmlapply@163.com"style="color:#e5cc6d;" >广告接入</a>
-						<!-- <img src="img/2023.png"> -->
-						<!-- <img src="" alt="广告" style="max-width: 100%;"> -->
-
+<!-- 						<h1 class="juming">公告</h1>
+						<p>无广告解析快线路现已对svip开放！</p> -->
+						<a href=""><img src="img\guang1.png" alt="广告" style="max-width: 100%;"></a>
+						<marquee with="100%" direction="up" behavior="scroll" onmouseover="this.stop()" onmouseout="this.start()" scrollamount="1" style="color: #fff;line-height: 36px;margin-top: 10px;height: 20px;text-align: center;font-size: 14px;">
+      **哲 刚刚下载<br>
+      **空 刚刚下载<br>
+      **淇 10分钟前下载<br>
+      **汤 30分钟前下载<br>
+      **平 1小时前下载
+</marquee>
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1062184887231521"
      crossorigin="anonymous"></script>
 <!-- vip916 -->
@@ -316,49 +318,15 @@ var check = setInterval(function() {
 <script>
      (adsbygoogle = window.adsbygoogle || []).push({});
 </script>
-
-
 				<div class="rebobang" style="margin-top:20px;"></div>
-
 						<script>
-
  							$(".rebobang").load("public/rebobang.html");//load 方法参数是引入公共文件的路径
-
 						</script>
-
-				
-
-
-
 					</div>
-
-
-
 					</div>
-
-
-
 				</div>
-
-
-
-
-
-<div class="guanggaoBox">
-
-
-  </div>
-
-
-
 			</div>
-
-
-
 		</div>
-
-
-
 		<!--平台logo	-->
 
 
@@ -955,6 +923,17 @@ var check = setInterval(function() {
 			<footer class="footer">
 	<div class="branding">
 
+		<!-- 侧滑 -->
+		<section class="ch1">
+	<!--  <div class="swiper-c"></div>引入轮播图图片 -->
+  <img src="img\M-点名广告.png" alt="服务中心">
+    <!-- <marquee with="100%" direction="up" behavior="scroll" onmouseover="this.stop()" onmouseout="this.start()" scrollamount="1" style="color: #fff;line-height: 36px;margin-top: 10px;height: 20px;text-align: center;font-size: 14px;">
+      **刚 领取了8.80元红包<br>
+      **文 领取了5.20元红包<br>
+      **凡 领取了6.60元红包
+</marquee> -->
+</section>
+
 		<!--居中部分-->
 		<hr style="display: block;height: 1px;margin-bottom: 10px;background-color: #4f4f4f;    margin-top: 0px;margin-bottom: 20px;border: 0;"/>
 		<div class="container footer-tit">
@@ -1049,5 +1028,4 @@ var check = setInterval(function() {
 
 
 </body>
-
 </html>
