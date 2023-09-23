@@ -1,6 +1,6 @@
 10.1
 www
 http://xxx.xxx.xxx.xx/
-bx
+fx
 
 ;bx=必须强制更新，fx=非必须强制更新
