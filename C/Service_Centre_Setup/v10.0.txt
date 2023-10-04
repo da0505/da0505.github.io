@@ -1,0 +1,25 @@
+no
+www
+http://192.168.101.52/1.exe
+当前版本已停止运行！请下载新版本！
+;检测到新版本，请进行更新以保证你的正常体验!
+
+
+
+
+
+
+
+
+
+;第一行no/yes代表安装包是否失效
+;第二行是如果失效的下载类型（www,exe,download）
+;第三行是失效下载地址
+;第四行是MessageBox内容
+
+
+using System;
+using System.IO;
+using System.Net.Http;
+
+

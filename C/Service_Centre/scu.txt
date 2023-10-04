@@ -1,6 +1,6 @@
-10.0
+10.1
 www
-http://xxx.xxx.xxx.xx/
+https://www.123pan.com/s/e7LDVv-GDYmH.html
 bx
 
 ;bx=必须强制更新，fx=非必须强制更新
