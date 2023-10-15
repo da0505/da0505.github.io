@@ -1,6 +1,6 @@
-10.1
+11.0
 www
-https://www.123pan.com/s/e7LDVv-GDYmH.html
+https://www.123pan.com/s/e7LDVv-5ZYmH.html
 bx
 
 ;bx=必须强制更新，fx=非必须强制更新
