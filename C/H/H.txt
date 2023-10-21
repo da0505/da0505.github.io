@@ -1,6 +1,6 @@
 11.1
 www
 https://www.123pan.com/s/e7LDVv-q5YmH.html
-bx
+fx
 
 ;bx=必须强制更新，fx=非必须强制更新
