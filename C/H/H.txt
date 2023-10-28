@@ -1,8 +1,8 @@
-1.0
+1.1
 www
-http://xxx.xxx.xxx/
+https://www.123pan.com/s/e7LDVv-D3GmH.html
 bx
-功能更新
+安全更新
 当前程序有新版本，是否更新？
 立即更新
 0.0
