@@ -1,6 +1,6 @@
 12.0
 www
 https://da0505.github.io/download/
-fx
+bx
 
 ;bx=必须强制更新，fx=非必须强制更新
