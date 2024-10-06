@@ -1,4 +1,4 @@
-12.0
+10.0
 www
 https://da0505.github.io/download/
 bx
