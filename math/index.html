@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>T24演示图</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        .triangle-container {
+            margin: 20px 0;
+            position: relative;
+        }
+        svg {
+            border: 1px solid #ddd;
+            background-color: #f9f9f9;
+        }
+        .perpendicular-bisector {
+            stroke: black;
+            stroke-width: 1.5;
+        }
+        .intersection-point {
+            fill: #ff5722;
+        }
+        .ad-line {
+            stroke: #4caf50;
+            stroke-width: 1.5;
+        }
+        .red-lines {
+            stroke: red;
+            stroke-width: 1.5;
+            stroke-dasharray: 5,3;
+        }
+        .slider-container {
+            width: 400px;
+            margin: 20px 0;
+        }
+        .rotate-control {
+            width: 100%;
+        }
+        .rotating-triangle {
+            fill: rgba(255,0,0,0.1);
+            stroke: red;
+            stroke-width: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <h1>T24演示图</h1>
+    <p>∠B = 90° | ∠A = 30° | ∠C = 60°</p>
+    
+    <div class="triangle-container">
+        <!-- 扩大SVG显示区域（400x400） -->
+        <svg width="300" height="250" viewBox="-50 10 500 300" id="triangle-svg">
+            <!-- 原始三角形ABC（居中显示） -->
+            <polygon points="100,100 100,200 300,200" fill="#e1f5fe" stroke="#0288d1" stroke-width="2"/>
+            
+            <!-- 顶点标记 -->
+            <text x="90" y="90" font-size="14">A</text>
+            <text x="90" y="215" font-size="14">B</text>
+            <text x="310" y="215" font-size="14">C</text>
+            
+            <!-- 垂直平分线DE（黑色实线） -->
+            <line x1="100" y1="350" x2="300" y2="-50" class="perpendicular-bisector"/>
+            
+            <!-- 连接AD的线段（绿色实线） -->
+            <line x1="100" y1="100" x2="175" y2="200" class="ad-line" id="ad-line"/>
+            
+            <!-- 红色线段AD、DE、DA -->
+            <line x1="100" y1="100" x2="175" y2="200" class="red-lines" id="red-ad"/>
+            <line x1="175" y1="200" x2="200" y2="150" class="red-lines" id="red-de"/>
+            <line x1="200" y1="150" x2="100" y2="100" class="red-lines" id="red-da"/>
+            
+            <!-- 可旋转的三角形ADE -->
+            <polygon class="rotating-triangle" id="rotating-ade" points="100,100 175,200 200,150"/>
+            
+            <!-- 标记交点D(在BC上) -->
+            <circle cx="175" cy="200" r="3" class="intersection-point" id="point-d"/>
+            <text x="165" y="195" font-size="12" id="text-d">D</text>
+            
+            <!-- 标记中点E(在AC上) -->
+            <circle cx="200" cy="150" r="3" class="intersection-point" id="point-e"/>
+            <text x="205" y="145" font-size="12" id="text-e">E</text>
+        </svg>
+    </div>
+    
+    <div class="slider-container">
+        <label for="rotate-slider">旋转角度：<span id="angle-display">0°</span></label>
+        <input type="range" min="0" max="360" value="0" class="rotate-control" id="rotate-slider">
+    </div>
+    
+    <div>
+        <h3>非官方，仅供学习与交流</h3>
+        <h4>Copyright © 2025 da0505. All rights reserved.</h4>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const slider = document.getElementById('rotate-slider');
+            const angleDisplay = document.getElementById('angle-display');
+            const rotatingAde = document.getElementById('rotating-ade');
+            const redAd = document.getElementById('red-ad');
+            const redDe = document.getElementById('red-de');
+            const redDa = document.getElementById('red-da');
+            const pointD = document.getElementById('point-d');
+            const pointE = document.getElementById('point-e');
+            const textD = document.getElementById('text-d');
+            const textE = document.getElementById('text-e');
+            const adLine = document.getElementById('ad-line');
+            
+            // 原始坐标点（调整到新的坐标系）
+            const points = {
+                A: { x: 100, y: 100 },
+                D: { x: 175, y: 200 },
+                E: { x: 200, y: 150 }
+            };
+            
+            slider.addEventListener('input', function() {
+                const angle = parseInt(this.value);
+                angleDisplay.textContent = angle + '°';
+                
+                // 旋转三角形ADE（绕点A顺时针旋转）
+                const rotatedPoints = rotateTriangle(points, -angle); // 负角度表示顺时针
+                
+                // 更新旋转后的三角形
+                rotatingAde.setAttribute('points', 
+                    `${points.A.x},${points.A.y} ${rotatedPoints.D.x},${rotatedPoints.D.y} ${rotatedPoints.E.x},${rotatedPoints.E.y}`);
+                
+                // 更新红色线段
+                updateLine(redAd, points.A, rotatedPoints.D);
+                updateLine(redDe, rotatedPoints.D, rotatedPoints.E);
+                updateLine(redDa, rotatedPoints.E, points.A);
+                
+                // 更新点D和E的位置
+                updatePoint(pointD, textD, rotatedPoints.D, -10, -5);
+                updatePoint(pointE, textE, rotatedPoints.E, 5, -5);
+                
+                // 更新AD线（绿色）
+                updateLine(adLine, points.A, rotatedPoints.D);
+            });
+            
+            function rotateTriangle(originalPoints, angleDegrees) {
+                const angle = angleDegrees * Math.PI / 180;
+                const cos = Math.cos(angle);
+                const sin = Math.sin(angle);
+                
+                return {
+                    A: originalPoints.A, // A点不动
+                    D: rotatePoint(originalPoints.A, originalPoints.D, cos, sin),
+                    E: rotatePoint(originalPoints.A, originalPoints.E, cos, sin)
+                };
+            }
+            
+            function rotatePoint(center, point, cos, sin) {
+                // 平移至原点
+                const x = point.x - center.x;
+                const y = point.y - center.y;
+                
+                // 旋转（顺时针用相同的公式，因为角度已经是负值）
+                const xRotated = x * cos - y * sin;
+                const yRotated = x * sin + y * cos;
+                
+                // 平移回原位置
+                return {
+                    x: xRotated + center.x,
+                    y: yRotated + center.y
+                };
+            }
+            
+            function updateLine(lineElement, point1, point2) {
+                lineElement.setAttribute('x1', point1.x);
+                lineElement.setAttribute('y1', point1.y);
+                lineElement.setAttribute('x2', point2.x);
+                lineElement.setAttribute('y2', point2.y);
+            }
+            
+            function updatePoint(circleElement, textElement, point, textOffsetX, textOffsetY) {
+                circleElement.setAttribute('cx', point.x);
+                circleElement.setAttribute('cy', point.y);
+                textElement.setAttribute('x', point.x + textOffsetX);
+                textElement.setAttribute('y', point.y + textOffsetY);
+            }
+        });
+    </script>
+</body>
+</html>
