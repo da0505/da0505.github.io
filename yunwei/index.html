@@ -6,10 +6,10 @@
     <title>云为E盘 · 云端存储</title>
     <!-- Font Awesome 6 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <!-- ✅ Supabase 客户端库 -->
+    <!-- Supabase 客户端库 -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        /* ========== 白蓝简约 · 磨砂质感 ========== */
+        /* ========== 完整样式 ========== */
         * {
             margin: 0;
             padding: 0;
@@ -492,7 +492,6 @@
         i {
             color: #387fc1;
         }
-        /* 删除按钮（管理员可见） */
         .delete-folder-btn, .delete-file-btn {
             color: #b04a4a;
             background: none;
@@ -611,16 +610,15 @@
 </div>
 
 <script>
-    // ========== Supabase 云端存储配置 ==========
+    // ========== Supabase 配置 ==========
     const SUPABASE_URL = 'https://yqhpeaceuqcyecdiksra.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_q0sNutGpuyJ9IYpLMEk_6g_JSy8bvfr';
-    
-    // ========== 全局变量 ==========
-    const STORAGE_KEY = 'jianyun_disk_persist';
+    const ADMIN_PASSWORD = '100200';
+    const STORAGE_KEY = 'yunwei_disk_backup';
     const CLOUD_TABLE = 'disk_data';
     const CLOUD_ROW_ID = 1;
-    const ADMIN_PASSWORD = '100200';
-    
+
+    // ========== 全局变量 ==========
     let supabase = null;
     let fileSystem = null;
     let currentPath = null;
@@ -638,35 +636,7 @@
     const modalImg = document.getElementById('modalImage');
     const resetButtonsContainer = document.getElementById('resetButtonsContainer');
 
-    // ========== 初始化 Supabase ==========
-    function initSupabase() {
-        try {
-            console.log('🔄 正在初始化 Supabase...');
-            
-            // 检查库是否加载
-            if (typeof window.supabase === 'undefined') {
-                throw new Error('Supabase 库加载失败');
-            }
-            
-            // 创建客户端
-            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-                auth: {
-                    persistSession: false,
-                    autoRefreshToken: false,
-                    detectSessionInUrl: false
-                }
-            });
-            
-            console.log('✅ Supabase 初始化成功');
-            return true;
-        } catch (e) {
-            console.error('❌ Supabase 初始化失败:', e);
-            alert('Supabase 初始化失败，将使用本地存储。错误：' + e.message);
-            return false;
-        }
-    }
-
-    // ========== 默认初始数据 ==========
+    // ========== 默认数据 ==========
     function getDefaultFileSystem() {
         return {
             name: '根目录',
@@ -694,118 +664,61 @@
         };
     }
 
-    // ========== 云端存储函数 ==========
+    // ========== 初始化 Supabase ==========
+    function initSupabase() {
+        try {
+            if (typeof window.supabase === 'undefined') {
+                console.error('Supabase库加载失败');
+                return false;
+            }
+            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            console.log('Supabase初始化成功');
+            return true;
+        } catch (e) {
+            console.error('Supabase初始化失败:', e);
+            return false;
+        }
+    }
+
+    // ========== 从云端加载数据 ==========
     async function loadFromCloud() {
-        // 如果 Supabase 未初始化，使用本地存储
         if (!supabase) {
-            console.log('📦 Supabase 未初始化，使用本地存储');
             const local = localStorage.getItem(STORAGE_KEY);
             return local ? JSON.parse(local) : getDefaultFileSystem();
         }
 
         try {
-            console.log('🔄 正在从Supabase加载数据...');
-            
-            // 先尝试创建表
-            await createTableIfNotExists();
-            
-            // 查询数据
             const { data, error } = await supabase
                 .from(CLOUD_TABLE)
                 .select('data')
                 .eq('id', CLOUD_ROW_ID)
                 .maybeSingle();
-            
+
             if (error) {
-                console.error('❌ 云端加载错误:', error);
+                console.error('云端加载错误:', error);
                 throw error;
             }
-            
-            if (data && data.data) {
-                console.log('✅ 云端加载成功');
-                // 同步到本地缓存
+
+            if (data?.data) {
+                console.log('云端加载成功');
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(data.data));
                 return data.data;
-            } else {
-                console.log('📦 云端无数据，使用默认数据');
-                const defaultData = getDefaultFileSystem();
-                // 尝试保存默认数据到云端
-                await saveToCloud(defaultData);
-                return defaultData;
             }
         } catch (e) {
-            console.error('❌ 从云端加载失败，使用本地缓存', e);
-            const local = localStorage.getItem(STORAGE_KEY);
-            if (local) {
-                try {
-                    return JSON.parse(local);
-                } catch (e) {
-                    return getDefaultFileSystem();
-                }
-            }
-            return getDefaultFileSystem();
+            console.error('加载失败，使用本地数据');
         }
-    }
-
-    // 创建表（如果不存在）
-    async function createTableIfNotExists() {
-        if (!supabase) return false;
         
-        try {
-            // 尝试查询，如果表不存在会返回错误
-            const { error } = await supabase
-                .from(CLOUD_TABLE)
-                .select('id')
-                .limit(1);
-            
-            // 如果表不存在，提示用户手动创建
-            if (error && error.message && error.message.includes('relation')) {
-                console.error('❌ 表不存在，请在 Supabase 中运行以下 SQL：');
-                console.error(`
-                    CREATE TABLE ${CLOUD_TABLE} (
-                        id INTEGER PRIMARY KEY,
-                        data JSONB NOT NULL,
-                        updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-                    );
-                    
-                    ALTER TABLE ${CLOUD_TABLE} ENABLE ROW LEVEL SECURITY;
-                    
-                    CREATE POLICY "enable_all" ON ${CLOUD_TABLE}
-                        USING (true)
-                        WITH CHECK (true);
-                `);
-                
-                alert('⚠️ Supabase 表不存在！\n\n请在 Supabase SQL Editor 中运行以下命令创建表：\n\n' + 
-                    'CREATE TABLE disk_data (\n' +
-                    '    id INTEGER PRIMARY KEY,\n' +
-                    '    data JSONB NOT NULL,\n' +
-                    '    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()\n' +
-                    ');\n\n' +
-                    'ALTER TABLE disk_data ENABLE ROW LEVEL SECURITY;\n\n' +
-                    'CREATE POLICY "enable_all" ON disk_data\n' +
-                    '    USING (true)\n' +
-                    '    WITH CHECK (true);');
-                
-                return false;
-            }
-            return true;
-        } catch (e) {
-            return false;
-        }
+        const local = localStorage.getItem(STORAGE_KEY);
+        return local ? JSON.parse(local) : getDefaultFileSystem();
     }
 
-    // 保存到Supabase
+    // ========== 保存到云端 ==========
     async function saveToCloud(data) {
-        // 如果 Supabase 未初始化，只保存到本地
-        if (!supabase) {
-            console.log('📦 Supabase 未初始化，仅保存到本地');
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-            return false;
-        }
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        
+        if (!supabase) return false;
 
         try {
-            console.log('🔄 正在保存到Supabase...');
-            
             const { error } = await supabase
                 .from(CLOUD_TABLE)
                 .upsert({ 
@@ -815,57 +728,267 @@
                 });
             
             if (error) {
-                console.error('❌ 云端保存错误:', error);
-                throw error;
+                console.error('云端保存错误:', error);
+                return false;
             }
             
-            console.log('✅ 云端保存成功');
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+            console.log('云端保存成功');
             return true;
         } catch (e) {
-            console.error('❌ 云端保存失败，仅保存到本地', e);
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+            console.error('云端保存失败:', e);
             return false;
         }
     }
 
-    // ========== 初始化应用 ==========
-    async function initApp() {
-        // 初始化 Supabase
-        initSupabase();
+    // ========== 保存文件系统 ==========
+    async function saveFileSystem() {
+        await saveToCloud(fileSystem);
+    }
+
+    // ========== 获取当前容器 ==========
+    function getCurrentContainer() {
+        return currentPath[currentPath.length - 1];
+    }
+
+    // ========== 渲染面包屑 ==========
+    function renderBreadcrumb() {
+        let html = '<i class="fas fa-location-dot"></i> ';
+        for (let i = 0; i < currentPath.length; i++) {
+            const seg = currentPath[i];
+            if (seg.type === 'root') {
+                html += `<span class="clickable" data-index="${i}">云为E盘</span>`;
+            } else {
+                html += ` <i class="fas fa-chevron-right" style="font-size:0.7rem;"></i> `;
+                html += `<span class="clickable" data-index="${i}">${seg.ref.name || '未命名'}</span>`;
+            }
+        }
+        breadcrumbDiv.innerHTML = html;
         
-        // 从云端加载数据
-        fileSystem = await loadFromCloud();
-        currentPath = [{ type: 'root', ref: fileSystem }];
-        
-        // 绑定事件监听器
-        bindEventListeners();
-        
-        // 渲染页面
+        document.querySelectorAll('.clickable').forEach(el => {
+            el.addEventListener('click', () => {
+                const idx = parseInt(el.dataset.index);
+                if (!isNaN(idx)) {
+                    currentPath = currentPath.slice(0, idx + 1);
+                    render();
+                }
+            });
+        });
+    }
+
+    // ========== 渲染管理员栏 ==========
+    function renderAdminBar() {
+        if (isAdmin) {
+            adminToggleSection.innerHTML = `<button class="exit-admin-btn" id="exitAdminBtn"><i class="fas fa-sign-out-alt"></i> 退出管理</button>`;
+        } else {
+            adminToggleSection.innerHTML = `<button class="admin-btn" id="loginAdminBtn"><i class="fas fa-lock-open"></i> 管理员登录</button>`;
+        }
+
+        // 直接绑定事件，不用setTimeout
+        const loginBtn = document.getElementById('loginAdminBtn');
+        if (loginBtn) {
+            loginBtn.onclick = adminLogin;
+        }
+        const exitBtn = document.getElementById('exitAdminBtn');
+        if (exitBtn) {
+            exitBtn.onclick = adminLogout;
+        }
+    }
+
+    // ========== 管理员登录 ==========
+    function adminLogin() {
+        const pwd = prompt('请输入管理员密码', '');
+        if (pwd === ADMIN_PASSWORD) {
+            isAdmin = true;
+            if (fileSystem?.folders) {
+                fileSystem.folders.forEach(f => { f.unlocked = true; });
+            }
+            render();
+        } else {
+            alert('密码错误');
+        }
+    }
+
+    // ========== 管理员登出 ==========
+    function adminLogout() {
+        isAdmin = false;
+        if (fileSystem?.folders) {
+            fileSystem.folders.forEach(f => { delete f.unlocked; });
+        }
         render();
     }
 
-    // ========== 绑定事件监听器 ==========
-    function bindEventListeners() {
-        // 密码验证
-        document.getElementById('submitFolderPassBtn').addEventListener('click', () => {
+    // ========== 删除文件夹 ==========
+    function deleteFolder(folderId) {
+        if (!isAdmin) return;
+        const current = getCurrentContainer();
+        if (current.ref.folders) {
+            current.ref.folders = current.ref.folders.filter(f => f.id !== folderId);
+            saveFileSystem();
+            render();
+        }
+    }
+
+    // ========== 删除文件 ==========
+    function deleteFile(index) {
+        if (!isAdmin) return;
+        const current = getCurrentContainer();
+        if (current.ref.files && current.ref.files[index]) {
+            current.ref.files.splice(index, 1);
+            saveFileSystem();
+            render();
+        }
+    }
+
+    // ========== 渲染主界面 ==========
+    async function render() {
+        if (!fileSystem || !currentPath) return;
+
+        renderAdminBar();
+        renderBreadcrumb();
+        const current = getCurrentContainer();
+
+        // 密码验证层
+        if (current.type === 'folder' && current.ref.password && !current.unlocked && !isAdmin) {
+            folderPassLayer.style.display = 'flex';
+            currentViewEl.innerHTML = '';
+            adminPanel.style.display = 'none';
+            pendingFolder = current;
+            return;
+        } else {
+            folderPassLayer.style.display = 'none';
+            pendingFolder = null;
+        }
+
+        // 渲染文件夹和文件
+        let html = '';
+
+        // 文件夹区域
+        if (current.ref.folders?.length > 0) {
+            html += '<div class="section-title"><i class="fas fa-folder-open"></i><h2>文件夹</h2></div>';
+            html += '<div class="grid-folders">';
+            current.ref.folders.forEach(folder => {
+                const lockIcon = folder.password ? `<span class="lock-tag"><i class="fas fa-lock"></i> 加密</span>` : '';
+                const deleteBtn = isAdmin ? `<span class="admin-delete"><button class="delete-folder-btn" data-folder-id="${folder.id}" title="删除文件夹"><i class="fas fa-trash-alt"></i></button></span>` : '';
+                html += `<div class="folder-card" data-folder-id="${folder.id}" data-folder-name="${folder.name}">
+                            ${deleteBtn}
+                            <i class="fas fa-folder folder-icon"></i>
+                            <span class="folder-name">${folder.name} ${lockIcon}</span>
+                        </div>`;
+            });
+            html += '</div>';
+        }
+
+        // 文件区域
+        if (current.ref.files?.length > 0) {
+            html += '<div class="section-title" style="margin-top:1.2rem;"><i class="fas fa-file-alt"></i><h2>文件</h2></div>';
+            html += '<div class="file-table">';
+            html += '<div class="file-row file-header"><span>文件名</span><span>类型</span><span>操作</span><span></span></div>';
+            current.ref.files.forEach((file, index) => {
+                let icon = file.type === 'image' ? 'fa-file-image' : 'fa-file-lines';
+                const deleteFileBtn = isAdmin ? `<button class="delete-file-btn" data-file-index="${index}" title="删除文件"><i class="fas fa-trash-alt"></i></button>` : '';
+                html += `<div class="file-row">
+                            <span class="file-name"><i class="fas ${icon}"></i> ${file.name}</span>
+                            <span>${file.type}</span>
+                            <span>
+                                ${file.type === 'image' ? `<a class="view-link" data-url="${file.url}" data-name="${file.name}"><i class="fas fa-eye"></i> 预览</a>` : `<span style="color:#6996c7;">—</span>`}
+                            </span>
+                            <span>${deleteFileBtn}</span>
+                        </div>`;
+            });
+            html += '</div>';
+        }
+
+        // 空状态
+        if ((!current.ref.folders || current.ref.folders.length === 0) && 
+            (!current.ref.files || current.ref.files.length === 0)) {
+            html = '<div style="padding: 3rem; text-align: center; color: #5b83a3;"><i class="fas fa-box-open" style="font-size:2.5rem;"></i><p style="margin-top:1rem;">此文件夹为空</p></div>';
+        }
+        currentViewEl.innerHTML = html;
+
+        // 显示/隐藏管理员面板
+        adminPanel.style.display = isAdmin ? 'block' : 'none';
+        if (resetButtonsContainer) {
+            resetButtonsContainer.style.display = isAdmin ? 'block' : 'none';
+        }
+
+        // 绑定事件
+        document.querySelectorAll('.folder-card').forEach(el => {
+            // 删除按钮事件
+            const delBtn = el.querySelector('.delete-folder-btn');
+            if (delBtn) {
+                delBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    deleteFolder(delBtn.dataset.folderId);
+                };
+            }
+            
+            // 文件夹点击事件
+            el.onclick = (e) => {
+                if (e.target.closest('.delete-folder-btn')) return;
+                const folderId = el.dataset.folderId;
+                const container = getCurrentContainer();
+                const folder = container.ref.folders.find(f => f.id === folderId);
+                if (folder) {
+                    currentPath.push({ 
+                        type: 'folder', 
+                        ref: folder, 
+                        unlocked: isAdmin ? true : false
+                    });
+                    render();
+                }
+            };
+        });
+
+        // 预览图片
+        document.querySelectorAll('.view-link').forEach(link => {
+            link.onclick = (e) => {
+                e.preventDefault();
+                const url = link.dataset.url;
+                if (url && url !== '#') {
+                    modalImg.src = url;
+                    currentZoom = 1;
+                    modalImg.style.transform = `scale(${currentZoom})`;
+                    modal.style.display = 'flex';
+                }
+            };
+        });
+
+        // 删除文件
+        document.querySelectorAll('.delete-file-btn').forEach(btn => {
+            btn.onclick = (e) => {
+                e.stopPropagation();
+                deleteFile(parseInt(btn.dataset.fileIndex));
+            };
+        });
+    }
+
+    // ========== 初始化应用 ==========
+    async function initApp() {
+        // 初始化Supabase
+        initSupabase();
+        
+        // 加载数据
+        fileSystem = await loadFromCloud();
+        currentPath = [{ type: 'root', ref: fileSystem }];
+        
+        // 绑定永久事件
+        document.getElementById('submitFolderPassBtn').onclick = () => {
             const inputPass = document.getElementById('folderPassInput').value;
-            if (pendingFolder && pendingFolder.ref.password === inputPass) {
+            if (pendingFolder?.ref.password === inputPass) {
                 pendingFolder.unlocked = true;
                 render();
             } else {
                 alert('密码错误');
             }
             document.getElementById('folderPassInput').value = '';
-        });
-        
-        document.getElementById('cancelFolderPassBtn').addEventListener('click', () => {
+        };
+
+        document.getElementById('cancelFolderPassBtn').onclick = () => {
             if (currentPath.length > 1) currentPath.pop();
             render();
-        });
+        };
 
-        // 新建文件夹
-        document.getElementById('createFolderBtn').addEventListener('click', () => {
+        document.getElementById('createFolderBtn').onclick = () => {
             if (!isAdmin) { alert('请先登录管理员'); return; }
             const name = document.getElementById('newFolderName').value.trim();
             if (!name) { alert('请输入文件夹名称'); return; }
@@ -875,17 +998,14 @@
             const newFolder = { id: newId, name: name, password: pwd, files: [] };
             if (!current.ref.folders) current.ref.folders = [];
             current.ref.folders.push(newFolder);
-            
             saveFileSystem();
-            
             document.getElementById('newFolderName').value = '';
             document.getElementById('newFolderPwd').value = '';
             render();
-        });
+        };
 
-        // 上传文件
-        document.getElementById('uploadFileBtn').addEventListener('click', function() {
-            if (!isAdmin) { alert('管理员登录后上传'); return; }
+        document.getElementById('uploadFileBtn').onclick = function() {
+            if (!isAdmin) { alert('请先登录管理员'); return; }
             const fileInput = document.getElementById('fileUploadInput');
             if (fileInput.files.length === 0) { alert('选择文件'); return; }
             const file = fileInput.files[0];
@@ -899,39 +1019,36 @@
                 const current = getCurrentContainer();
                 if (!current.ref.files) current.ref.files = [];
                 current.ref.files.push(fileObj);
-                
                 saveFileSystem();
-                
                 render();
             };
             reader.readAsDataURL(file);
-        });
+        };
 
         // 图片缩放
-        document.getElementById('zoomInBtn').addEventListener('click', () => {
+        document.getElementById('zoomInBtn').onclick = () => {
             currentZoom = Math.min(currentZoom + 0.2, 2.5);
             modalImg.style.transform = `scale(${currentZoom})`;
-        });
+        };
         
-        document.getElementById('zoomOutBtn').addEventListener('click', () => {
+        document.getElementById('zoomOutBtn').onclick = () => {
             currentZoom = Math.max(currentZoom - 0.2, 0.5);
             modalImg.style.transform = `scale(${currentZoom})`;
-        });
+        };
         
-        document.getElementById('closeModalBtn').addEventListener('click', () => {
+        document.getElementById('closeModalBtn').onclick = () => {
             modal.style.display = 'none';
             modalImg.src = '';
-        });
-        
-        window.addEventListener('click', (e) => { 
+        };
+
+        window.onclick = (e) => { 
             if (e.target === modal) modal.style.display = 'none'; 
-        });
+        };
 
         // 重置按钮
-        document.getElementById('clearStorageBtn')?.addEventListener('click', async function() {
+        document.getElementById('clearStorageBtn').onclick = async function() {
             if (!isAdmin) { alert('请先登录管理员'); return; }
-            
-            if (confirm('⚠️ 确定要彻底清除所有云端数据吗？\n所有上传的文件、新建的文件夹都将永久删除。')) {
+            if (confirm('⚠️ 确定要彻底清除所有云端数据吗？')) {
                 fileSystem = getDefaultFileSystem();
                 currentPath = [{ type: 'root', ref: fileSystem }];
                 isAdmin = false;
@@ -939,238 +1056,22 @@
                 render();
                 alert('已重置为初始状态');
             }
-        });
+        };
 
-        document.getElementById('softResetBtn')?.addEventListener('click', async function() {
+        document.getElementById('softResetBtn').onclick = async function() {
             if (!isAdmin) { alert('请先登录管理员'); return; }
-            
             if (confirm('恢复默认文件夹会删除所有当前数据，确定吗？')) {
                 fileSystem = getDefaultFileSystem();
                 currentPath = [{ type: 'root', ref: fileSystem }];
                 isAdmin = false;
                 await saveToCloud(fileSystem);
                 render();
-                alert('已恢复默认文件夹（关于、学习目录）');
+                alert('已恢复默认文件夹');
             }
-        });
-    }
+        };
 
-    // ========== 核心渲染函数 ==========
-    function render() {
-        renderAdminBar();
-        renderBreadcrumb();
-        const current = getCurrentContainer();
-        
-        // 密码验证层逻辑
-        if (current.type === 'folder' && current.ref.password && !current.unlocked && !isAdmin) {
-            folderPassLayer.style.display = 'flex';
-            currentViewEl.innerHTML = '';
-            adminPanel.style.display = 'none';
-            pendingFolder = current;
-        } else {
-            folderPassLayer.style.display = 'none';
-            pendingFolder = null;
-            
-            let html = '';
-
-            // 文件夹区域
-            if (current.ref.folders && current.ref.folders.length > 0) {
-                html += '<div class="section-title"><i class="fas fa-folder-open"></i><h2>文件夹</h2></div>';
-                html += '<div class="grid-folders">';
-                current.ref.folders.forEach(folder => {
-                    const lockIcon = folder.password ? `<span class="lock-tag"><i class="fas fa-lock"></i> 加密</span>` : '';
-                    const deleteBtn = isAdmin ? `<span class="admin-delete"><button class="delete-folder-btn" data-folder-id="${folder.id}" title="删除文件夹"><i class="fas fa-trash-alt"></i></button></span>` : '';
-                    html += `<div class="folder-card" data-folder-id="${folder.id}" data-folder-name="${folder.name}">
-                                ${deleteBtn}
-                                <i class="fas fa-folder folder-icon"></i>
-                                <span class="folder-name">${folder.name} ${lockIcon}</span>
-                            </div>`;
-                });
-                html += '</div>';
-            }
-
-            // 文件区域
-            if (current.ref.files && current.ref.files.length > 0) {
-                html += '<div class="section-title" style="margin-top:1.2rem;"><i class="fas fa-file-alt"></i><h2>文件</h2></div>';
-                html += '<div class="file-table">';
-                html += '<div class="file-row file-header"><span>文件名</span><span>类型</span><span>操作</span><span></span></div>';
-                current.ref.files.forEach((file, index) => {
-                    let icon = file.type === 'image' ? 'fa-file-image' : 'fa-file-lines';
-                    const deleteFileBtn = isAdmin ? `<button class="delete-file-btn" data-file-index="${index}" title="删除文件"><i class="fas fa-trash-alt"></i></button>` : '';
-                    html += `<div class="file-row">
-                                <span class="file-name"><i class="fas ${icon}"></i> ${file.name}</span>
-                                <span>${file.type}</span>
-                                <span>
-                                    ${file.type === 'image' ? `<a class="view-link" data-url="${file.url}" data-name="${file.name}"><i class="fas fa-eye"></i> 预览</a>` : `<span style="color:#6996c7;">—</span>`}
-                                </span>
-                                <span>${deleteFileBtn}</span>
-                            </div>`;
-                });
-                html += '</div>';
-            }
-
-            // 空状态
-            if ((!current.ref.folders || current.ref.folders.length === 0) && 
-                (!current.ref.files || current.ref.files.length === 0)) {
-                html = '<div style="padding: 3rem; text-align: center; color: #5b83a3;"><i class="fas fa-box-open" style="font-size:2.5rem;"></i><p style="margin-top:1rem;">此文件夹为空</p></div>';
-            }
-            currentViewEl.innerHTML = html;
-            
-            adminPanel.style.display = isAdmin ? 'block' : 'none';
-            if (resetButtonsContainer) {
-                resetButtonsContainer.style.display = isAdmin ? 'block' : 'none';
-            }
-        }
-
-        // 事件绑定
-        document.querySelectorAll('.folder-card').forEach(el => {
-            if (isAdmin) {
-                const delBtn = el.querySelector('.delete-folder-btn');
-                if (delBtn) {
-                    delBtn.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        const folderId = delBtn.dataset.folderId;
-                        deleteFolder(folderId);
-                    });
-                }
-            }
-            el.addEventListener('click', (e) => {
-                if (e.target.closest('.delete-folder-btn')) return;
-                const folderId = el.dataset.folderId;
-                const container = getCurrentContainer();
-                const folder = container.ref.folders.find(f => f.id === folderId);
-                if (folder) {
-                    currentPath.push({ 
-                        type: 'folder', 
-                        ref: folder, 
-                        unlocked: isAdmin ? true : false
-                    });
-                    render();
-                }
-            });
-        });
-
-        document.querySelectorAll('.view-link').forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                const url = link.dataset.url;
-                if (url && url !== '#') {
-                    modalImg.src = url;
-                    currentZoom = 1;
-                    modalImg.style.transform = `scale(${currentZoom})`;
-                    modal.style.display = 'flex';
-                } else {
-                    alert('预览地址无效');
-                }
-            });
-        });
-
-        document.querySelectorAll('.delete-file-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const index = btn.dataset.fileIndex;
-                deleteFile(parseInt(index));
-            });
-        });
-    }
-
-    // 获取当前容器
-    function getCurrentContainer() {
-        return currentPath[currentPath.length - 1];
-    }
-
-    // 面包屑
-    function renderBreadcrumb() {
-        let html = '<i class="fas fa-location-dot"></i> ';
-        for (let i = 0; i < currentPath.length; i++) {
-            const seg = currentPath[i];
-            if (seg.type === 'root') {
-                html += `<span class="clickable" data-index="${i}">云为E盘</span>`;
-            } else {
-                html += ` <i class="fas fa-chevron-right" style="font-size:0.7rem;"></i> `;
-                html += `<span class="clickable" data-index="${i}">${seg.ref.name || '未命名'}</span>`;
-            }
-        }
-        breadcrumbDiv.innerHTML = html;
-        breadcrumbDiv.querySelectorAll('.clickable').forEach(el => {
-            el.addEventListener('click', () => {
-                const idx = parseInt(el.dataset.index);
-                if (!isNaN(idx)) {
-                    currentPath = currentPath.slice(0, idx + 1);
-                    render();
-                }
-            });
-        });
-    }
-
-    // 管理员登录/登出UI
-    function renderAdminBar() {
-        if (isAdmin) {
-            adminToggleSection.innerHTML = `<button class="exit-admin-btn" id="exitAdminBtn"><i class="fas fa-sign-out-alt"></i> 退出管理</button>`;
-        } else {
-            adminToggleSection.innerHTML = `<button class="admin-btn" id="loginAdminBtn"><i class="fas fa-lock-open"></i> 管理员登录</button>`;
-        }
-        setTimeout(() => {
-            const loginBtn = document.getElementById('loginAdminBtn');
-            if (loginBtn) loginBtn.addEventListener('click', adminLogin);
-            const exitBtn = document.getElementById('exitAdminBtn');
-            if (exitBtn) exitBtn.addEventListener('click', adminLogout);
-        }, 0);
-    }
-
-    // 管理员登录
-    function adminLogin() {
-        const pwd = prompt('请输入管理员密码', '');
-        if (pwd === ADMIN_PASSWORD) {
-            isAdmin = true;
-            function unlockAll(container) {
-                if (container.folders) {
-                    container.folders.forEach(f => { f.unlocked = true; });
-                }
-            }
-            unlockAll(fileSystem);
-            render();
-        } else {
-            alert('密码错误');
-        }
-    }
-
-    function adminLogout() {
-        isAdmin = false;
-        function clearUnlock(container) {
-            if (container.folders) {
-                container.folders.forEach(f => { delete f.unlocked; });
-            }
-        }
-        clearUnlock(fileSystem);
+        // 首次渲染
         render();
-    }
-
-    // 删除文件夹
-    function deleteFolder(folderId) {
-        if (!isAdmin) return;
-        const current = getCurrentContainer();
-        if (current.ref.folders) {
-            current.ref.folders = current.ref.folders.filter(f => f.id !== folderId);
-            saveFileSystem();
-            render();
-        }
-    }
-
-    // 删除文件
-    function deleteFile(index) {
-        if (!isAdmin) return;
-        const current = getCurrentContainer();
-        if (current.ref.files && current.ref.files[index]) {
-            current.ref.files.splice(index, 1);
-            saveFileSystem();
-            render();
-        }
-    }
-
-    // 保存文件系统
-    async function saveFileSystem() {
-        await saveToCloud(fileSystem);
     }
 
     // 启动应用
