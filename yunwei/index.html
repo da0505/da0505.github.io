@@ -750,7 +750,7 @@
             render();
         };
 
-        // 上传文件（带压缩）
+        // 上传文件（智能压缩到100KB）
 document.getElementById('uploadFileBtn').onclick = async () => {
     if (!isAdmin) { alert('请先登录管理员'); return; }
     const input = document.getElementById('fileUploadInput');
@@ -758,12 +758,10 @@ document.getElementById('uploadFileBtn').onclick = async () => {
     
     const originalFile = input.files[0];
     
-    // 压缩图片
+    // 智能压缩，目标100KB
     let fileToUpload = originalFile;
     if (originalFile.type.startsWith('image/')) {
-        // ===== 关键参数在这里 =====
-        fileToUpload = await compressImage(originalFile, 600, 0.5);
-        // =======================
+        fileToUpload = await compressImageIntelligently(originalFile);
     }
     
     const reader = new FileReader();
@@ -777,15 +775,16 @@ document.getElementById('uploadFileBtn').onclick = async () => {
                   originalFile.name.replace(/\.\w+$/, '.jpg') : 
                   originalFile.name,
             type: 'image',
-            url: e.target.result
+            url: e.target.result,
+            size: fileToUpload.size
         });
         
         saveFileSystem();
         render();
-        input.value = ''; // 清空input
+        input.value = '';
         
         if (originalFile.type.startsWith('image/')) {
-            alert(`✅ 上传成功！\n📦 大小: ${(fileToUpload.size/1024).toFixed(1)}KB`);
+            alert(`上传成功！\n ${(fileToUpload.size/1024).toFixed(1)}KB\n📐 ${fileToUpload.width || '自适应'}x${fileToUpload.height || ''}`);
         }
     };
 };
@@ -852,10 +851,9 @@ document.getElementById('uploadFileBtn').onclick = async () => {
     // 启动
     init();
 
-    // ========== 图片压缩工具 ==========
-function compressImage(file, maxWidth = 800, quality = 0.7) {
+    // ========== 智能压缩：目标100KB，尽量清晰 ==========
+async function compressImageIntelligently(file) {
     return new Promise((resolve, reject) => {
-        // 如果不是图片，直接返回原文件
         if (!file.type.startsWith('image/')) {
             resolve(file);
             return;
@@ -867,37 +865,100 @@ function compressImage(file, maxWidth = 800, quality = 0.7) {
             const img = new Image();
             img.src = e.target.result;
             img.onload = () => {
-                // 计算压缩后的尺寸
                 let width = img.width;
                 let height = img.height;
+                let quality = 0.92;      // 初始高质量
+                let targetSize = 100 * 1024; // 100KB
                 
-                if (width > maxWidth) {
-                    height = Math.floor(height * (maxWidth / width));
-                    width = maxWidth;
+                // 如果原图已经小于100KB，直接返回
+                if (file.size <= targetSize) {
+                    console.log(`原图已小于100KB，无需压缩`);
+                    resolve(file);
+                    return;
                 }
 
-                // 创建 canvas 压缩
+                console.log(`原图: ${(file.size/1024).toFixed(1)}KB, ${width}x${height}`);
+                
+                // 第一步：先缩放到合适尺寸（保留2K内最佳清晰度）
+                if (width > 1600) {
+                    height = Math.floor(height * (1600 / width));
+                    width = 1600;
+                }
+                
                 const canvas = document.createElement('canvas');
                 canvas.width = width;
                 canvas.height = height;
                 
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(img, 0, 0, width, height);
-                
-                // 转换为 Blob
-                canvas.toBlob((blob) => {
-                    // 创建压缩后的新文件
-                    const compressedFile = new File([blob], file.name, {
-                        type: 'image/jpeg',  // 统一转成 JPEG
+                // 尝试不同的质量参数，直到接近100KB
+                const tryCompress = (currentQuality) => {
+                    return new Promise((resolveTry) => {
+                        canvas.toBlob((blob) => {
+                            resolveTry(blob);
+                        }, 'image/jpeg', currentQuality);
+                    });
+                };
+
+                // 动态调整质量
+                (async () => {
+                    let bestBlob = null;
+                    let bestSize = 0;
+                    let bestQuality = quality;
+                    
+                    // 从高质量开始尝试，逐步降低
+                    for (let q = 0.92; q >= 0.6; q -= 0.05) {
+                        const blob = await tryCompress(q);
+                        const size = blob.size;
+                        
+                        console.log(`  尝试质量 ${q.toFixed(2)}: ${(size/1024).toFixed(1)}KB`);
+                        
+                        if (size <= targetSize) {
+                            bestBlob = blob;
+                            bestSize = size;
+                            bestQuality = q;
+                            break;
+                        }
+                        
+                        // 保留最接近100KB的
+                        if (!bestBlob || Math.abs(size - targetSize) < Math.abs(bestSize - targetSize)) {
+                            bestBlob = blob;
+                            bestSize = size;
+                            bestQuality = q;
+                        }
+                    }
+                    
+                    // 如果还是太大，继续缩小尺寸
+                    if (bestSize > targetSize && width > 800) {
+                        console.log(`📏 压缩后仍${(bestSize/1024).toFixed(1)}KB，缩小尺寸...`);
+                        
+                        // 缩小到1200px
+                        let newWidth = 1200;
+                        let newHeight = Math.floor(height * (1200 / width));
+                        canvas.width = newWidth;
+                        canvas.height = newHeight;
+                        
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, newWidth, newHeight);
+                        
+                        // 再用0.85质量压缩
+                        const blob = await tryCompress(0.85);
+                        if (blob.size < bestSize) {
+                            bestBlob = blob;
+                            bestSize = blob.size;
+                            console.log(`  二次压缩: ${(bestSize/1024).toFixed(1)}KB`);
+                        }
+                    }
+                    
+                    // 创建最终文件
+                    const compressedFile = new File([bestBlob], file.name.replace(/\.\w+$/, '.jpg'), {
+                        type: 'image/jpeg',
                         lastModified: Date.now()
                     });
                     
-                    console.log(`📊 压缩前: ${(file.size/1024).toFixed(2)} KB`);
-                    console.log(`📊 压缩后: ${(compressedFile.size/1024).toFixed(2)} KB`);
-                    console.log(`📐 尺寸: ${width} x ${height}`);
+                    console.log(`最终结果: ${(compressedFile.size/1024).toFixed(1)}KB, ${canvas.width}x${canvas.height}`);
+                    console.log(`压缩率: ${(compressedFile.size/file.size*100).toFixed(1)}%`);
                     
                     resolve(compressedFile);
-                }, 'image/jpeg', quality);  // quality: 0-1
+                })();
             };
         };
         reader.onerror = reject;
