@@ -1,62 +1,1124 @@
--- 创建云盘数据表
-CREATE TABLE IF NOT EXISTS disk_data (
-    id INTEGER PRIMARY KEY,
-    data JSONB NOT NULL,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0, user-scalable=yes">
+    <title>云为E盘 · 云端存储</title>
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- ✅ Supabase 客户端库 - 已添加！ -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        /* ========== 白蓝简约 · 磨砂质感 ========== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
 
--- 插入初始数据
-INSERT INTO disk_data (id, data, updated_at)
-VALUES (
-    1, 
-    '{
-        "name": "根目录",
-        "folders": [
-            {
-                "id": "f1",
-                "name": "关于",
-                "password": "",
-                "files": []
-            },
-            {
-                "id": "f2",
-                "name": "学习目录",
-                "password": "100000",
-                "files": [
-                    {
-                        "name": "界面草图.png",
-                        "type": "image",
-                        "url": "https://picsum.photos/id/101/400/300"
-                    },
-                    {
-                        "name": "规范.pdf",
-                        "type": "pdf",
-                        "url": "#"
-                    }
-                ]
+        body {
+            background: linear-gradient(145deg, #f6faff 0%, #ebf3fe 100%);
+            min-height: 100vh;
+            padding: 2rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #1a2c3e;
+        }
+
+        .cloud-container {
+            max-width: 1300px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-radius: 36px;
+            box-shadow: 0 20px 40px -10px rgba(27, 62, 104, 0.12), 0 2px 6px rgba(0, 70, 150, 0.04);
+            padding: 2rem 2rem 2.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        /* 头部区域 */
+        .header-area {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            font-size: 2.2rem;
+            color: #2a7de1;
+            filter: drop-shadow(0 4px 6px rgba(30, 112, 206, 0.12));
+        }
+
+        .logo-text h1 {
+            font-weight: 600;
+            font-size: 1.9rem;
+            letter-spacing: -0.5px;
+            color: #0a3352;
+            line-height: 1.1;
+        }
+
+        .logo-text span {
+            font-size: 0.9rem;
+            color: #4d7db3;
+            background: rgba(42, 125, 225, 0.08);
+            padding: 0.2rem 0.9rem;
+            border-radius: 30px;
+            font-weight: 400;
+            border: 0.5px solid rgba(42, 125, 225, 0.2);
+        }
+
+        .admin-access {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: white;
+            padding: 0.5rem 0.9rem 0.5rem 1.3rem;
+            border-radius: 50px;
+            box-shadow: 0 6px 12px -6px rgba(0,65,131,0.08);
+            border: 1px solid #ffffff;
+        }
+
+        .admin-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #1f6fd0;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .admin-btn, .exit-admin-btn {
+            border: none;
+            background: #eef5ff;
+            padding: 0.5rem 1.1rem;
+            border-radius: 30px;
+            color: #1a5fb0;
+            font-weight: 500;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            transition: 0.2s;
+            border: 1px solid transparent;
+        }
+
+        .admin-btn:hover, .exit-admin-btn:hover {
+            background: #d9e9ff;
+            color: #0a4296;
+            border-color: rgba(42,125,225,0.3);
+        }
+
+        .exit-admin-btn {
+            background: #ffece5;
+            color: #b0533a;
+        }
+
+        /* 密码浮层 */
+        .password-layer {
+            background: white;
+            border-radius: 24px;
+            padding: 1.5rem 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 18px -8px rgba(33,66,99,0.1);
+            border: 1px solid rgba(42,125,225,0.15);
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .lock-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #20588c;
+        }
+
+        .lock-info i {
+            font-size: 1.4rem;
+            color: #3080d0;
+        }
+
+        .password-form {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .password-input {
+            border: 1px solid #c2d9f0;
+            border-radius: 40px;
+            padding: 0.7rem 1.2rem;
+            font-size: 0.95rem;
+            width: 210px;
+            background: #fafcff;
+            transition: 0.2s;
+            color: #0a2e4a;
+        }
+
+        .password-input:focus {
+            border-color: #2a7de1;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(42,125,225,0.08);
+            background: white;
+        }
+
+        .btn {
+            border: none;
+            background: white;
+            padding: 0.7rem 1.6rem;
+            border-radius: 40px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 8px -4px rgba(0,0,0,0.02);
+            transition: all 0.15s;
+            border: 1px solid #e1ecfe;
+            color: #1e5b9e;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: #2a7de1;
+            border: 1px solid #2a7de1;
+            color: white;
+        }
+
+        .btn-primary i {
+            color: white;
+        }
+
+        .btn-outline {
+            border: 1px solid #b6d0e9;
+            background: white;
+        }
+
+        /* 文件夹网格 */
+        .section-title {
+            display: flex;
+            align-items: baseline;
+            margin: 1.8rem 0 0.8rem 0;
+        }
+
+        .section-title h2 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #153e60;
+            letter-spacing: -0.2px;
+        }
+
+        .section-title i {
+            color: #2a7de1;
+            margin-right: 8px;
+        }
+
+        .grid-folders {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 16px;
+            margin-bottom: 1rem;
+        }
+
+        .folder-card {
+            background: white;
+            border-radius: 18px;
+            padding: 1.1rem 0.8rem;
+            border: 1px solid rgba(42,125,225,0.1);
+            box-shadow: 0 4px 10px -4px rgba(0,57,115,0.04);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: 0.15s;
+            cursor: pointer;
+            backdrop-filter: blur(4px);
+            position: relative;
+        }
+
+        .folder-card:hover {
+            border-color: #2a7de1;
+            background: #f9fcff;
+            transform: translateY(-3px);
+            box-shadow: 0 14px 20px -10px rgba(30,100,200,0.18);
+        }
+
+        .folder-icon {
+            font-size: 2.4rem;
+            color: #4791db;
+            margin-bottom: 6px;
+        }
+
+        .folder-name {
+            font-weight: 550;
+            color: #1c4c70;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .lock-tag {
+            font-size: 0.75rem;
+            background: #ebf3fe;
+            border-radius: 30px;
+            padding: 0.2rem 0.5rem;
+            color: #2160a5;
+            margin-left: 5px;
+        }
+
+        /* 文件列表 */
+        .file-table {
+            background: white;
+            border-radius: 24px;
+            padding: 0.2rem 0;
+            border: 1px solid rgba(42,125,225,0.12);
+            width: 100%;
+            margin-top: 0.4rem;
+        }
+
+        .file-row {
+            display: grid;
+            grid-template-columns: 3fr 1.5fr 2fr 0.8fr;
+            padding: 0.9rem 1.5rem;
+            border-bottom: 1px solid #ecf3fa;
+            align-items: center;
+        }
+
+        .file-row:last-child {
+            border-bottom: none;
+        }
+
+        .file-header {
+            background: #f2f9ff;
+            color: #1f6290;
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            border-radius: 20px 20px 0 0;
+        }
+
+        .file-name {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 470;
+            color: #144a6e;
+        }
+
+        .file-name i {
+            color: #2a7de1;
+            width: 1.2rem;
+            text-align: center;
+        }
+
+        .view-link {
+            color: #2270c0;
+            text-decoration: none;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+        }
+
+        /* 图片预览模态框 */
+        .image-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 32px;
+            padding: 1.2rem 1.2rem 1.5rem;
+            max-width: 80vw;
+            max-height: 90vh;
+            box-shadow: 0 30px 60px -20px rgba(0,59,121,0.2);
+            border: 1px solid rgba(255,255,255,0.6);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-img {
+            max-width: 70vw;
+            max-height: 70vh;
+            object-fit: contain;
+            border-radius: 16px;
+            transition: transform 0.1s ease;
+        }
+
+        .modal-controls {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin-top: 1rem;
+        }
+
+        .modal-controls button {
+            background: #ecf3fc;
+            border: none;
+            border-radius: 40px;
+            padding: 0.5rem 1.2rem;
+            font-size: 0.95rem;
+            color: #1360a3;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            border: 1px solid white;
+        }
+
+        /* 管理员面板 */
+        .admin-panel {
+            background: #f3f9ff;
+            border-radius: 26px;
+            padding: 1.6rem 1.8rem;
+            margin-top: 2rem;
+            border: 1px solid #b4d3f3;
+        }
+
+        .admin-title {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #0d4e8c;
+            font-weight: 600;
+            margin-bottom: 1.2rem;
+        }
+
+        .admin-form-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px 30px;
+            align-items: flex-end;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .input-group label {
+            font-size: 0.8rem;
+            color: #38658b;
+            font-weight: 500;
+            margin-left: 8px;
+        }
+
+        .admin-input {
+            border: 1px solid #c1d9f0;
+            border-radius: 30px;
+            padding: 0.6rem 1.2rem;
+            width: 200px;
+            background: white;
+        }
+
+        .small-btn {
+            background: white;
+            border: 1px solid #2a7de1;
+            padding: 0.6rem 1.4rem;
+            border-radius: 30px;
+            color: #1a5fb0;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .small-btn:hover {
+            background: #e3f0ff;
+        }
+
+        /* 面包屑 */
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.95rem;
+            margin-bottom: 1rem;
+            color: #3c698d;
+            background: rgba(255,255,255,0.5);
+            padding: 0.5rem 1rem;
+            border-radius: 40px;
+            flex-wrap: wrap;
+        }
+
+        .breadcrumb i {
+            color: #2f81d7;
+        }
+
+        .clickable {
+            cursor: pointer;
+            color: #1565c0;
+            text-decoration: underline;
+            text-underline-offset: 2px;
+            text-decoration-color: #a0c6f0;
+        }
+
+        hr {
+            border: 0.5px solid #dae6f2;
+            margin: 1.4rem 0;
+        }
+
+        .footer-note {
+            font-size: 0.75rem;
+            color: #5982a3;
+            text-align: center;
+            margin-top: 1.2rem;
+        }
+
+        i {
+            color: #387fc1;
+        }
+        /* 删除按钮（管理员可见） */
+        .delete-folder-btn, .delete-file-btn {
+            color: #b04a4a;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+            padding: 4px 8px;
+            border-radius: 20px;
+        }
+        .delete-folder-btn:hover, .delete-file-btn:hover {
+            background: #ffeae8;
+        }
+        .folder-card {
+            position: relative;
+        }
+        .admin-delete {
+            position: absolute;
+            top: 6px;
+            right: 8px;
+        }
+    </style>
+</head>
+<body>
+<div class="cloud-container" id="app">
+    <!-- 头部 -->
+    <div class="header-area">
+        <div class="logo-section">
+            <div class="logo-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+            <div class="logo-text">
+                <h1>云为E盘</h1>
+                <span>你的学习在线处理 · 云端存储</span>
+            </div>
+        </div>
+        <div class="admin-access" id="adminAccessBar">
+            <div class="admin-badge"><i class="fas fa-shield-alt"></i> 管理员</div>
+            <div id="adminToggleSection"></div>
+        </div>
+    </div>
+
+    <!-- 面包屑 -->
+    <div class="breadcrumb" id="breadcrumbDiv"></div>
+
+    <!-- 文件夹密码验证层 -->
+    <div id="folderPasswordLayer" class="password-layer" style="display: none;">
+        <div class="lock-info">
+            <i class="fas fa-lock"></i>
+            <span>此文件夹已加密，请输入密码</span>
+        </div>
+        <div class="password-form">
+            <input type="password" id="folderPassInput" class="password-input" placeholder="输入访问密码">
+            <button class="btn btn-primary" id="submitFolderPassBtn"><i class="fas fa-key"></i> 验证</button>
+            <button class="btn-outline btn" id="cancelFolderPassBtn"><i class="fas fa-times"></i> 取消</button>
+        </div>
+    </div>
+
+    <!-- 主内容区域：文件夹+文件 -->
+    <div id="currentView"></div>
+
+    <!-- 管理员面板 -->
+    <div id="adminPanelSection" style="display: none;">
+        <div class="admin-panel">
+            <div class="admin-title"><i class="fas fa-cog"></i> 管理操作（当前目录）</div>
+            <div class="admin-form-grid">
+                <!-- 新建文件夹 -->
+                <div class="input-group">
+                    <label><i class="fas fa-folder"></i> 新建文件夹</label>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                        <input type="text" id="newFolderName" class="admin-input" placeholder="文件夹名称">
+                        <input type="password" id="newFolderPwd" class="admin-input" placeholder="访问密码(可选)">
+                        <button class="small-btn" id="createFolderBtn"><i class="fas fa-plus-circle"></i> 创建</button>
+                    </div>
+                </div>
+                <!-- 上传文件 -->
+                <div class="input-group">
+                    <label><i class="fas fa-upload"></i> 上传文件（图片可预览）</label>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+                        <input type="file" id="fileUploadInput" class="admin-input" style="padding: 0.4rem 1rem; width: 240px;">
+                        <button class="small-btn" id="uploadFileBtn"><i class="fas fa-cloud-upload-alt"></i> 上传</button>
+                    </div>
+                </div>
+            </div>
+            <p style="font-size:0.8rem; color: #4d78a3; margin-top: 0.8rem;"><i class="fas fa-info-circle"></i> 所有更改自动保存到云端，所有用户共享。</p>
+            
+            <!-- 重置按钮区域 - 仅管理员可见 -->
+            <div id="resetButtonsContainer" style="margin-top: 1.5rem; border-top: 1px solid #b4d3f3; padding-top: 1.2rem; display: none;">
+                <div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-exclamation-triangle" style="color: #d97706;"></i>
+                        <span style="color: #4d78a3; font-size: 0.9rem;">危险操作：</span>
+                    </div>
+                    <button id="clearStorageBtn" class="small-btn" style="border-color: #d97706; color: #b0533a;">
+                        <i class="fas fa-trash-alt"></i> 重置云盘（清除所有数据）
+                    </button>
+                    <button id="softResetBtn" class="small-btn" style="border-color: #6c8eb0;">
+                        <i class="fas fa-undo-alt"></i> 恢复默认文件夹
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 图片预览模态框 -->
+    <div id="imageModal" class="image-modal">
+        <div class="modal-content">
+            <img id="modalImage" class="modal-img" src="" alt="预览">
+            <div class="modal-controls">
+                <button id="zoomOutBtn"><i class="fas fa-search-minus"></i> 缩小</button>
+                <button id="zoomInBtn"><i class="fas fa-search-plus"></i> 放大</button>
+                <button id="closeModalBtn"><i class="fas fa-xmark"></i> 关闭</button>
+            </div>
+        </div>
+    </div>
+    <div class="footer-note">
+        <i class="fas fa-shield"></i> 云为E盘 · 云端存储 · Copyright © 2023-2026 da0505. All rights reserved.
+    </div>
+</div>
+
+<script>
+    // ========== Supabase 云端存储配置 ==========
+    const SUPABASE_URL = 'https://yqhpeaceuqcyecdiksra.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_q0sNutGpuyJ9IYpLMEk_6g_JSy8bvfr';
+    
+    // ✅ 检查 Supabase 是否加载成功
+    if (typeof window.supabase === 'undefined') {
+        console.error('❌ Supabase 库加载失败！');
+        alert('Supabase 库加载失败，请刷新页面重试');
+    } else {
+        console.log('✅ Supabase 库加载成功');
+    }
+    
+    // 初始化 Supabase 客户端
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    
+    // 数据库表名和固定ID
+    const STORAGE_KEY = 'jianyun_disk_persist';  // 保留作为本地缓存
+    const CLOUD_TABLE = 'disk_data';
+    const CLOUD_ROW_ID = 1;
+    const ADMIN_PASSWORD = '100200';  // 管理员密码
+
+    // ========== 默认初始数据 ==========
+    function getDefaultFileSystem() {
+        return {
+            name: '根目录',
+            folders: [
+                { 
+                    id: 'f1', 
+                    name: '关于', 
+                    password: '', 
+                    files: []
+                },
+                { 
+                    id: 'f2', 
+                    name: '学习目录', 
+                    password: '100000', 
+                    files: [
+                        { name: '界面草图.png', type: 'image', url: 'https://picsum.photos/id/101/400/300' },
+                        { name: '规范.pdf', type: 'pdf', url: '#' }
+                    ]
+                }
+            ],
+            files: [
+                { name: '说明.txt', type: 'text', url: '#' },
+                { name: '封面图.png', type: 'image', url: 'https://picsum.photos/id/16/500/400' }
+            ]
+        };
+    }
+
+    // ========== 云端存储函数 ==========
+    // 从Supabase加载数据
+    async function loadFromCloud() {
+        try {
+            console.log('🔄 正在从Supabase加载数据...');
+            const { data, error } = await supabase
+                .from(CLOUD_TABLE)
+                .select('data')
+                .eq('id', CLOUD_ROW_ID)
+                .single();
+            
+            if (error) {
+                console.error('❌ 云端加载错误:', error);
+                // 如果表不存在或没有数据，返回默认数据
+                if (error.code === 'PGRST116') {
+                    console.log('📦 云端无数据，使用默认数据');
+                    return getDefaultFileSystem();
+                }
+                throw error;
             }
-        ],
-        "files": [
-            {
-                "name": "说明.txt",
-                "type": "text",
-                "url": "#"
-            },
-            {
-                "name": "封面图.png",
-                "type": "image",
-                "url": "https://picsum.photos/id/16/500/400"
+            
+            console.log('✅ 云端加载成功:', data);
+            return data.data;
+        } catch (e) {
+            console.error('❌ 从云端加载失败，使用本地缓存', e);
+            // 降级到localStorage
+            const local = localStorage.getItem(STORAGE_KEY);
+            if (local) {
+                try {
+                    return JSON.parse(local);
+                } catch (e) {
+                    return getDefaultFileSystem();
+                }
             }
-        ]
-    }'::jsonb,
-    NOW()
-)
-ON CONFLICT (id) DO NOTHING;
+            return getDefaultFileSystem();
+        }
+    }
 
--- 启用行级安全
-ALTER TABLE disk_data ENABLE ROW LEVEL SECURITY;
+    // 保存到Supabase
+    async function saveToCloud(data) {
+        try {
+            console.log('🔄 正在保存到Supabase...');
+            const { error } = await supabase
+                .from(CLOUD_TABLE)
+                .upsert({ 
+                    id: CLOUD_ROW_ID, 
+                    data: data,
+                    updated_at: new Date()
+                });
+            
+            if (error) {
+                console.error('❌ 云端保存错误:', error);
+                throw error;
+            }
+            
+            console.log('✅ 云端保存成功');
+            // 同时备份到localStorage
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+            return true;
+        } catch (e) {
+            console.error('❌ 云端保存失败，仅保存到本地', e);
+            // 降级保存到本地
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+            alert('云端保存失败，但已保存到本地缓存。请检查Supabase配置。');
+            return false;
+        }
+    }
 
--- 允许所有操作
-CREATE POLICY "enable_all" ON disk_data
-    USING (true)
-    WITH CHECK (true);
+    // 全局变量
+    let fileSystem = null;
+    let currentPath = null;
+    let isAdmin = false;
+    let pendingFolder = null;
+    let currentZoom = 1;
+
+    // ========== DOM 元素 ==========
+    const currentViewEl = document.getElementById('currentView');
+    const breadcrumbDiv = document.getElementById('breadcrumbDiv');
+    const folderPassLayer = document.getElementById('folderPasswordLayer');
+    const adminPanel = document.getElementById('adminPanelSection');
+    const adminToggleSection = document.getElementById('adminToggleSection');
+    const modal = document.getElementById('imageModal');
+    const modalImg = document.getElementById('modalImage');
+    const resetButtonsContainer = document.getElementById('resetButtonsContainer');
+
+    // ========== 初始化应用 ==========
+    async function initApp() {
+        // 从云端加载数据
+        fileSystem = await loadFromCloud();
+        currentPath = [{ type: 'root', ref: fileSystem }];
+        
+        // 绑定事件监听器
+        bindEventListeners();
+        
+        // 渲染页面
+        render();
+    }
+
+    // ========== 绑定事件监听器 ==========
+    function bindEventListeners() {
+        // 密码验证
+        document.getElementById('submitFolderPassBtn').addEventListener('click', () => {
+            const inputPass = document.getElementById('folderPassInput').value;
+            if (pendingFolder && pendingFolder.ref.password === inputPass) {
+                pendingFolder.unlocked = true;
+                render();
+            } else {
+                alert('密码错误');
+            }
+            document.getElementById('folderPassInput').value = '';
+        });
+        
+        document.getElementById('cancelFolderPassBtn').addEventListener('click', () => {
+            if (currentPath.length > 1) currentPath.pop();
+            render();
+        });
+
+        // 新建文件夹
+        document.getElementById('createFolderBtn').addEventListener('click', () => {
+            if (!isAdmin) { alert('请先登录管理员'); return; }
+            const name = document.getElementById('newFolderName').value.trim();
+            if (!name) { alert('请输入文件夹名称'); return; }
+            const pwd = document.getElementById('newFolderPwd').value.trim() || '';
+            const current = getCurrentContainer();
+            const newId = 'f' + Date.now() + Math.random();
+            const newFolder = { id: newId, name: name, password: pwd, files: [] };
+            if (!current.ref.folders) current.ref.folders = [];
+            current.ref.folders.push(newFolder);
+            
+            saveFileSystem();
+            
+            document.getElementById('newFolderName').value = '';
+            document.getElementById('newFolderPwd').value = '';
+            render();
+        });
+
+        // 上传文件
+        document.getElementById('uploadFileBtn').addEventListener('click', function() {
+            if (!isAdmin) { alert('管理员登录后上传'); return; }
+            const fileInput = document.getElementById('fileUploadInput');
+            if (fileInput.files.length === 0) { alert('选择文件'); return; }
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const fileObj = {
+                    name: file.name,
+                    type: file.type.startsWith('image/') ? 'image' : '文档',
+                    url: e.target.result
+                };
+                const current = getCurrentContainer();
+                if (!current.ref.files) current.ref.files = [];
+                current.ref.files.push(fileObj);
+                
+                saveFileSystem();
+                
+                render();
+            };
+            reader.readAsDataURL(file);
+        });
+
+        // 图片缩放
+        document.getElementById('zoomInBtn').addEventListener('click', () => {
+            currentZoom = Math.min(currentZoom + 0.2, 2.5);
+            modalImg.style.transform = `scale(${currentZoom})`;
+        });
+        
+        document.getElementById('zoomOutBtn').addEventListener('click', () => {
+            currentZoom = Math.max(currentZoom - 0.2, 0.5);
+            modalImg.style.transform = `scale(${currentZoom})`;
+        });
+        
+        document.getElementById('closeModalBtn').addEventListener('click', () => {
+            modal.style.display = 'none';
+            modalImg.src = '';
+        });
+        
+        window.addEventListener('click', (e) => { 
+            if (e.target === modal) modal.style.display = 'none'; 
+        });
+
+        // 重置按钮
+        document.getElementById('clearStorageBtn')?.addEventListener('click', async function() {
+            if (!isAdmin) { alert('请先登录管理员'); return; }
+            
+            if (confirm('⚠️ 确定要彻底清除所有云端数据吗？\n所有上传的文件、新建的文件夹都将永久删除。')) {
+                fileSystem = getDefaultFileSystem();
+                currentPath = [{ type: 'root', ref: fileSystem }];
+                isAdmin = false;
+                await saveToCloud(fileSystem);
+                render();
+                alert('已重置为初始状态');
+            }
+        });
+
+        document.getElementById('softResetBtn')?.addEventListener('click', async function() {
+            if (!isAdmin) { alert('请先登录管理员'); return; }
+            
+            if (confirm('恢复默认文件夹会删除所有当前数据，确定吗？')) {
+                fileSystem = getDefaultFileSystem();
+                currentPath = [{ type: 'root', ref: fileSystem }];
+                isAdmin = false;
+                await saveToCloud(fileSystem);
+                render();
+                alert('已恢复默认文件夹（关于、学习目录）');
+            }
+        });
+    }
+
+    // ========== 核心渲染函数 ==========
+    function render() {
+        renderAdminBar();
+        renderBreadcrumb();
+        const current = getCurrentContainer();
+        
+        // 密码验证层逻辑
+        if (current.type === 'folder' && current.ref.password && !current.unlocked && !isAdmin) {
+            folderPassLayer.style.display = 'flex';
+            currentViewEl.innerHTML = '';
+            adminPanel.style.display = 'none';
+            pendingFolder = current;
+        } else {
+            folderPassLayer.style.display = 'none';
+            pendingFolder = null;
+            
+            let html = '';
+
+            // 文件夹区域
+            if (current.ref.folders && current.ref.folders.length > 0) {
+                html += '<div class="section-title"><i class="fas fa-folder-open"></i><h2>文件夹</h2></div>';
+                html += '<div class="grid-folders">';
+                current.ref.folders.forEach(folder => {
+                    const lockIcon = folder.password ? `<span class="lock-tag"><i class="fas fa-lock"></i> 加密</span>` : '';
+                    const deleteBtn = isAdmin ? `<span class="admin-delete"><button class="delete-folder-btn" data-folder-id="${folder.id}" title="删除文件夹"><i class="fas fa-trash-alt"></i></button></span>` : '';
+                    html += `<div class="folder-card" data-folder-id="${folder.id}" data-folder-name="${folder.name}">
+                                ${deleteBtn}
+                                <i class="fas fa-folder folder-icon"></i>
+                                <span class="folder-name">${folder.name} ${lockIcon}</span>
+                            </div>`;
+                });
+                html += '</div>';
+            }
+
+            // 文件区域
+            if (current.ref.files && current.ref.files.length > 0) {
+                html += '<div class="section-title" style="margin-top:1.2rem;"><i class="fas fa-file-alt"></i><h2>文件</h2></div>';
+                html += '<div class="file-table">';
+                html += '<div class="file-row file-header"><span>文件名</span><span>类型</span><span>操作</span><span></span></div>';
+                current.ref.files.forEach((file, index) => {
+                    let icon = file.type === 'image' ? 'fa-file-image' : 'fa-file-lines';
+                    const deleteFileBtn = isAdmin ? `<button class="delete-file-btn" data-file-index="${index}" title="删除文件"><i class="fas fa-trash-alt"></i></button>` : '';
+                    html += `<div class="file-row">
+                                <span class="file-name"><i class="fas ${icon}"></i> ${file.name}</span>
+                                <span>${file.type}</span>
+                                <span>
+                                    ${file.type === 'image' ? `<a class="view-link" data-url="${file.url}" data-name="${file.name}"><i class="fas fa-eye"></i> 预览</a>` : `<span style="color:#6996c7;">—</span>`}
+                                </span>
+                                <span>${deleteFileBtn}</span>
+                            </div>`;
+                });
+                html += '</div>';
+            }
+
+            // 空状态
+            if ((!current.ref.folders || current.ref.folders.length === 0) && 
+                (!current.ref.files || current.ref.files.length === 0)) {
+                html = '<div style="padding: 3rem; text-align: center; color: #5b83a3;"><i class="fas fa-box-open" style="font-size:2.5rem;"></i><p style="margin-top:1rem;">此文件夹为空</p></div>';
+            }
+            currentViewEl.innerHTML = html;
+            
+            adminPanel.style.display = isAdmin ? 'block' : 'none';
+            if (resetButtonsContainer) {
+                resetButtonsContainer.style.display = isAdmin ? 'block' : 'none';
+            }
+        }
+
+        // 事件绑定
+        document.querySelectorAll('.folder-card').forEach(el => {
+            if (isAdmin) {
+                const delBtn = el.querySelector('.delete-folder-btn');
+                if (delBtn) {
+                    delBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const folderId = delBtn.dataset.folderId;
+                        deleteFolder(folderId);
+                    });
+                }
+            }
+            el.addEventListener('click', (e) => {
+                if (e.target.closest('.delete-folder-btn')) return;
+                const folderId = el.dataset.folderId;
+                const container = getCurrentContainer();
+                const folder = container.ref.folders.find(f => f.id === folderId);
+                if (folder) {
+                    currentPath.push({ 
+                        type: 'folder', 
+                        ref: folder, 
+                        unlocked: isAdmin ? true : false
+                    });
+                    render();
+                }
+            });
+        });
+
+        document.querySelectorAll('.view-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const url = link.dataset.url;
+                if (url && url !== '#') {
+                    modalImg.src = url;
+                    currentZoom = 1;
+                    modalImg.style.transform = `scale(${currentZoom})`;
+                    modal.style.display = 'flex';
+                } else {
+                    alert('预览地址无效');
+                }
+            });
+        });
+
+        document.querySelectorAll('.delete-file-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const index = btn.dataset.fileIndex;
+                deleteFile(parseInt(index));
+            });
+        });
+    }
+
+    // 获取当前容器
+    function getCurrentContainer() {
+        return currentPath[currentPath.length - 1];
+    }
+
+    // 面包屑
+    function renderBreadcrumb() {
+        let html = '<i class="fas fa-location-dot"></i> ';
+        for (let i = 0; i < currentPath.length; i++) {
+            const seg = currentPath[i];
+            if (seg.type === 'root') {
+                html += `<span class="clickable" data-index="${i}">云为E盘</span>`;
+            } else {
+                html += ` <i class="fas fa-chevron-right" style="font-size:0.7rem;"></i> `;
+                html += `<span class="clickable" data-index="${i}">${seg.ref.name || '未命名'}</span>`;
+            }
+        }
+        breadcrumbDiv.innerHTML = html;
+        breadcrumbDiv.querySelectorAll('.clickable').forEach(el => {
+            el.addEventListener('click', () => {
+                const idx = parseInt(el.dataset.index);
+                if (!isNaN(idx)) {
+                    currentPath = currentPath.slice(0, idx + 1);
+                    render();
+                }
+            });
+        });
+    }
+
+    // 管理员登录/登出UI
+    function renderAdminBar() {
+        if (isAdmin) {
+            adminToggleSection.innerHTML = `<button class="exit-admin-btn" id="exitAdminBtn"><i class="fas fa-sign-out-alt"></i> 退出管理</button>`;
+        } else {
+            adminToggleSection.innerHTML = `<button class="admin-btn" id="loginAdminBtn"><i class="fas fa-lock-open"></i> 管理员登录</button>`;
+        }
+        setTimeout(() => {
+            const loginBtn = document.getElementById('loginAdminBtn');
+            if (loginBtn) loginBtn.addEventListener('click', adminLogin);
+            const exitBtn = document.getElementById('exitAdminBtn');
+            if (exitBtn) exitBtn.addEventListener('click', adminLogout);
+        }, 0);
+    }
+
+    // 管理员登录
+    function adminLogin() {
+        const pwd = prompt('请输入管理员密码', '');
+        if (pwd === ADMIN_PASSWORD) {
+            isAdmin = true;
+            function unlockAll(container) {
+                if (container.folders) {
+                    container.folders.forEach(f => { f.unlocked = true; });
+                }
+            }
+            unlockAll(fileSystem);
+            render();
+        } else {
+            alert('密码错误');
+        }
+    }
+
+    function adminLogout() {
+        isAdmin = false;
+        function clearUnlock(container) {
+            if (container.folders) {
+                container.folders.forEach(f => { delete f.unlocked; });
+            }
+        }
+        clearUnlock(fileSystem);
+        render();
+    }
+
+    // 删除文件夹
+    function deleteFolder(folderId) {
+        if (!isAdmin) return;
+        const current = getCurrentContainer();
+        if (current.ref.folders) {
+            current.ref.folders = current.ref.folders.filter(f => f.id !== folderId);
+            saveFileSystem();
+            render();
+        }
+    }
+
+    // 删除文件
+    function deleteFile(index) {
+        if (!isAdmin) return;
+        const current = getCurrentContainer();
+        if (current.ref.files && current.ref.files[index]) {
+            current.ref.files.splice(index, 1);
+            saveFileSystem();
+            render();
+        }
+    }
+
+    // 保存文件系统
+    async function saveFileSystem() {
+        await saveToCloud(fileSystem);
+    }
+
+    // 启动应用
+    initApp();
+</script>
+
+<!-- 云端连接测试工具 -->
+<script>
+    window.testCloudConnection = async function() {
+        console.log('🔄 测试Supabase连接...');
+        try {
+            const { data, error } = await supabase
+                .from('disk_data')
+                .select('*')
+                .eq('id', 1);
+            
+            if (error) {
+                console.error('❌ 连接失败:', error);
+                alert('❌ 云端连接失败！\n\n错误信息：' + error.message + '\n\n请检查：\n1. Supabase表是否创建\n2. RLS策略是否配置\n3. 网络连接是否正常');
+            } else {
+                console.log('✅ 连接成功! 当前数据:', data);
+                alert('✅ 云端连接成功！当前数据条数：' + (data?.length || 0));
+            }
+        } catch (e) {
+            console.error('❌ 异常:', e);
+            alert('❌ 连接异常：' + e.message);
+        }
+    };
+    
+    // 3秒后自动测试连接
+    setTimeout(() => {
+        if (typeof supabase !== 'undefined') {
+            window.testCloudConnection();
+        }
+    }, 3000);
+</script>
+</body>
+</html>
