@@ -6,7 +6,7 @@
     <title>云为E盘 · 云端存储</title>
     <!-- Font Awesome 6 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <!-- ✅ Supabase 客户端库 - 已添加！ -->
+    <!-- ✅ Supabase 客户端库 -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         /* ========== 白蓝简约 · 磨砂质感 ========== */
@@ -615,22 +615,56 @@
     const SUPABASE_URL = 'https://yqhpeaceuqcyecdiksra.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_q0sNutGpuyJ9IYpLMEk_6g_JSy8bvfr';
     
-    // ✅ 检查 Supabase 是否加载成功
-    if (typeof window.supabase === 'undefined') {
-        console.error('❌ Supabase 库加载失败！');
-        alert('Supabase 库加载失败，请刷新页面重试');
-    } else {
-        console.log('✅ Supabase 库加载成功');
-    }
-    
-    // 初始化 Supabase 客户端
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    
-    // 数据库表名和固定ID
-    const STORAGE_KEY = 'jianyun_disk_persist';  // 保留作为本地缓存
+    // ========== 全局变量 ==========
+    const STORAGE_KEY = 'jianyun_disk_persist';
     const CLOUD_TABLE = 'disk_data';
     const CLOUD_ROW_ID = 1;
-    const ADMIN_PASSWORD = '100200';  // 管理员密码
+    const ADMIN_PASSWORD = '100200';
+    
+    let supabase = null;
+    let fileSystem = null;
+    let currentPath = null;
+    let isAdmin = false;
+    let pendingFolder = null;
+    let currentZoom = 1;
+
+    // ========== DOM 元素 ==========
+    const currentViewEl = document.getElementById('currentView');
+    const breadcrumbDiv = document.getElementById('breadcrumbDiv');
+    const folderPassLayer = document.getElementById('folderPasswordLayer');
+    const adminPanel = document.getElementById('adminPanelSection');
+    const adminToggleSection = document.getElementById('adminToggleSection');
+    const modal = document.getElementById('imageModal');
+    const modalImg = document.getElementById('modalImage');
+    const resetButtonsContainer = document.getElementById('resetButtonsContainer');
+
+    // ========== 初始化 Supabase ==========
+    function initSupabase() {
+        try {
+            console.log('🔄 正在初始化 Supabase...');
+            
+            // 检查库是否加载
+            if (typeof window.supabase === 'undefined') {
+                throw new Error('Supabase 库加载失败');
+            }
+            
+            // 创建客户端
+            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+                auth: {
+                    persistSession: false,
+                    autoRefreshToken: false,
+                    detectSessionInUrl: false
+                }
+            });
+            
+            console.log('✅ Supabase 初始化成功');
+            return true;
+        } catch (e) {
+            console.error('❌ Supabase 初始化失败:', e);
+            alert('Supabase 初始化失败，将使用本地存储。错误：' + e.message);
+            return false;
+        }
+    }
 
     // ========== 默认初始数据 ==========
     function getDefaultFileSystem() {
@@ -661,31 +695,46 @@
     }
 
     // ========== 云端存储函数 ==========
-    // 从Supabase加载数据
     async function loadFromCloud() {
+        // 如果 Supabase 未初始化，使用本地存储
+        if (!supabase) {
+            console.log('📦 Supabase 未初始化，使用本地存储');
+            const local = localStorage.getItem(STORAGE_KEY);
+            return local ? JSON.parse(local) : getDefaultFileSystem();
+        }
+
         try {
             console.log('🔄 正在从Supabase加载数据...');
+            
+            // 先尝试创建表
+            await createTableIfNotExists();
+            
+            // 查询数据
             const { data, error } = await supabase
                 .from(CLOUD_TABLE)
                 .select('data')
                 .eq('id', CLOUD_ROW_ID)
-                .single();
+                .maybeSingle();
             
             if (error) {
                 console.error('❌ 云端加载错误:', error);
-                // 如果表不存在或没有数据，返回默认数据
-                if (error.code === 'PGRST116') {
-                    console.log('📦 云端无数据，使用默认数据');
-                    return getDefaultFileSystem();
-                }
                 throw error;
             }
             
-            console.log('✅ 云端加载成功:', data);
-            return data.data;
+            if (data && data.data) {
+                console.log('✅ 云端加载成功');
+                // 同步到本地缓存
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(data.data));
+                return data.data;
+            } else {
+                console.log('📦 云端无数据，使用默认数据');
+                const defaultData = getDefaultFileSystem();
+                // 尝试保存默认数据到云端
+                await saveToCloud(defaultData);
+                return defaultData;
+            }
         } catch (e) {
             console.error('❌ 从云端加载失败，使用本地缓存', e);
-            // 降级到localStorage
             const local = localStorage.getItem(STORAGE_KEY);
             if (local) {
                 try {
@@ -698,16 +747,71 @@
         }
     }
 
+    // 创建表（如果不存在）
+    async function createTableIfNotExists() {
+        if (!supabase) return false;
+        
+        try {
+            // 尝试查询，如果表不存在会返回错误
+            const { error } = await supabase
+                .from(CLOUD_TABLE)
+                .select('id')
+                .limit(1);
+            
+            // 如果表不存在，提示用户手动创建
+            if (error && error.message && error.message.includes('relation')) {
+                console.error('❌ 表不存在，请在 Supabase 中运行以下 SQL：');
+                console.error(`
+                    CREATE TABLE ${CLOUD_TABLE} (
+                        id INTEGER PRIMARY KEY,
+                        data JSONB NOT NULL,
+                        updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+                    );
+                    
+                    ALTER TABLE ${CLOUD_TABLE} ENABLE ROW LEVEL SECURITY;
+                    
+                    CREATE POLICY "enable_all" ON ${CLOUD_TABLE}
+                        USING (true)
+                        WITH CHECK (true);
+                `);
+                
+                alert('⚠️ Supabase 表不存在！\n\n请在 Supabase SQL Editor 中运行以下命令创建表：\n\n' + 
+                    'CREATE TABLE disk_data (\n' +
+                    '    id INTEGER PRIMARY KEY,\n' +
+                    '    data JSONB NOT NULL,\n' +
+                    '    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()\n' +
+                    ');\n\n' +
+                    'ALTER TABLE disk_data ENABLE ROW LEVEL SECURITY;\n\n' +
+                    'CREATE POLICY "enable_all" ON disk_data\n' +
+                    '    USING (true)\n' +
+                    '    WITH CHECK (true);');
+                
+                return false;
+            }
+            return true;
+        } catch (e) {
+            return false;
+        }
+    }
+
     // 保存到Supabase
     async function saveToCloud(data) {
+        // 如果 Supabase 未初始化，只保存到本地
+        if (!supabase) {
+            console.log('📦 Supabase 未初始化，仅保存到本地');
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+            return false;
+        }
+
         try {
             console.log('🔄 正在保存到Supabase...');
+            
             const { error } = await supabase
                 .from(CLOUD_TABLE)
                 .upsert({ 
                     id: CLOUD_ROW_ID, 
                     data: data,
-                    updated_at: new Date()
+                    updated_at: new Date().toISOString()
                 });
             
             if (error) {
@@ -716,37 +820,20 @@
             }
             
             console.log('✅ 云端保存成功');
-            // 同时备份到localStorage
             localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
             return true;
         } catch (e) {
             console.error('❌ 云端保存失败，仅保存到本地', e);
-            // 降级保存到本地
             localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-            alert('云端保存失败，但已保存到本地缓存。请检查Supabase配置。');
             return false;
         }
     }
 
-    // 全局变量
-    let fileSystem = null;
-    let currentPath = null;
-    let isAdmin = false;
-    let pendingFolder = null;
-    let currentZoom = 1;
-
-    // ========== DOM 元素 ==========
-    const currentViewEl = document.getElementById('currentView');
-    const breadcrumbDiv = document.getElementById('breadcrumbDiv');
-    const folderPassLayer = document.getElementById('folderPasswordLayer');
-    const adminPanel = document.getElementById('adminPanelSection');
-    const adminToggleSection = document.getElementById('adminToggleSection');
-    const modal = document.getElementById('imageModal');
-    const modalImg = document.getElementById('modalImage');
-    const resetButtonsContainer = document.getElementById('resetButtonsContainer');
-
     // ========== 初始化应用 ==========
     async function initApp() {
+        // 初始化 Supabase
+        initSupabase();
+        
         // 从云端加载数据
         fileSystem = await loadFromCloud();
         currentPath = [{ type: 'root', ref: fileSystem }];
@@ -1088,37 +1175,6 @@
 
     // 启动应用
     initApp();
-</script>
-
-<!-- 云端连接测试工具 -->
-<script>
-    window.testCloudConnection = async function() {
-        console.log('🔄 测试Supabase连接...');
-        try {
-            const { data, error } = await supabase
-                .from('disk_data')
-                .select('*')
-                .eq('id', 1);
-            
-            if (error) {
-                console.error('❌ 连接失败:', error);
-                alert('❌ 云端连接失败！\n\n错误信息：' + error.message + '\n\n请检查：\n1. Supabase表是否创建\n2. RLS策略是否配置\n3. 网络连接是否正常');
-            } else {
-                console.log('✅ 连接成功! 当前数据:', data);
-                alert('✅ 云端连接成功！当前数据条数：' + (data?.length || 0));
-            }
-        } catch (e) {
-            console.error('❌ 异常:', e);
-            alert('❌ 连接异常：' + e.message);
-        }
-    };
-    
-    // 3秒后自动测试连接
-    setTimeout(() => {
-        if (typeof supabase !== 'undefined') {
-            window.testCloudConnection();
-        }
-    }, 3000);
 </script>
 </body>
 </html>
