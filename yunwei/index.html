@@ -401,7 +401,7 @@
             <div class="grid-folders">
                 <div class="folder-card loading-skeleton" style="border: 1px solid #e1f0fe;">
                     <i class="fas fa-folder folder-icon" style="color: #c2d9f0;"></i>
-                    <span style="color: #a0c0d8;">数学</span>
+                    <span style="color: #a0c0d8;">学习目录</span>
                 </div>
             </div>
         </div>
@@ -472,9 +472,9 @@
 </div>
 
 <script>
-    // ========== JSONBin 配置（请替换成你自己的）==========
-    const BIN_ID = '698cc5daae596e708f232b0e';  // 已配置好的Bin
-    const API_KEY = '$2a$10$niXyVQL6WkchGYLkpqvKQ.R8DhDaH6GkkblVUNDjxSa4iHdCuUnu6';  // Key
+    // ========== JSONBin 配置 ==========
+    const BIN_ID = '698cc5daae596e708f232b0e';
+    const API_KEY = '$2a$10$niXyVQL6WkchGYLkpqvKQ.R8DhDaH6GkkblVUNDjxSa4iHdCuUnu6';
     const ADMIN_PASSWORD = '100200';
 
     // ========== 全局变量 ==========
@@ -482,7 +482,6 @@
     let currentPath = null;
     let isAdmin = false;
     let pendingFolder = null;
-    let isLoading = false;
 
     // ========== DOM 元素 ==========
     const currentViewEl = document.getElementById('currentView');
@@ -498,12 +497,11 @@
     const lastUpdateTime = document.getElementById('lastUpdateTime');
     const skeletonLoader = document.getElementById('skeletonLoader');
 
-    // ========== 本地缓存系统（秒开核心）==========
+    // ========== 本地缓存系统 ==========
     const LocalCache = {
         KEYS: {
             FILESYSTEM: 'yunwei_filesystem_cache',
-            TIMESTAMP: 'yunwei_timestamp',
-            PENDING: 'yunwei_pending_operations'
+            TIMESTAMP: 'yunwei_timestamp'
         },
 
         save(data) {
@@ -521,8 +519,6 @@
             try {
                 const data = localStorage.getItem(this.KEYS.FILESYSTEM);
                 if (data) {
-                    const timestamp = localStorage.getItem(this.KEYS.TIMESTAMP);
-                    console.log(`从本地缓存加载，缓存时间: ${new Date(parseInt(timestamp)).toLocaleString()}`);
                     return JSON.parse(data);
                 }
             } catch (e) {
@@ -531,69 +527,138 @@
             return null;
         },
 
-        getCacheTime() {
-            const ts = localStorage.getItem(this.KEYS.TIMESTAMP);
-            return ts ? parseInt(ts) : null;
-        },
-
         clear() {
             localStorage.removeItem(this.KEYS.FILESYSTEM);
             localStorage.removeItem(this.KEYS.TIMESTAMP);
-            localStorage.removeItem(this.KEYS.PENDING);
         }
     };
 
-    // ========== 图片缓存系统（IndexedDB + 自动清理）==========
+    // ========== 图片缓存系统（优化版）==========
     const ImageCache = {
         DB_NAME: 'YunweiImageDB',
         STORE_NAME: 'images',
-        DB_VERSION: 1,
+        DB_VERSION: 2,
         db: null,
+        initPromise: null,
         memoryCache: new Map(),
+        uploadQueue: [],          // 上传队列
+        isProcessing: false,     // 是否正在处理队列
+
+        // 预热：提前初始化
+        async warmup() {
+            try {
+                await this.initDB();
+                console.log('IndexedDB 预热完成');
+            } catch (e) {
+                console.warn('IndexedDB 预热失败，将使用内存缓存', e);
+            }
+        },
 
         async initDB() {
             if (this.db) return this.db;
             
+            if (!this.initPromise) {
+                this.initPromise = new Promise((resolve, reject) => {
+                    const request = indexedDB.open(this.DB_NAME, this.DB_VERSION);
+                    
+                    request.onerror = () => {
+                        console.error('IndexedDB 打开失败');
+                        reject(request.error);
+                    };
+                    
+                    request.onsuccess = () => {
+                        this.db = request.result;
+                        resolve(this.db);
+                    };
+                    
+                    request.onupgradeneeded = (event) => {
+                        const db = event.target.result;
+                        if (!db.objectStoreNames.contains(this.STORE_NAME)) {
+                            const store = db.createObjectStore(this.STORE_NAME, { keyPath: 'id' });
+                            store.createIndex('timestamp', 'timestamp', { unique: false });
+                        }
+                    };
+                });
+            }
+            
+            return this.initPromise;
+        },
+
+        // 批量上传处理器
+        async processQueue() {
+            if (this.isProcessing || this.uploadQueue.length === 0) return;
+            
+            this.isProcessing = true;
+            
+            while (this.uploadQueue.length > 0) {
+                const item = this.uploadQueue.shift();
+                try {
+                    const result = await this.storeInternal(item.file);
+                    item.resolve(result);
+                } catch (e) {
+                    item.reject(e);
+                }
+                // 给浏览器喘息机会
+                await new Promise(resolve => setTimeout(resolve, 10));
+            }
+            
+            this.isProcessing = false;
+        },
+
+        // 对外接口：加入队列
+        store(originalFile) {
             return new Promise((resolve, reject) => {
-                const request = indexedDB.open(this.DB_NAME, this.DB_VERSION);
+                this.uploadQueue.push({
+                    file: originalFile,
+                    resolve,
+                    reject
+                });
                 
-                request.onerror = () => {
-                    console.error('IndexedDB 打开失败，回退到内存缓存');
-                    reject(request.error);
-                };
-                
-                request.onsuccess = () => {
-                    this.db = request.result;
-                    resolve(this.db);
-                };
-                
-                request.onupgradeneeded = (event) => {
-                    const db = event.target.result;
-                    if (!db.objectStoreNames.contains(this.STORE_NAME)) {
-                        const store = db.createObjectStore(this.STORE_NAME, { keyPath: 'id' });
-                        store.createIndex('timestamp', 'timestamp', { unique: false });
-                        store.createIndex('size', 'size', { unique: false });
-                    }
-                };
+                if (!this.isProcessing) {
+                    this.processQueue();
+                }
             });
         },
 
-        async store(originalFile) {
+        // 内部实际存储
+        async storeInternal(originalFile) {
+            // 小文件直接内存缓存
+            if (originalFile.size < 1024 * 1024) { // 小于1MB
+                return this.memoryStore(originalFile);
+            }
+            
             try {
                 await this.initDB();
                 
                 return new Promise((resolve, reject) => {
                     const reader = new FileReader();
                     reader.readAsDataURL(originalFile);
+                    
+                    const timeout = setTimeout(() => {
+                        reject(new Error('读取超时'));
+                    }, 30000);
+                    
                     reader.onload = async () => {
+                        clearTimeout(timeout);
+                        
                         const id = 'img_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                        
+                        // 压缩大图片
+                        let dataToStore = reader.result;
+                        if (originalFile.size > 5 * 1024 * 1024) { // 大于5MB
+                            try {
+                                dataToStore = await this.compressImage(reader.result, 0.8);
+                            } catch (e) {
+                                console.warn('图片压缩失败，使用原图', e);
+                            }
+                        }
                         
                         const cacheData = {
                             id: id,
                             name: originalFile.name,
                             type: originalFile.type,
                             size: originalFile.size,
-                            data: reader.result,
+                            data: dataToStore,
                             timestamp: Date.now()
                         };
 
@@ -602,18 +667,16 @@
                         const request = store.add(cacheData);
                         
                         request.onsuccess = () => {
-                            console.log(`💾 图片已缓存: ${originalFile.name}, ID: ${id}`);
                             this.cleanOldCache().catch(console.warn);
                             resolve(id);
                         };
                         
                         request.onerror = () => {
-                            console.error('IndexedDB 存储失败', request.error);
-                            this.cleanOldCache(true).then(() => {
-                                this.store(originalFile).then(resolve).catch(reject);
-                            }).catch(reject);
+                            // 存储失败，降级到内存缓存
+                            this.memoryStore(originalFile).then(resolve).catch(reject);
                         };
                     };
+                    
                     reader.onerror = reject;
                 });
             } catch (e) {
@@ -622,12 +685,52 @@
             }
         },
 
+        // 压缩图片
+        compressImage(base64, quality = 0.8) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.src = base64;
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    let width = img.width;
+                    let height = img.height;
+                    
+                    // 限制最大尺寸
+                    const MAX_SIZE = 1920;
+                    if (width > MAX_SIZE || height > MAX_SIZE) {
+                        if (width > height) {
+                            height = Math.floor(height * (MAX_SIZE / width));
+                            width = MAX_SIZE;
+                        } else {
+                            width = Math.floor(width * (MAX_SIZE / height));
+                            height = MAX_SIZE;
+                        }
+                    }
+                    
+                    canvas.width = width;
+                    canvas.height = height;
+                    
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    
+                    resolve(canvas.toDataURL('image/jpeg', quality));
+                };
+            });
+        },
+
         async memoryStore(originalFile) {
             return new Promise((resolve) => {
                 const reader = new FileReader();
                 reader.readAsDataURL(originalFile);
                 reader.onload = () => {
                     const id = 'mem_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                    
+                    // 内存缓存最多存20张
+                    if (this.memoryCache.size >= 20) {
+                        const oldestKey = Array.from(this.memoryCache.keys())[0];
+                        this.memoryCache.delete(oldestKey);
+                    }
+                    
                     this.memoryCache.set(id, {
                         id: id,
                         name: originalFile.name,
@@ -637,17 +740,13 @@
                         timestamp: Date.now()
                     });
                     
-                    if (this.memoryCache.size > 10) {
-                        const oldestKey = Array.from(this.memoryCache.keys())[0];
-                        this.memoryCache.delete(oldestKey);
-                    }
-                    
                     resolve(id);
                 };
             });
         },
 
         async get(id) {
+            // 先查内存缓存
             if (this.memoryCache.has(id)) {
                 return this.memoryCache.get(id);
             }
@@ -664,7 +763,6 @@
                     request.onerror = () => resolve(null);
                 });
             } catch (e) {
-                console.warn('IndexedDB 读取失败', e);
                 return null;
             }
         },
@@ -678,11 +776,11 @@
                 const store = transaction.objectStore(this.STORE_NAME);
                 store.delete(id);
             } catch (e) {
-                console.warn('IndexedDB 删除失败', e);
+                console.warn('删除缓存失败', e);
             }
         },
 
-        async cleanOldCache(force = false) {
+        async cleanOldCache() {
             try {
                 await this.initDB();
                 
@@ -694,8 +792,8 @@
                     const allImages = getAllRequest.result;
                     allImages.sort((a, b) => b.timestamp - a.timestamp);
                     
-                    const MAX_COUNT = 50;
-                    const MAX_SIZE = 100 * 1024 * 1024;
+                    const MAX_COUNT = 30;  // 最多30张
+                    const MAX_SIZE = 150 * 1024 * 1024; // 150MB
                     
                     let currentSize = 0;
                     const toDelete = [];
@@ -704,21 +802,36 @@
                         const img = allImages[i];
                         const imgSize = img.data?.length || 0;
                         
-                        if (i >= MAX_COUNT || (force && currentSize + imgSize > MAX_SIZE)) {
+                        if (i >= MAX_COUNT || currentSize + imgSize > MAX_SIZE) {
                             toDelete.push(img.id);
                         } else {
                             currentSize += imgSize;
                         }
                     }
                     
-                    toDelete.forEach(id => store.delete(id));
-                    
-                    if (toDelete.length > 0) {
-                        console.log(`🧹 已清理 ${toDelete.length} 张旧图片缓存`);
-                    }
+                    toDelete.forEach(id => {
+                        try {
+                            store.delete(id);
+                        } catch (e) {
+                            console.warn('删除缓存项失败', e);
+                        }
+                    });
                 };
             } catch (e) {
                 console.warn('清理缓存失败', e);
+            }
+        },
+
+        async clearAll() {
+            this.memoryCache.clear();
+            
+            try {
+                await this.initDB();
+                const transaction = this.db.transaction([this.STORE_NAME], 'readwrite');
+                const store = transaction.objectStore(this.STORE_NAME);
+                store.clear();
+            } catch (e) {
+                console.warn('清除缓存失败', e);
             }
         },
 
@@ -759,55 +872,44 @@
                                     originalHeight: img.height
                                 });
                             };
-                        }, 'image/jpeg', 0.9);
+                        }, 'image/jpeg', 0.85);
                     };
                 };
             });
         },
 
-        async clearAll() {
-            this.memoryCache.clear();
+        async getStats() {
+            const memoryCount = this.memoryCache.size;
+            let dbCount = 0;
+            let dbSize = 0;
             
             try {
                 await this.initDB();
-                const transaction = this.db.transaction([this.STORE_NAME], 'readwrite');
-                const store = transaction.objectStore(this.STORE_NAME);
-                store.clear();
-                console.log('🗑️ 所有图片缓存已清除');
-            } catch (e) {
-                console.warn('IndexedDB 清除失败', e);
-            }
-        },
-
-        async getStats() {
-            try {
-                await this.initDB();
                 
-                return new Promise((resolve) => {
+                await new Promise((resolve) => {
                     const transaction = this.db.transaction([this.STORE_NAME], 'readonly');
                     const store = transaction.objectStore(this.STORE_NAME);
                     const request = store.getAll();
                     
                     request.onsuccess = () => {
                         const images = request.result;
-                        let totalSize = 0;
+                        dbCount = images.length;
                         images.forEach(img => {
-                            totalSize += img.data?.length || 0;
+                            dbSize += img.data?.length || 0;
                         });
-                        
-                        resolve({
-                            count: images.length,
-                            totalSizeMB: (totalSize / (1024 * 1024)).toFixed(1)
-                        });
+                        resolve();
                     };
                     
-                    request.onerror = () => {
-                        resolve({ count: 0, totalSizeMB: '0' });
-                    };
+                    request.onerror = () => resolve();
                 });
             } catch (e) {
-                return { count: 0, totalSizeMB: '0' };
+                console.warn('获取统计失败', e);
             }
+            
+            return {
+                count: memoryCount + dbCount,
+                totalSizeMB: ((dbSize + (memoryCount * 0.5 * 1024 * 1024)) / (1024 * 1024)).toFixed(1)
+            };
         }
     };
 
@@ -835,32 +937,9 @@
                 this.zoom(delta);
             };
             
-            let touchStartDistance = 0;
-            modalImg.addEventListener('touchstart', (e) => {
-                if (e.touches.length === 2) {
-                    touchStartDistance = this.getTouchDistance(e.touches);
-                }
-            });
-            
-            modalImg.addEventListener('touchmove', (e) => {
-                if (e.touches.length === 2) {
-                    e.preventDefault();
-                    const distance = this.getTouchDistance(e.touches);
-                    const scale = distance / touchStartDistance;
-                    this.currentZoom = Math.min(Math.max(scale, 0.5), 3);
-                    this.modalImg.style.transform = `scale(${this.currentZoom})`;
-                }
-            });
-            
             modal.onclick = (e) => {
                 if (e.target === modal) this.close();
             };
-        }
-        
-        getTouchDistance(touches) {
-            const dx = touches[0].clientX - touches[1].clientX;
-            const dy = touches[0].clientY - touches[1].clientY;
-            return Math.sqrt(dx * dx + dy * dy);
         }
         
         async show(imageData) {
@@ -883,48 +962,13 @@
             }
             
             this.modalImg.src = imageData.thumbnail;
-            infoText += ` · 缩略图 (点击下方按钮加载原图)`;
+            infoText += ` · 缩略图`;
             if (imageData.originalWidth) {
                 infoText += ` · 原图尺寸: ${imageData.originalWidth}×${imageData.originalHeight}`;
             }
             this.modalImg.style.transform = `scale(1)`;
             this.modal.style.display = 'flex';
             this.imageInfo.innerText = infoText;
-            
-            const loadBtn = document.createElement('button');
-            loadBtn.innerHTML = '<i class="fas fa-download"></i> 加载原图并缓存';
-            loadBtn.style.position = 'fixed';
-            loadBtn.style.bottom = '120px';
-            loadBtn.style.left = '50%';
-            loadBtn.style.transform = 'translateX(-50%)';
-            loadBtn.style.background = '#2a7de1';
-            loadBtn.style.color = 'white';
-            loadBtn.style.border = 'none';
-            loadBtn.style.padding = '12px 24px';
-            loadBtn.style.borderRadius = '40px';
-            loadBtn.style.fontSize = '16px';
-            loadBtn.style.cursor = 'pointer';
-            loadBtn.style.zIndex = '1002';
-            loadBtn.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
-            
-            loadBtn.onclick = () => this.loadOriginal(imageData);
-            
-            this.modal.appendChild(loadBtn);
-            setTimeout(() => {
-                if (loadBtn.parentNode) loadBtn.remove();
-            }, 10000);
-        }
-        
-        async loadOriginal(imageData) {
-            if (!imageData.cacheId) return;
-            
-            this.imageInfo.innerText = `${this.currentFileName} · 正在加载原图...`;
-            
-            const cached = await ImageCache.get(imageData.cacheId);
-            if (cached) {
-                this.modalImg.src = cached.data;
-                this.imageInfo.innerText = `${this.currentFileName} · 原画 (${(cached.size/1024/1024).toFixed(1)}MB) · 已缓存`;
-            }
         }
         
         zoom(delta) {
@@ -944,26 +988,25 @@
             this.modalImg.src = '';
             this.currentZoom = 1;
             this.imageInfo.innerText = '';
-            
-            const btns = this.modal.querySelectorAll('button:not(.modal-controls button)');
-            btns.forEach(btn => btn.remove());
         }
         
         download() {
-            const link = document.createElement('a');
-            link.href = this.modalImg.src;
-            link.download = this.currentFileName || 'image.jpg';
-            link.click();
+            if (this.modalImg.src) {
+                const link = document.createElement('a');
+                link.href = this.modalImg.src;
+                link.download = this.currentFileName || 'image.jpg';
+                link.click();
+            }
         }
     }
 
-    // ========== 默认数据（只有数学空文件夹）==========
+    // ========== 默认数据 ==========
     function getDefaultFileSystem() {
         return {
             name: '根目录',
             folders: [
                 { 
-                    id: 'f1', 
+                    id: 'f1_' + Date.now(), 
                     name: '学习目录', 
                     password: '100000', 
                     files: [],
@@ -985,13 +1028,11 @@
             if (!response.ok) throw new Error('加载失败');
             
             const data = await response.json();
-            console.log('JSONBin加载成功');
             return data.record;
         } catch (e) {
-            console.error('加载失败，使用本地缓存或默认数据', e);
+            console.error('云端加载失败，使用本地缓存或默认数据', e);
             const local = LocalCache.load();
-            if (local) return local;
-            return getDefaultFileSystem();
+            return local || getDefaultFileSystem();
         }
     }
 
@@ -1011,15 +1052,12 @@
             });
             
             if (!response.ok) throw new Error('保存失败');
-            console.log('JSONBin保存成功');
             return true;
         } catch (e) {
-            console.error('保存失败，仅保存到本地', e);
+            console.error('云端保存失败，已保存到本地', e);
             return false;
         }
     }
-
-    const STORAGE_KEY = 'yunwei';
 
     // ========== 保存文件系统 ==========
     async function saveFileSystem() {
@@ -1036,12 +1074,6 @@
         const stats = await ImageCache.getStats();
         if (syncStatus) {
             syncStatus.innerHTML = `<i class="fas fa-database"></i> ${stats.count}张 | ${stats.totalSizeMB}MB`;
-        }
-        
-        const cacheTime = LocalCache.getCacheTime();
-        if (cacheTime && lastUpdateTime) {
-            const date = new Date(cacheTime);
-            lastUpdateTime.innerHTML = `最后更新: ${date.toLocaleTimeString()}`;
         }
     }
 
@@ -1186,7 +1218,7 @@
 
         currentViewEl.innerHTML = html;
 
-        // ===== 绑定事件 =====
+        // 绑定文件夹点击事件
         document.querySelectorAll('.folder-card').forEach(el => {
             const delBtn = el.querySelector('.delete-folder-btn');
             if (delBtn) {
@@ -1211,6 +1243,7 @@
             };
         });
 
+        // 绑定图片预览事件
         const viewer = window.smartViewer;
         document.querySelectorAll('.view-link').forEach(link => {
             link.onclick = (e) => {
@@ -1230,6 +1263,7 @@
             };
         });
 
+        // 绑定文件删除事件
         document.querySelectorAll('.delete-file-btn').forEach(btn => {
             btn.onclick = () => deleteFile(parseInt(btn.dataset.fileIndex));
         });
@@ -1326,7 +1360,7 @@
             if (!current.ref.folders) current.ref.folders = [];
             
             const newFolder = {
-                id: 'f' + Date.now(),
+                id: 'f' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
                 name: name,
                 password: pwd,
                 files: [],
@@ -1347,49 +1381,78 @@
             const input = document.getElementById('fileUploadInput');
             if (input.files.length === 0) { alert('请选择文件'); return; }
             
-            const originalFile = input.files[0];
+            const files = Array.from(input.files);
+            if (files.length > 10) {
+                alert('一次最多上传10个文件');
+                return;
+            }
+
             const current = getCurrentContainer();
             if (!current.ref.files) current.ref.files = [];
             
-            if (originalFile.type.startsWith('image/')) {
-                const thumbnail = await ImageCache.generateThumbnail(originalFile, 400);
-                const cacheId = await ImageCache.store(originalFile);
-                
-                current.ref.files.push({
-                    name: originalFile.name,
-                    type: 'image',
-                    thumbnail: thumbnail.url,
-                    thumbnailWidth: thumbnail.width,
-                    thumbnailHeight: thumbnail.height,
-                    originalWidth: thumbnail.originalWidth,
-                    originalHeight: thumbnail.originalHeight,
-                    cacheId: cacheId,
-                    size: originalFile.size,
-                    uploadTime: Date.now()
-                });
-                
-                alert(`图片上传成功！\n 原图: ${(originalFile.size/1024/1024).toFixed(1)}MB (已缓存)\n🖼️ 缩略图: ${(thumbnail.url.length/1024).toFixed(1)}KB`);
-            } else {
-                const reader = new FileReader();
-                reader.readAsDataURL(originalFile);
-                reader.onload = (e) => {
-                    current.ref.files.push({
-                        name: originalFile.name,
-                        type: '文档',
-                        url: e.target.result,
-                        size: originalFile.size,
-                        uploadTime: Date.now()
-                    });
+            let successCount = 0;
+            let failCount = 0;
+            
+            for (const originalFile of files) {
+                try {
+                    if (originalFile.type.startsWith('image/')) {
+                        // 图片文件
+                        const thumbnail = await ImageCache.generateThumbnail(originalFile, 400);
+                        const cacheId = await ImageCache.store(originalFile);
+                        
+                        current.ref.files.push({
+                            name: originalFile.name,
+                            type: 'image',
+                            thumbnail: thumbnail.url,
+                            thumbnailWidth: thumbnail.width,
+                            thumbnailHeight: thumbnail.height,
+                            originalWidth: thumbnail.originalWidth,
+                            originalHeight: thumbnail.originalHeight,
+                            cacheId: cacheId,
+                            size: originalFile.size,
+                            uploadTime: Date.now()
+                        });
+                        
+                        successCount++;
+                    } else {
+                        // 文档文件
+                        const reader = new FileReader();
+                        reader.readAsDataURL(originalFile);
+                        await new Promise((resolve) => {
+                            reader.onload = (e) => {
+                                current.ref.files.push({
+                                    name: originalFile.name,
+                                    type: '文档',
+                                    url: e.target.result,
+                                    size: originalFile.size,
+                                    uploadTime: Date.now()
+                                });
+                                resolve();
+                            };
+                        });
+                        successCount++;
+                    }
                     
-                    saveFileSystem();
-                    render();
-                };
-                return;
+                    // 每上传一个文件保存一次
+                    if (successCount % 3 === 0) {
+                        await saveFileSystem();
+                    }
+                    
+                } catch (e) {
+                    console.error('上传失败:', originalFile.name, e);
+                    failCount++;
+                }
             }
             
             await saveFileSystem();
             render();
             input.value = '';
+            
+            if (failCount === 0) {
+                alert(`✅ 成功上传 ${successCount} 个文件`);
+            } else {
+                alert(`⚠️ 上传完成: ${successCount}成功, ${failCount}失败`);
+            }
         };
 
         document.getElementById('clearStorageBtn').onclick = async () => {
@@ -1423,6 +1486,9 @@
 
     // ========== 初始化 ==========
     async function init() {
+        // 预热IndexedDB（不阻塞渲染）
+        ImageCache.warmup().catch(console.warn);
+        
         window.smartViewer = new SmartImageViewer(modal, modalImg, imageInfo);
         
         // 先显示骨架屏
@@ -1437,19 +1503,28 @@
             currentPath = [{ type: 'root', ref: fileSystem }];
             await render();
             console.log('⚡ 秒开模式：使用本地缓存');
-        }
-        
-        // 后台静默更新云端数据
-        setTimeout(async () => {
+        } else {
+            // 没有缓存，从云端加载
             const cloudData = await loadFromCloud();
             if (cloudData) {
                 fileSystem = cloudData;
                 currentPath = [{ type: 'root', ref: fileSystem }];
                 LocalCache.save(fileSystem);
                 await render();
+            }
+        }
+        
+        // 后台静默更新云端数据
+        setTimeout(async () => {
+            const cloudData = await loadFromCloud();
+            if (cloudData && JSON.stringify(cloudData) !== JSON.stringify(fileSystem)) {
+                fileSystem = cloudData;
+                currentPath = [{ type: 'root', ref: fileSystem }];
+                LocalCache.save(fileSystem);
+                await render();
                 console.log('云端数据已同步');
             }
-        }, 100);
+        }, 500);
         
         bindEvents();
     }
