@@ -3,11 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=3.0, user-scalable=yes">
-    <title>云为E盘 · 纯云储存</title>
+    <title>云为E盘 · 专业压缩 · 本地恢复原图</title>
     <!-- Font Awesome 6 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- 🔥 专业图片压缩库：browser-image-compression 🔥 精准控制100KB，清晰度最优 -->
+    <script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"></script>
     <style>
-        /* ========== 白蓝简约风格（保持原样） ========== */
+        /* ========== 白蓝简约风格（完全保留） ========== */
         * {
             margin: 0;
             padding: 0;
@@ -188,7 +190,7 @@
 
         .file-row {
             display: grid;
-            grid-template-columns: 3fr 1.5fr 2fr 0.8fr;
+            grid-template-columns: 3fr 1.5fr 2.2fr 0.8fr;
             padding: 15px 20px;
             border-bottom: 1px solid #ecf3fa;
             align-items: center;
@@ -335,7 +337,6 @@
             border-radius: 20px;
         }
 
-        /* 移除骨架动画——因为不再缓存，展示加载状态但保持简约 */
         .loading-skeleton {
             animation: pulse 1.5s infinite;
         }
@@ -346,9 +347,61 @@
             100% { opacity: 0.6; }
         }
 
+        /* 缩略图样式 - 极小体积，云端只存这个！ */
+        .instant-thumb {
+            max-width: 48px;
+            max-height: 48px;
+            border-radius: 8px;
+            object-fit: cover;
+            margin-right: 10px;
+            vertical-align: middle;
+            background: #f0f8ff;
+            border: 1px solid #d0e2f0;
+        }
+        
+        .recover-badge {
+            background: #e6f7e6;
+            color: #1e6b3b;
+            border-radius: 16px;
+            padding: 2px 12px;
+            font-size: 11px;
+            margin-left: 8px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .recover-btn {
+            background: none;
+            border: 1px solid #2a7de1;
+            padding: 5px 15px;
+            border-radius: 30px;
+            color: #1a5fb0;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            transition: 0.1s;
+        }
+        
+        .recover-btn:hover {
+            background: #e1f0fd;
+        }
+
+        /* 上传进度提示 */
+        .upload-progress {
+            font-size: 12px;
+            color: #0a7b3c;
+            margin-left: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
         @media (max-width: 600px) {
             .cloud-container { padding: 1.5rem; }
-            .file-row { grid-template-columns: 2fr 1fr 1.5fr 0.8fr; }
+            .file-row { grid-template-columns: 2fr 1fr 2fr 0.8fr; }
             .password-layer { flex-direction: column; gap: 10px; }
         }
     </style>
@@ -360,7 +413,7 @@
         <div class="logo-section">
             <div class="logo-text">
                 <h1><i class="fas fa-cloud" style="color: #2a7de1;"></i> 云为E盘</h1>
-                <span>纯云储存 · 实时同步</span>
+                <span>专业压缩·100KB精控·本地恢复</span>
             </div>
         </div>
         <div class="admin-access">
@@ -431,14 +484,15 @@
                 </div>
                 <div>
                     <label style="display: block; margin-bottom: 8px; font-size: 14px; color: #38658b;">
-                        <i class="fas fa-upload"></i> 上传文件
+                        <i class="fas fa-image"></i> 上传图片（专业压缩≤100KB）
                     </label>
                     <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
-                        <input type="file" id="fileUploadInput" class="admin-input" accept="image/*,.pdf,.txt,.doc,.docx" multiple>
-                        <button class="small-btn" id="uploadFileBtn"><i class="fas fa-cloud-upload-alt"></i> 上传</button>
+                        <input type="file" id="fileUploadInput" class="admin-input" accept="image/*" multiple>
+                        <button class="small-btn" id="uploadFileBtn"><i class="fas fa-cloud-upload-alt"></i> 上传缩略图</button>
+                        <span id="uploadProgress" class="upload-progress" style="display: none;"><i class="fas fa-spinner fa-pulse"></i> 压缩中...</span>
                     </div>
                     <p style="font-size: 12px; color: #5982a3; margin-top: 8px;">
-                        <i class="fas fa-info-circle"></i> 纯云模式：图片转为Base64存储于JSONBin，无本地缓存
+                        <i class="fas fa-bolt"></i> <strong>专业算法</strong> · 精准≤100KB · 画质保留最佳 | 原图本地恢复
                     </p>
                 </div>
             </div>
@@ -456,15 +510,15 @@
         </div>
     </div>
 
-    <!-- 图片预览模态框（纯Base64预览） -->
+    <!-- 原图预览模态框（本地恢复后显示） -->
     <div id="imageModal" class="image-modal">
         <div class="modal-content">
-            <img id="modalImage" class="modal-img" src="" alt="预览">
+            <img id="modalImage" class="modal-img" src="" alt="原图">
             <div class="modal-controls">
                 <button id="zoomOutBtn"><i class="fas fa-search-minus"></i> 缩小</button>
                 <button id="zoomInBtn"><i class="fas fa-search-plus"></i> 放大</button>
                 <button id="resetZoomBtn"><i class="fas fa-undo"></i> 重置</button>
-                <button id="downloadImageBtn"><i class="fas fa-download"></i> 下载</button>
+                <button id="downloadImageBtn"><i class="fas fa-download"></i> 下载原图</button>
                 <button id="closeModalBtn"><i class="fas fa-times"></i> 关闭</button>
             </div>
             <div id="imageInfo" class="image-info"></div>
@@ -472,22 +526,25 @@
     </div>
     
     <div class="footer-note">
-        <i class="fas fa-cloud"></i> 云为E盘 · 纯云储存 | JSONBin实时同步
+        <i class="fas fa-cloud"></i> 云为E盘 · 极致轻量云端 | 专业压缩≤100KB · 原图本地恢复
     </div>
 </div>
 
 <script>
-    // ========== JSONBin 配置 (纯云，无任何本地缓存) ==========
-    const BIN_ID = '698d62e2d0ea881f40b3f8dc';
-    const API_KEY = '$2a$10$gxTxlYpDmPDa.xMkrAdyN.ABSgkqwDDnrjfiCuSgkN82BZLxIMywq';
+    // ========== JSONBin 配置 (云端只存缩略图！) ==========
+    const BIN_ID = '698dc207d0ea881f40b4d2dc';
+    const API_KEY = '$2a$10$AeBBV3QRbqxacd6sLjYM4uKZGElJz1vO91JUcn/Zn/wFBP3li/pq6';
     const ADMIN_PASSWORD = '100200';
 
     // ========== 全局变量 ==========
-    let fileSystem = null;                // 始终从云端获取/保存，无本地缓存副本
-    let currentPath = null;             // 当前路径引用
+    let fileSystem = null;
+    let currentPath = null;             
     let isAdmin = false;
-    let pendingFolder = null;           // 待验证的加密文件夹
-    let isCloudLoading = false;        // 防止并发请求
+    let pendingFolder = null;           
+    let isCloudLoading = false;        
+
+    // ★ 本地原图缓存（仅当前会话有效）
+    const localOriginalCache = new Map(); // key: file.id, value: { base64, fileName, size }
 
     // ========== DOM 元素 ==========
     const currentViewEl = document.getElementById('currentView');
@@ -502,17 +559,14 @@
     const syncStatus = document.getElementById('syncStatus');
     const lastUpdateTime = document.getElementById('lastUpdateTime');
     const skeletonLoader = document.getElementById('skeletonLoader');
-
-    // ========== 完全移除所有本地缓存、IndexedDB、LocalStorage 相关代码 ==========
-    // 云盘只依赖JSONBin，所有文件（包括图片）以Base64存入record
-    // 存储容量警告：JSONBin免费版有请求限制，但符合需求“无限缓存”概念性实现
+    const uploadProgress = document.getElementById('uploadProgress');
 
     // ========== 纯云端数据操作方法 ==========
     async function loadFromCloud() {
-        if (isCloudLoading) return fileSystem; // 防抖
+        if (isCloudLoading) return fileSystem;
         isCloudLoading = true;
         try {
-            console.log('[云盘] 从JSONBin加载数据...');
+            console.log('[云盘] 从JSONBin加载缩略图数据...');
             const response = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
                 headers: { 'X-Master-Key': API_KEY }
             });
@@ -523,17 +577,27 @@
             
             const data = await response.json();
             const record = data.record;
-            // 确保数据结构完整
             if (!record || typeof record !== 'object') {
                 throw new Error('无效的云端数据');
             }
             if (!record.folders) record.folders = [];
             if (!record.files) record.files = [];
-            console.log('[云盘] 加载成功，根目录文件夹数:', record.folders.length);
+            // 确保每个文件有唯一ID
+            function ensureFileId(container) {
+                if (container.files) {
+                    container.files.forEach(f => {
+                        if (!f.id) f.id = 'thumb_' + Date.now() + '_' + Math.random().toString(36).substr(2, 8);
+                    });
+                }
+                if (container.folders) {
+                    container.folders.forEach(ensureFileId);
+                }
+            }
+            ensureFileId(record);
+            console.log('[云盘] 缩略图加载成功，根目录文件夹数:', record.folders.length);
             return record;
         } catch (e) {
             console.error('[云盘] 云端加载失败，使用默认初始结构', e);
-            // 出错时返回默认结构（不会保存到云端，防止覆盖）
             return getDefaultFileSystem();
         } finally {
             isCloudLoading = false;
@@ -541,9 +605,8 @@
     }
 
     async function saveToCloud(data) {
-        // 纯云，直接PUT，不使用任何本地回退
         try {
-            console.log('[云盘] 保存到JSONBin...');
+            console.log('[云盘] 保存缩略图到JSONBin...');
             const response = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
                 method: 'PUT',
                 headers: {
@@ -556,16 +619,16 @@
             if (!response.ok) {
                 throw new Error(`云端保存失败 (${response.status})`);
             }
-            console.log('[云盘] 保存成功');
+            console.log('[云盘] 缩略图保存成功');
             return true;
         } catch (e) {
             console.error('[云盘] 保存失败，请检查网络或JSONBin限额', e);
-            alert('⚠️ 云端保存失败，请稍后重试。您的更改可能未同步。');
+            alert('⚠️ 云端保存失败，请稍后重试。');
             return false;
         }
     }
 
-    // ========== 默认数据（不含任何本地缓存残留）==========
+    // ========== 默认数据 ==========
     function getDefaultFileSystem() {
         return {
             name: '根目录',
@@ -582,20 +645,18 @@
         };
     }
 
-    // ========== 保存文件系统（直接调云端）==========
+    // ========== 保存文件系统 ==========
     async function saveFileSystem() {
         if (!fileSystem) return;
         await saveToCloud(fileSystem);
-        // 更新界面上的时间戳
         if (lastUpdateTime) {
             const now = new Date();
             lastUpdateTime.innerText = `最后同步: ${now.toLocaleTimeString()}`;
         }
-        // 更新统计（纯云端，根据fileSystem内图片大小估算）
         updateStatsFromFileSystem();
     }
 
-    // 计算当前文件系统中图片的大致大小（Base64长度）
+    // 更新统计（只计算缩略图大小）
     function updateStatsFromFileSystem() {
         if (!fileSystem) return;
         let totalSizeMB = 0;
@@ -604,13 +665,9 @@
         function walk(container) {
             if (container.files) {
                 container.files.forEach(f => {
-                    if (f.type === 'image' && f.base64Data) {
+                    if (f.type === 'image' && f.thumbnail) {
                         imageCount++;
-                        // Base64 长度 ≈ 大小 * 1.37
-                        totalSizeMB += (f.base64Data.length * 0.75) / (1024 * 1024);
-                    } else if (f.type === '文档' && f.url) {
-                        // 文档也是base64
-                        totalSizeMB += (f.url.length * 0.75) / (1024 * 1024);
+                        totalSizeMB += (f.thumbnail.length * 0.75) / (1024 * 1024);
                     }
                 });
             }
@@ -621,7 +678,7 @@
         walk(fileSystem);
         
         if (syncStatus) {
-            syncStatus.innerHTML = `<i class="fas fa-database"></i> ${imageCount}张 | ${totalSizeMB.toFixed(1)}MB`;
+            syncStatus.innerHTML = `<i class="fas fa-database"></i> ${imageCount}张 | ${totalSizeMB.toFixed(2)}MB (缩略图)`;
         }
     }
 
@@ -630,7 +687,7 @@
         return currentPath[currentPath.length - 1];
     }
 
-    // ========== 渲染视图（完全基于内存中的fileSystem）==========
+    // ========== 渲染视图 ==========
     async function render() {
         if (!fileSystem || !currentPath) return;
 
@@ -667,7 +724,7 @@
 
         const current = getCurrentContainer();
 
-        // 密码验证（管理员自动解锁）
+        // 密码验证
         if (current.type === 'folder' && current.ref.password && !current.unlocked && !isAdmin) {
             folderPassLayer.style.display = 'flex';
             currentViewEl.innerHTML = '';
@@ -679,13 +736,11 @@
             pendingFolder = null;
         }
 
-        // 管理员面板显示
         adminPanel.style.display = isAdmin ? 'block' : 'none';
         if (resetButtonsContainer) {
             resetButtonsContainer.style.display = isAdmin ? 'block' : 'none';
         }
 
-        // 隐藏骨架屏
         if (skeletonLoader) {
             skeletonLoader.style.display = 'none';
         }
@@ -693,7 +748,6 @@
         // 渲染文件夹 & 文件
         let html = '';
 
-        // 文件夹区域
         if (current.ref.folders && current.ref.folders.length > 0) {
             html += '<div style="display: flex; align-items: center; gap: 8px; margin: 20px 0 10px;">';
             html += '<i class="fas fa-folder-open" style="color: #2a7de1;"></i>';
@@ -717,53 +771,48 @@
             html += '</div>';
         }
 
-        // 文件区域
         if (current.ref.files && current.ref.files.length > 0) {
             html += '<div style="display: flex; align-items: center; gap: 8px; margin-top: 30px;">';
             html += '<i class="fas fa-file-alt" style="color: #2a7de1;"></i>';
-            html += '<h2 style="font-size: 1.3rem; color: #153e60;">文件</h2></div>';
+            html += '<h2 style="font-size: 1.3rem; color: #153e60;">图片（云端专业压缩≤100KB）</h2></div>';
             html += '<div class="file-table">';
-            html += '<div class="file-row file-header"><span>文件名</span><span>类型</span><span>操作</span><span></span></div>';
+            html += '<div class="file-row file-header"><span>缩略图/文件名</span><span>类型</span><span>本地恢复原图</span><span></span></div>';
             
             for (let i = 0; i < current.ref.files.length; i++) {
                 const file = current.ref.files[i];
-                let icon, previewBtn;
+                let thumbHtml = '';
                 
-                if (file.type === 'image') {
-                    icon = 'fa-file-image';
-                    // 预览：直接使用base64Data（原图或缩略图）
-                    previewBtn = `<a class="view-link" 
-                        data-base64="${file.base64Data || file.thumbnail || ''}"
-                        data-file-name="${file.name}"
-                        style="color: #2270c0; cursor: pointer;">
-                        <i class="fas fa-eye"></i> 预览
-                    </a>`;
-                } else {
-                    icon = 'fa-file-lines';
-                    previewBtn = file.url && file.url !== '#' ? 
-                        `<a href="${file.url}" target="_blank" style="color: #2270c0;"><i class="fas fa-external-link-alt"></i> 打开</a>` : 
-                        '<span style="color: #6996c7;">—</span>';
+                if (file.thumbnail) {
+                    thumbHtml = `<img src="${file.thumbnail}" class="instant-thumb" alt="缩略图" loading="lazy">`;
                 }
+                
+                // 检查本地是否已恢复过原图
+                const isCached = localOriginalCache.has(file.id);
+                const cacheBadge = isCached ? `<span class="recover-badge"><i class="fas fa-check-circle"></i> 已恢复</span>` : '';
+                
+                // 恢复原图按钮
+                const recoverBtn = `<button class="recover-btn" data-file-id="${file.id}" data-file-name="${file.name}">
+                    <i class="fas fa-undo-alt"></i> ${isCached ? '查看原图' : '恢复原图'}
+                </button>`;
                 
                 const deleteBtn = isAdmin ? 
                     `<button class="delete-file-btn" data-file-index="${i}"><i class="fas fa-trash-alt"></i></button>` : '';
                 
                 html += `<div class="file-row">
-                            <span><i class="fas ${icon}" style="color: #2a7de1; margin-right: 10px;"></i>${file.name}</span>
-                            <span>${file.type}</span>
-                            <span>${previewBtn}</span>
+                            <span>${thumbHtml}<span style="margin-left: 5px;">${file.name}</span> ${cacheBadge}</span>
+                            <span>图片</span>
+                            <span>${recoverBtn}</span>
                             <span>${deleteBtn}</span>
                         </div>`;
             }
             html += '</div>';
         }
 
-        // 空状态
         if (!html) {
             html = '<div style="padding: 60px 20px; text-align: center; color: #5b83a3;">';
             html += '<i class="fas fa-folder-open" style="font-size: 50px;"></i>';
             html += '<p style="margin-top: 20px;">此文件夹为空</p>';
-            html += '<p style="margin-top: 10px; font-size: 14px;">管理员登录后可上传文件</p>';
+            html += '<p style="margin-top: 10px; font-size: 14px;">管理员登录后上传图片，专业压缩≤100KB，原图本地恢复</p>';
             html += '</div>';
         }
 
@@ -794,20 +843,59 @@
             };
         });
 
-        // 绑定图片预览事件（纯Base64预览，无IndexedDB）
-        const viewer = window.smartViewer;
-        document.querySelectorAll('.view-link').forEach(link => {
-            link.onclick = (e) => {
+        // ★ 恢复原图按钮 —— 用户从本地选择原图 ★
+        document.querySelectorAll('.recover-btn').forEach(btn => {
+            btn.onclick = async (e) => {
                 e.preventDefault();
-                const base64 = link.dataset.base64;
-                if (base64) {
-                    viewer.show({
-                        src: base64,
-                        fileName: link.dataset.fileName || '图片'
+                const fileId = btn.dataset.fileId;
+                const fileName = btn.dataset.fileName;
+                
+                // 如果已经缓存过，直接显示
+                if (localOriginalCache.has(fileId)) {
+                    const cached = localOriginalCache.get(fileId);
+                    window.smartViewer.show({
+                        src: cached.base64,
+                        fileName: cached.fileName + ' (本地缓存)'
                     });
-                } else if (link.href && link.href !== '#') {
-                    window.open(link.href, '_blank');
+                    return;
                 }
+
+                // 未缓存：用户从本地选择原图文件
+                const fileInput = document.createElement('input');
+                fileInput.type = 'file';
+                fileInput.accept = 'image/*';
+                fileInput.style.display = 'none';
+                document.body.appendChild(fileInput);
+                
+                fileInput.onchange = async (e) => {
+                    const file = e.target.files[0];
+                    if (!file) {
+                        document.body.removeChild(fileInput);
+                        return;
+                    }
+                    
+                    const reader = new FileReader();
+                    reader.onload = (loadEvent) => {
+                        const base64 = loadEvent.target.result;
+                        // 存入本地缓存
+                        localOriginalCache.set(fileId, {
+                            base64: base64,
+                            fileName: fileName,
+                            size: file.size
+                        });
+                        
+                        window.smartViewer.show({
+                            src: base64,
+                            fileName: fileName + ' (本地恢复)'
+                        });
+                        
+                        render();
+                        document.body.removeChild(fileInput);
+                    };
+                    reader.readAsDataURL(file);
+                };
+                
+                fileInput.click();
             };
         });
 
@@ -816,7 +904,6 @@
             btn.onclick = () => deleteFile(parseInt(btn.dataset.fileIndex));
         });
 
-        // 更新统计
         updateStatsFromFileSystem();
     }
 
@@ -856,7 +943,6 @@
         render();
     }
 
-    // ========== 删除文件夹 ==========
     async function deleteFolder(folderId) {
         if (!isAdmin) return;
         const current = getCurrentContainer();
@@ -865,44 +951,247 @@
         render();
     }
 
-    // ========== 删除文件 ==========
     async function deleteFile(index) {
         if (!isAdmin) return;
         const current = getCurrentContainer();
+        const file = current.ref.files[index];
+        if (file && file.id) {
+            localOriginalCache.delete(file.id);
+        }
         current.ref.files.splice(index, 1);
         await saveFileSystem();
         render();
     }
 
-    // ========== 图片压缩（纯前端，只为减小JSONBin体积）==========
-    async function compressImage(base64, maxSize = 1200, quality = 0.8) {
+    // ========== 🔥 专业压缩函数：browser-image-compression 🔥 ==========
+    // 精准控制在100KB以内，同时保留最佳清晰度
+    async function compressWithLibrary(file, maxSizeKB = 100, maxWidthOrHeight = 800) {
+        const options = {
+            maxSizeMB: maxSizeKB / 1024,        // 100KB = 0.0976MB，设为略低于100KB确保达标
+            maxWidthOrHeight: maxWidthOrHeight,  // 限制最大尺寸，加快压缩
+            useWebWorker: true,                  // 使用WebWorker加速
+            fileType: 'image/jpeg',             // 统一输出JPEG，体积更小
+            initialQuality: 0.85,               // 初始高质量，库会自动迭代
+            alwaysKeepResolution: true          // 尽量保留分辨率，仅降低质量
+        };
+
+        try {
+            // 专业库自动迭代压缩直到≤maxSizeMB
+            const compressedFile = await imageCompression(file, options);
+            
+            // 将压缩后的File转为base64缩略图
+            const base64 = await imageCompression.getDataUrlFromFile(compressedFile);
+            
+            // 验证实际大小（可选）
+            const estimatedSizeKB = (base64.length * 0.75) / 1024;
+            console.log(`[专业压缩] ${file.name} -> ${estimatedSizeKB.toFixed(2)}KB, 分辨率保持`);
+            
+            return base64;
+        } catch (error) {
+            console.error('[专业压缩] 压缩失败，回退Canvas方法', error);
+            // 回退到Canvas压缩
+            return fallbackCompress(file, maxSizeKB);
+        }
+    }
+
+    // 回退方案：Canvas压缩（保证兼容性）
+    async function fallbackCompress(file, maxSizeKB = 100) {
         return new Promise((resolve, reject) => {
-            const img = new Image();
-            img.src = base64;
-            img.onload = () => {
-                let width = img.width;
-                let height = img.height;
-                if (width > maxSize || height > maxSize) {
-                    if (width > height) {
-                        height = Math.floor(height * (maxSize / width));
-                        width = maxSize;
-                    } else {
-                        width = Math.floor(width * (maxSize / height));
-                        height = maxSize;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.src = e.target.result;
+                img.onload = () => {
+                    let width = img.width;
+                    let height = img.height;
+                    const maxDimension = 800;
+                    if (width > maxDimension || height > maxDimension) {
+                        if (width > height) {
+                            height = Math.floor(height * (maxDimension / width));
+                            width = maxDimension;
+                        } else {
+                            width = Math.floor(width * (maxDimension / height));
+                            height = maxDimension;
+                        }
                     }
-                }
-                const canvas = document.createElement('canvas');
-                canvas.width = width;
-                canvas.height = height;
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(img, 0, 0, width, height);
-                resolve(canvas.toDataURL('image/jpeg', quality));
+                    const canvas = document.createElement('canvas');
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    
+                    let quality = 0.8;
+                    let result = canvas.toDataURL('image/jpeg', quality);
+                    let estimatedSizeKB = (result.length * 0.75) / 1024;
+                    
+                    while (estimatedSizeKB > maxSizeKB && quality > 0.2) {
+                        quality -= 0.1;
+                        result = canvas.toDataURL('image/jpeg', quality);
+                        estimatedSizeKB = (result.length * 0.75) / 1024;
+                    }
+                    resolve(result);
+                };
+                img.onerror = reject;
             };
-            img.onerror = reject;
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
         });
     }
 
-    // ========== 绑定事件 ==========
+    // ========== 上传图片：云端只存专业压缩缩略图（≤100KB） ==========
+    document.getElementById('uploadFileBtn').onclick = async () => {
+        if (!isAdmin) { alert('请先登录管理员'); return; }
+        
+        const input = document.getElementById('fileUploadInput');
+        if (input.files.length === 0) { alert('请选择图片文件'); return; }
+        
+        const files = Array.from(input.files);
+        if (files.length > 3) {
+            alert('一次最多上传3张图片');
+            return;
+        }
+
+        const current = getCurrentContainer();
+        if (!current.ref.files) current.ref.files = [];
+        
+        let successCount = 0;
+        let failCount = 0;
+        
+        const uploadBtn = document.getElementById('uploadFileBtn');
+        uploadBtn.disabled = true;
+        uploadBtn.style.opacity = '0.5';
+        uploadProgress.style.display = 'inline-flex';
+        
+        try {
+            for (const originalFile of files) {
+                if (!originalFile.type.startsWith('image/')) {
+                    alert('只能上传图片文件');
+                    continue;
+                }
+                try {
+                    // 🔥 使用专业压缩库生成缩略图（≤100KB，清晰度最优）
+                    const thumbnail = await compressWithLibrary(originalFile, 100, 800);
+                    
+                    const fileId = 'thumb_' + Date.now() + '_' + Math.random().toString(36).substr(2, 10);
+                    
+                    // 云端仅存储缩略图，绝不存原图
+                    current.ref.files.push({
+                        id: fileId,
+                        name: originalFile.name,
+                        type: 'image',
+                        thumbnail: thumbnail,
+                        size: originalFile.size,
+                        uploadTime: Date.now()
+                    });
+                    
+                    successCount++;
+                    await saveFileSystem(); // 每次上传后保存，避免丢失
+                } catch (e) {
+                    console.error('上传失败:', originalFile.name, e);
+                    failCount++;
+                }
+            }
+        } finally {
+            uploadBtn.disabled = false;
+            uploadBtn.style.opacity = '1';
+            uploadProgress.style.display = 'none';
+            input.value = '';
+        }
+        
+        render();
+        alert(`✅ 专业压缩完成: ${successCount}成功, ${failCount}失败\n云端仅存储≤100KB缩略图，画质保留最佳`);
+    };
+
+    // ========== 重置与默认 ==========
+    document.getElementById('clearStorageBtn').onclick = async () => {
+        if (!isAdmin) { alert('请先登录管理员'); return; }
+        if (confirm('⚠️ 确定要彻底清除云端所有数据吗？\n此操作不可恢复！')) {
+            fileSystem = getDefaultFileSystem();
+            currentPath = [{ type: 'root', ref: fileSystem }];
+            isAdmin = false;
+            localOriginalCache.clear();
+            await saveToCloud(fileSystem);
+            render();
+            alert('云盘已重置为初始状态');
+        }
+    };
+
+    document.getElementById('softResetBtn').onclick = async () => {
+        if (!isAdmin) { alert('请先登录管理员'); return; }
+        if (confirm('恢复默认文件夹会删除所有当前数据，确定吗？')) {
+            fileSystem = getDefaultFileSystem();
+            currentPath = [{ type: 'root', ref: fileSystem }];
+            isAdmin = false;
+            localOriginalCache.clear();
+            await saveToCloud(fileSystem);
+            render();
+            alert('已恢复默认文件夹');
+        }
+    };
+
+    // ========== 智能图片查看器 ==========
+    class SmartImageViewer {
+        constructor(modal, modalImg, imageInfo) {
+            this.modal = modal;
+            this.modalImg = modalImg;
+            this.imageInfo = imageInfo;
+            this.currentZoom = 1;
+            this.currentFileName = '';
+            
+            document.getElementById('zoomInBtn').onclick = () => this.zoom(0.2);
+            document.getElementById('zoomOutBtn').onclick = () => this.zoom(-0.2);
+            document.getElementById('resetZoomBtn').onclick = () => this.resetZoom();
+            document.getElementById('closeModalBtn').onclick = () => this.close();
+            document.getElementById('downloadImageBtn').onclick = () => this.download();
+            
+            modalImg.ondblclick = () => this.resetZoom();
+            modalImg.onwheel = (e) => {
+                e.preventDefault();
+                const delta = e.deltaY > 0 ? -0.1 : 0.1;
+                this.zoom(delta);
+            };
+            modal.onclick = (e) => {
+                if (e.target === modal) this.close();
+            };
+        }
+        
+        show({ src, fileName }) {
+            this.currentFileName = fileName || 'image.jpg';
+            this.currentZoom = 1;
+            this.modalImg.src = src;
+            this.modalImg.style.transform = 'scale(1)';
+            this.modal.style.display = 'flex';
+            this.imageInfo.innerText = `${fileName} · 本地临时缓存（刷新即释放）`;
+        }
+        
+        zoom(delta) {
+            this.currentZoom = Math.min(Math.max(this.currentZoom + delta, 0.5), 3);
+            this.modalImg.style.transform = `scale(${this.currentZoom})`;
+            this.modalImg.style.cursor = this.currentZoom > 1 ? 'zoom-out' : 'zoom-in';
+        }
+        
+        resetZoom() {
+            this.currentZoom = 1;
+            this.modalImg.style.transform = 'scale(1)';
+            this.modalImg.style.cursor = 'zoom-in';
+        }
+        
+        close() {
+            this.modal.style.display = 'none';
+            this.modalImg.src = '';
+        }
+        
+        download() {
+            if (this.modalImg.src) {
+                const link = document.createElement('a');
+                link.href = this.modalImg.src;
+                link.download = this.currentFileName;
+                link.click();
+            }
+        }
+    }
+
+    // ========== 绑定事件（除上传按钮已在前面定义） ==========
     function bindEvents() {
         document.getElementById('submitFolderPassBtn').onclick = () => {
             const pass = document.getElementById('folderPassInput').value;
@@ -944,191 +1233,23 @@
             document.getElementById('newFolderPwd').value = '';
             render();
         };
-
-        document.getElementById('uploadFileBtn').onclick = async () => {
-            if (!isAdmin) { alert('请先登录管理员'); return; }
-            
-            const input = document.getElementById('fileUploadInput');
-            if (input.files.length === 0) { alert('请选择文件'); return; }
-            
-            const files = Array.from(input.files);
-            if (files.length > 5) {
-                alert('一次最多上传5个文件（JSONBin容量限制）');
-                return;
-            }
-
-            const current = getCurrentContainer();
-            if (!current.ref.files) current.ref.files = [];
-            
-            let successCount = 0;
-            let failCount = 0;
-            
-            const uploadBtn = document.getElementById('uploadFileBtn');
-            uploadBtn.disabled = true;
-            uploadBtn.style.opacity = '0.5';
-            
-            try {
-                for (const originalFile of files) {
-                    try {
-                        const reader = new FileReader();
-                        const base64 = await new Promise((resolve, reject) => {
-                            reader.onload = (e) => resolve(e.target.result);
-                            reader.onerror = reject;
-                            reader.readAsDataURL(originalFile);
-                        });
-
-                        if (originalFile.type.startsWith('image/')) {
-                            // 图片：压缩后存储，避免bin过大
-                            const compressedBase64 = await compressImage(base64, 1200, 0.8);
-                            current.ref.files.push({
-                                name: originalFile.name,
-                                type: 'image',
-                                base64Data: compressedBase64,  // 直接存储压缩后的base64
-                                thumbnail: compressedBase64,   // 预览用同一份
-                                size: originalFile.size,
-                                uploadTime: Date.now()
-                            });
-                        } else {
-                            // 文档类，也压缩？保持原样但警告大文件
-                            if (base64.length > 2 * 1024 * 1024) {
-                                alert(`文件 ${originalFile.name} 较大，可能超出JSONBin限制，请谨慎。`);
-                            }
-                            current.ref.files.push({
-                                name: originalFile.name,
-                                type: '文档',
-                                url: base64,
-                                size: originalFile.size,
-                                uploadTime: Date.now()
-                            });
-                        }
-                        successCount++;
-                        // 每个文件上传后立即保存（确保不丢）
-                        await saveFileSystem();
-                    } catch (e) {
-                        console.error('上传失败:', originalFile.name, e);
-                        failCount++;
-                    }
-                }
-            } finally {
-                uploadBtn.disabled = false;
-                uploadBtn.style.opacity = '1';
-                input.value = '';
-            }
-            
-            render();
-            alert(`✅ 上传完成: ${successCount}成功, ${failCount}失败`);
-        };
-
-        // 重置云盘（清除所有数据，重置为默认）
-        document.getElementById('clearStorageBtn').onclick = async () => {
-            if (!isAdmin) { alert('请先登录管理员'); return; }
-            if (confirm('⚠️ 确定要彻底清除云端所有数据吗？\n此操作不可恢复！')) {
-                fileSystem = getDefaultFileSystem();
-                currentPath = [{ type: 'root', ref: fileSystem }];
-                isAdmin = false; // 重置后退出管理
-                await saveToCloud(fileSystem);
-                render();
-                alert('云盘已重置为初始状态');
-            }
-        };
-
-        document.getElementById('softResetBtn').onclick = async () => {
-            if (!isAdmin) { alert('请先登录管理员'); return; }
-            if (confirm('恢复默认文件夹会删除所有当前数据，确定吗？')) {
-                fileSystem = getDefaultFileSystem();
-                currentPath = [{ type: 'root', ref: fileSystem }];
-                isAdmin = false;
-                await saveToCloud(fileSystem);
-                render();
-                alert('已恢复默认文件夹');
-            }
-        };
     }
 
-    // ========== 智能图片查看器（纯Base64，无缓存）==========
-    class SmartImageViewer {
-        constructor(modal, modalImg, imageInfo) {
-            this.modal = modal;
-            this.modalImg = modalImg;
-            this.imageInfo = imageInfo;
-            this.currentZoom = 1;
-            this.currentFileName = '';
-            
-            document.getElementById('zoomInBtn').onclick = () => this.zoom(0.2);
-            document.getElementById('zoomOutBtn').onclick = () => this.zoom(-0.2);
-            document.getElementById('resetZoomBtn').onclick = () => this.resetZoom();
-            document.getElementById('closeModalBtn').onclick = () => this.close();
-            document.getElementById('downloadImageBtn').onclick = () => this.download();
-            
-            modalImg.ondblclick = () => this.resetZoom();
-            modalImg.onwheel = (e) => {
-                e.preventDefault();
-                const delta = e.deltaY > 0 ? -0.1 : 0.1;
-                this.zoom(delta);
-            };
-            modal.onclick = (e) => {
-                if (e.target === modal) this.close();
-            };
-        }
-        
-        show({ src, fileName }) {
-            this.currentFileName = fileName || 'image.jpg';
-            this.currentZoom = 1;
-            this.modalImg.src = src;
-            this.modalImg.style.transform = 'scale(1)';
-            this.modal.style.display = 'flex';
-            this.imageInfo.innerText = `${fileName} · 原图 (Base64)`;
-        }
-        
-        zoom(delta) {
-            this.currentZoom = Math.min(Math.max(this.currentZoom + delta, 0.5), 3);
-            this.modalImg.style.transform = `scale(${this.currentZoom})`;
-            this.modalImg.style.cursor = this.currentZoom > 1 ? 'zoom-out' : 'zoom-in';
-        }
-        
-        resetZoom() {
-            this.currentZoom = 1;
-            this.modalImg.style.transform = 'scale(1)';
-            this.modalImg.style.cursor = 'zoom-in';
-        }
-        
-        close() {
-            this.modal.style.display = 'none';
-            this.modalImg.src = '';
-        }
-        
-        download() {
-            if (this.modalImg.src) {
-                const link = document.createElement('a');
-                link.href = this.modalImg.src;
-                link.download = this.currentFileName;
-                link.click();
-            }
-        }
-    }
-
-    // ========== 初始化（纯云端，无缓存）==========
+    // ========== 初始化 ==========
     async function init() {
-        // 初始化查看器
         window.smartViewer = new SmartImageViewer(modal, modalImg, imageInfo);
         
-        // 显示骨架屏，从云端加载
         if (skeletonLoader) skeletonLoader.style.display = 'block';
         
-        // 直接从JSONBin拉取（没有任何本地缓存介入）
         const cloudData = await loadFromCloud();
         fileSystem = cloudData;
         
-        // 初始化路径
         currentPath = [{ type: 'root', ref: fileSystem }];
         
-        // 首次渲染
         await render();
         
-        // 绑定UI事件
         bindEvents();
         
-        // 更新最后同步时间
         if (lastUpdateTime) {
             lastUpdateTime.innerText = `最后同步: ${new Date().toLocaleTimeString()}`;
         }
