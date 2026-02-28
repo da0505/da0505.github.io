@@ -6,6 +6,7 @@
     <title>校园速递</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
+        /* 样式保持不变 */
         * {
             margin: 0;
             padding: 0;
@@ -694,98 +695,6 @@
             color: #f59e0b;
             margin-left: 10px;
         }
-
-        /* 评价星星样式 */
-        .rating-stars {
-            display: flex;
-            gap: 5px;
-            margin: 10px 0;
-            justify-content: center;
-        }
-        
-        .rating-star {
-            font-size: 2rem;
-            color: #ddd;
-            cursor: pointer;
-            transition: color 0.2s;
-        }
-        
-        .rating-star.active {
-            color: #ffc107;
-        }
-        
-        .rating-star.hover {
-            color: #ffdb7c;
-        }
-        
-        .rating-summary {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin: 10px 0;
-            padding: 10px;
-            background: #f8f9fa;
-            border-radius: 20px;
-        }
-        
-        .rating-average {
-            font-size: 2rem;
-            font-weight: bold;
-            color: #1e4b7a;
-        }
-        
-        .rating-count {
-            color: #6c757d;
-            font-size: 0.9rem;
-        }
-        
-        .rating-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            padding: 3px 10px;
-            background: #ffc107;
-            color: #1e4b7a;
-            border-radius: 30px;
-            font-size: 0.8rem;
-            font-weight: 600;
-        }
-        
-        .rating-distribution {
-            margin-top: 15px;
-        }
-        
-        .rating-row {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin: 5px 0;
-        }
-        
-        .rating-label {
-            width: 30px;
-            color: #1e4b7a;
-        }
-        
-        .rating-bar {
-            flex: 1;
-            height: 8px;
-            background: #e9ecef;
-            border-radius: 4px;
-            overflow: hidden;
-        }
-        
-        .rating-bar-fill {
-            height: 100%;
-            background: #ffc107;
-            border-radius: 4px;
-        }
-        
-        .rating-count-small {
-            width: 40px;
-            color: #6c757d;
-            font-size: 0.8rem;
-        }
     </style>
 </head>
 <body>
@@ -882,6 +791,10 @@
                 <i class="fas fa-user-plus"></i> {{syncing ? '注册中...' : '注册'}}
             </button>
         </div>
+
+        <!-- <p style="text-align: center; margin-top: 1rem; color: #6b8eb3; font-size: 0.9rem;">
+            默认账号：测试1/123 | admin/123 | 配送员1/123
+        </p> -->
     </div>
 
     <!-- 配送端注册弹窗 -->
@@ -998,6 +911,10 @@
                 
                 <!-- 付款码区域 -->
                 <div class="payment-section">
+                    <!-- <div class="qr-code">
+                        <i class="fab fa-weixin"></i>
+                        <span>微信收款码</span>
+                    </div> -->
                     <div class="qr-code">
                         <img src="1000.png" alt="微信收款码" style="width: 100%; height: 100%; object-fit: cover; border-radius: 16px;">
                     </div>
@@ -1011,12 +928,12 @@
                 </div>
 
                 <!-- 发布订单按钮 -->
-                <button class="btn" @click="submitOrder" :disabled="!canSubmit || syncing || currentUser?.banned" v-if="!currentUser?.banned">
-                    <i class="fas fa-paper-plane"></i> {{syncing ? '提交中...' : '发布订单'}}
-                </button>
-                <div v-else class="warning-text" style="text-align: center; padding: 1rem; background: #fee2e2; border-radius: 30px;">
-                    <i class="fas fa-exclamation-triangle"></i> 账号已封禁，无法发布订单
-                </div>
+<button class="btn" @click="submitOrder" :disabled="!canSubmit || syncing || currentUser?.banned" v-if="!currentUser?.banned">
+    <i class="fas fa-paper-plane"></i> {{syncing ? '提交中...' : '发布订单'}}
+</button>
+<div v-else class="warning-text" style="text-align: center; padding: 1rem; background: #fee2e2; border-radius: 30px;">
+    <i class="fas fa-exclamation-triangle"></i> 账号已封禁，无法发布订单
+</div>
             </div>
         </div>
 
@@ -1059,27 +976,6 @@
                         </span>
                         <button class="action-btn success btn-small" @click="confirmDelivery(order)">确认送达</button>
                     </div>
-                    
-                    <!-- 已完成状态显示评价按钮（如果未评价） -->
-                    <div v-else-if="order.status === '已完成' && !hasReviewed(order.id)" class="order-actions" style="flex-direction: column; align-items: flex-start;">
-                        <div style="font-weight: 600; margin-bottom: 5px;">评价配送员：</div>
-                        <div class="rating-stars">
-                            <span v-for="star in 5" :key="star" 
-                                  class="rating-star" 
-                                  :class="{active: star <= (order.tempRating || 0)}"
-                                  @click="order.tempRating = star">
-                                ★
-                            </span>
-                        </div>
-                        <button class="action-btn btn-small" @click="submitReview(order)" :disabled="!order.tempRating || syncing">
-                            提交评价
-                        </button>
-                    </div>
-                    
-                    <!-- 已评价显示评分 -->
-                    <div v-else-if="order.status === '已完成' && hasReviewed(order.id)" class="rating-badge">
-                        <i class="fas fa-star"></i> 已评价 {{getReviewRating(order.id)}}分
-                    </div>
                 </div>
                 <div v-if="userOrders.length === 0" style="text-align: center; padding: 2rem; color: #6b8eb3;">
                     暂无订单
@@ -1110,29 +1006,6 @@
                 <i class="fas fa-exclamation-triangle fa-2x stat-danger"></i>
                 <div class="rider-stat-number stat-danger">¥{{riderStats.frozenBalance}}</div>
                 <div>封禁金额</div>
-            </div>
-        </div>
-        
-        <!-- 配送员评价卡片 -->
-        <div class="stats-card" style="margin-bottom: 25px;">
-            <h3 class="card-title"><i class="fas fa-star"></i> 我的评分</h3>
-            <div class="rating-summary">
-                <div class="rating-average">{{riderAverageRating}}</div>
-                <div>
-                    <div class="rating-stars" style="justify-content: flex-start;">
-                        <span v-for="star in 5" :key="star" class="rating-star" :class="{active: star <= Math.round(riderAverageRating)}">★</span>
-                    </div>
-                    <div class="rating-count">共 {{riderReviewCount}} 条评价</div>
-                </div>
-            </div>
-            <div class="rating-distribution">
-                <div v-for="star in [5,4,3,2,1]" :key="star" class="rating-row">
-                    <span class="rating-label">{{star}}星</span>
-                    <div class="rating-bar">
-                        <div class="rating-bar-fill" :style="{width: getRatingPercentage(star) + '%'}"></div>
-                    </div>
-                    <span class="rating-count-small">{{getRatingCount(star)}}</span>
-                </div>
             </div>
         </div>
 
@@ -1173,11 +1046,6 @@
                                        order.status === '待确认' ? '#f59e0b' :
                                        order.status === '异常' ? '#c74545' : '#1d7a5c'
                             }">{{order.status}}</span>
-                            
-                            <!-- 显示评价信息 -->
-                            <span v-if="order.status === '已完成' && getOrderReview(order.id)" class="rating-badge">
-                                <i class="fas fa-star"></i> {{getOrderReview(order.id)}}分
-                            </span>
                         </div>
                         
                         <!-- 等待管理端确认状态 -->
@@ -1188,7 +1056,7 @@
                             </div>
                         </div>
                         
-                        <!-- 待取件状态 - 显示已送达按钮 -->
+                        <!-- 待取件状态 - 显示已取件按钮 -->
                         <div v-else-if="order.status === '待取件'">
                             <div class="info-item"><i class="fas fa-store"></i> {{order.point}}</div>
                             <div class="info-item"><i class="fas fa-map-marker-alt"></i> {{order.location}}</div>
@@ -1196,7 +1064,7 @@
                             <div class="info-item"><i class="fas fa-phone"></i> 用户: {{order.phone}}</div>
                             <div class="info-item"><i class="fas fa-money-bill"></i> ¥{{order.amount}} (待确认 {{(order.amount * 0.8).toFixed(2)}})</div>
                             <div class="order-actions">
-                                <button class="action-btn warning btn-small" @click="confirmPickup(order)">已送达</button>
+                                <button class="action-btn warning btn-small" @click="confirmPickup(order)">已取件</button>
                             </div>
                         </div>
                         
@@ -1273,7 +1141,6 @@
             <button class="action-btn" :class="{active: adminTab === 'orders'}" @click="adminTab = 'orders'">订单管理</button>
             <button class="action-btn" :class="{active: adminTab === 'users'}" @click="adminTab = 'users'">用户列表</button>
             <button class="action-btn" :class="{active: adminTab === 'riders'}" @click="adminTab = 'riders'">配送员列表</button>
-            <button class="action-btn" :class="{active: adminTab === 'reviews'}" @click="adminTab = 'reviews'">评价管理</button>
             <button class="action-btn" :class="{active: adminTab === 'appeals'}" @click="showAppealList = true">申诉管理</button>
         </div>
 
@@ -1292,7 +1159,6 @@
                             <th>金额</th>
                             <th>状态</th>
                             <th>配送员</th>
-                            <th>评价</th>
                             <th>操作</th>
                         </tr>
                     </thead>
@@ -1313,12 +1179,6 @@
                             <td>{{order.status}}</td>
                             <td>
                                 <span v-if="order.riderPhone">{{order.riderPhone}}</span>
-                                <span v-else>-</span>
-                            </td>
-                            <td>
-                                <span v-if="getOrderReview(order.id)" class="rating-badge" style="background: #ffc107;">
-                                    <i class="fas fa-star"></i> {{getOrderReview(order.id)}}分
-                                </span>
                                 <span v-else>-</span>
                             </td>
                             <td>
@@ -1360,7 +1220,7 @@
                                 <span v-if="['2023511298', '2024511467', '2024511357', '2023511262'].includes(user.stuId)" style="color:#9b59b6; font-weight: bold; background: #f3e8ff; padding: 2px 8px; border-radius: 12px;">
                                     <i class="fas fa-crown"></i> 管理员
                                 </span>
-                                <!-- 优先级2：配送员 -->
+                                <!-- 优先级2：封禁（已经在状态列显示，这里只显示类型） -->
                                 <span v-else-if="user.rider" style="color:#1e4b7a; font-weight: bold; background: #e1efff; padding: 2px 8px; border-radius: 12px;">
                                     <i class="fas fa-truck"></i> 配送员
                                 </span>
@@ -1402,8 +1262,6 @@
                             <th>可提现</th>
                             <th>待确认</th>
                             <th>封禁金额</th>
-                            <th>平均评分</th>
-                            <th>评价数</th>
                             <th>状态</th>
                             <th>操作</th>
                         </tr>
@@ -1419,12 +1277,6 @@
                             <td class="stat-warning">¥{{(rider.pendingBalance || 0).toFixed(2)}}</td>
                             <td class="stat-danger">¥{{(rider.frozenBalance || 0).toFixed(2)}}</td>
                             <td>
-                                <span class="rating-badge" style="background: #ffc107;">
-                                    <i class="fas fa-star"></i> {{getRiderAverageRating(rider.stuId)}}
-                                </span>
-                            </td>
-                            <td>{{getRiderReviewCount(rider.stuId)}}</td>
-                            <td>
                                 <span v-if="rider.banned" style="color:#c74545;">封禁</span>
                                 <span v-else style="color:#48bb78;">正常</span>
                             </td>
@@ -1432,39 +1284,6 @@
                                 <button class="action-btn danger btn-small" @click="banUser(rider)" v-if="!rider.banned" :disabled="syncing">封号</button>
                                 <button class="action-btn btn-small" @click="unbanUser(rider)" v-else :disabled="syncing">解封</button>
                             </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-        
-        <!-- 评价管理 -->
-        <div class="stats-card" v-if="adminTab === 'reviews'">
-            <h3 class="card-title">评价管理</h3>
-            <div class="scrollable-orders" style="max-height: 400px;">
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>订单号</th>
-                            <th>用户</th>
-                            <th>配送员</th>
-                            <th>评分</th>
-                            <th>评价时间</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="(review, index) in reviews" :key="review.id">
-                            <td>{{index+1}}</td>
-                            <td>{{review.orderId}}</td>
-                            <td>{{review.userName}}<br><span class="small-text">{{review.userStuId}}</span></td>
-                            <td>{{review.riderName}}<br><span class="small-text">{{review.riderId}}</span></td>
-                            <td>
-                                <span class="rating-badge" style="background: #ffc107;">
-                                    {{review.rating}}分 <i class="fas fa-star"></i>
-                                </span>
-                            </td>
-                            <td>{{formatDate(review.createdAt)}}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -1559,7 +1378,7 @@
             // 数据
             users: [],
             orders: [],
-            reviews: [],           // 存储所有评价
+            reviews: [],
             appeals: [],
 
             // 新增：记录最近一次封禁操作
@@ -1573,12 +1392,14 @@
         },
         computed: {
             canSubmit() {
-                if (this.currentUser?.banned) return false;
-                return this.newOrder.point && this.newOrder.code && 
-                       this.newOrder.location && this.newOrder.phone && 
-                       this.newOrder.amount >= 1 && this.paymentConfirmed &&
-                       this.isValidPhone(this.newOrder.phone);
-            },
+    // 如果用户被封禁，直接返回 false
+    if (this.currentUser?.banned) return false;
+    
+    return this.newOrder.point && this.newOrder.code && 
+           this.newOrder.location && this.newOrder.phone && 
+           this.newOrder.amount >= 1 && this.paymentConfirmed &&
+           this.isValidPhone(this.newOrder.phone);
+},
             isRiderPhoneValid() {
                 return this.isValidPhone(this.riderRegister.phone);
             },
@@ -1614,7 +1435,9 @@
             },
             riderStats() {
                 if (!this.currentUser?.rider) return { balance: 0, pendingBalance: 0, totalEarned: 0, frozenBalance: 0, completedOrders: 0 };
+                
                 let rider = this.users.find(u => u.stuId === this.currentUser.stuId) || {};
+                
                 return {
                     balance: (rider.balance || 0).toFixed(2),
                     pendingBalance: (rider.pendingBalance || 0).toFixed(2),
@@ -1629,6 +1452,7 @@
                 let riderTotal = deliveredOrders.reduce((sum, o) => sum + o.amount * 0.8, 0);
                 let platformFee = deliveredOrders.reduce((sum, o) => sum + o.amount * 0.2, 0);
                 let frozenTotal = this.users.reduce((sum, u) => sum + (u.frozenBalance || 0), 0);
+                
                 return {
                     platform: userTotal.toFixed(2),
                     riderTotal: riderTotal.toFixed(2),
@@ -1636,21 +1460,6 @@
                     platformFee: platformFee.toFixed(2),
                     frozenTotal: frozenTotal.toFixed(2)
                 };
-            },
-            
-            // 配送员平均评分
-            riderAverageRating() {
-                if (!this.currentUser?.rider) return 0;
-                const riderReviews = this.reviews.filter(r => r.riderId === this.currentUser.stuId);
-                if (riderReviews.length === 0) return 0;
-                const sum = riderReviews.reduce((acc, cur) => acc + cur.rating, 0);
-                return (sum / riderReviews.length).toFixed(1);
-            },
-            
-            // 配送员评价数量
-            riderReviewCount() {
-                if (!this.currentUser?.rider) return 0;
-                return this.reviews.filter(r => r.riderId === this.currentUser.stuId).length;
             }
         },
         methods: {
@@ -1680,56 +1489,12 @@
                 const delivered = new Date(order.deliveredAt);
                 const end = new Date(delivered.getTime() + 24 * 60 * 60 * 1000);
                 const remaining = end - now;
+                
                 if (remaining <= 0) return '00:00';
+                
                 const hours = Math.floor(remaining / (60 * 60 * 1000));
                 const minutes = Math.floor((remaining % (60 * 60 * 1000)) / (60 * 1000));
                 return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
-            },
-            
-            // 格式化日期
-            formatDate(isoString) {
-                if (!isoString) return '';
-                const d = new Date(isoString);
-                return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-            },
-            
-            // 评价相关方法
-            hasReviewed(orderId) {
-                return this.reviews.some(r => r.orderId === orderId);
-            },
-            
-            getReviewRating(orderId) {
-                const review = this.reviews.find(r => r.orderId === orderId);
-                return review ? review.rating : 0;
-            },
-            
-            getOrderReview(orderId) {
-                const review = this.reviews.find(r => r.orderId === orderId);
-                return review ? review.rating : null;
-            },
-            
-            getRiderAverageRating(riderId) {
-                const riderReviews = this.reviews.filter(r => r.riderId === riderId);
-                if (riderReviews.length === 0) return '0.0';
-                const sum = riderReviews.reduce((acc, cur) => acc + cur.rating, 0);
-                return (sum / riderReviews.length).toFixed(1);
-            },
-            
-            getRiderReviewCount(riderId) {
-                return this.reviews.filter(r => r.riderId === riderId).length;
-            },
-            
-            getRatingPercentage(star) {
-                if (!this.currentUser?.rider) return 0;
-                const riderReviews = this.reviews.filter(r => r.riderId === this.currentUser.stuId);
-                if (riderReviews.length === 0) return 0;
-                const count = riderReviews.filter(r => r.rating === star).length;
-                return (count / riderReviews.length * 100).toFixed(1);
-            },
-            
-            getRatingCount(star) {
-                if (!this.currentUser?.rider) return 0;
-                return this.reviews.filter(r => r.riderId === this.currentUser.stuId && r.rating === star).length;
             },
             
             // JSONBin 方法
@@ -1748,14 +1513,9 @@
                     
                     if (data.record) {
                         this.users = data.record.users || [];
-                        // 为每个订单添加临时评分属性
-                        this.orders = (data.record.orders || []).map(o => ({
-                            ...o,
-                            tempRating: null,
-                            hoverRating: null
-                        }));
+                        this.orders = data.record.orders || [];
                         this.reviews = data.record.reviews || [];
-                        this.appeals = data.record.appeals || [];
+                        this.appeals = data.record.appeals || [];  // 确保 appeals 存在
                         this.lastSync = new Date().toLocaleTimeString();
                     }
                 } catch (error) {
@@ -1765,16 +1525,13 @@
                     this.users = [
                         { name: '李欣', stuId: '2024511242', pwd: '20260101', banned: false },
                         { name: '刘禹含', stuId: '2023511298', pwd: '20260101', banned: false },
-                        { name: '张中', stuId: '2022511274', pwd: '20260101', rider: true, phone: '13800138001', completed: 0, balance: 0, pendingBalance: 0, frozenBalance: 0, banned: false },
+                        { name: '张中', stuId: '2022511274', pwd: '20260101', rider: true, phone: '13800138001', completed: 0, earned: 0, balance: 0, pendingBalance: 0, frozenBalance: 0, banned: false },
                         { name: '李厚', stuId: '2023211254', pwd: '20260101', banned: true }
                     ];
                     this.orders = [
-                        { id: '1', userName: '李欣', userStuId: '2024511242', phone: '13800138000', point: '校内驿站', code: 'A123', location: '9#宿舍楼5楼', amount: 10, status: '待付款确认', showPickup: false, riderId: null, riderPhone: null, createdAt: new Date().toISOString(), grabbing: false, tempRating: null },
-                        { id: '2', userName: '张中', userStuId: '2022511274', phone: '13800138001', point: '校内驿站', code: 'B789', location: '9#宿舍楼12楼', amount: 15, status: '待取件', showPickup: true, riderId: '2022511274', riderPhone: '13800138001', createdAt: new Date().toISOString(), grabbing: false, tempRating: null },
-                        { id: '3', userName: '李厚', userStuId: '2023211254', phone: '13800138002', point: '校内驿站', code: 'C456', location: '9#宿舍楼9楼', amount: 8, status: '已完成', showPickup: true, riderId: '2022511274', riderPhone: '13800138001', createdAt: new Date().toISOString(), deliveredAt: new Date().toISOString(), grabbing: false, tempRating: null }
-                    ];
-                    this.reviews = [
-                        { id: 1, orderId: '3', userId: '2023211254', userName: '李厚', riderId: '2022511274', riderName: '张中', rating: 5, comment: '服务很好', createdAt: new Date().toISOString() }
+                        { id: '1', userName: '李欣', userStuId: '2024511242', phone: '13800138000', point: '校内驿站', code: 'A123', location: '9#宿舍楼5楼', amount: 10, status: '待付款确认', showPickup: false, riderId: null, riderPhone: null, createdAt: new Date().toISOString(), grabbing: false },
+                        { id: '2', userName: '张中', userStuId: '2022511274', phone: '13800138001', point: '校内驿站', code: 'B789', location: '9#宿舍楼12楼', amount: 15, status: '待取件', showPickup: true, riderId: '2022511274', riderPhone: '13800138001', createdAt: new Date().toISOString(), grabbing: false },
+                        { id: '3', userName: '李厚', userStuId: '2023211254', phone: '13800138002', point: '校内驿站', code: 'C456', location: '9#宿舍楼9楼', amount: 8, status: '已完成', showPickup: true, riderId: '2022511274', riderPhone: '13800138001', createdAt: new Date().toISOString(), deliveredAt: new Date().toISOString(), grabbing: false }
                     ];
                     this.appeals = [
                         { id: 1, name: '李厚', stuId: '2023211254', reason: '求解封！！！！！！！！！！！！！！！！！！！！！！！！！！', time: '2026-03-16' }
@@ -1788,13 +1545,11 @@
             async saveToJSONBin() {
                 this.syncing = true;
                 try {
-                    // 保存前移除临时属性
-                    const ordersToSave = this.orders.map(({ tempRating, hoverRating, ...rest }) => rest);
                     const dataToSave = {
                         users: this.users || [],
-                        orders: ordersToSave,
+                        orders: this.orders || [],
                         reviews: this.reviews || [],
-                        appeals: this.appeals || [],
+                        appeals: this.appeals || [],  // 确保 appeals 被保存
                         lastUpdate: new Date().toISOString()
                     };
                     
@@ -1880,12 +1635,15 @@
             
             switchRole(role) {
                 this.role = role;
+                
+                // 检查是否需要触发封禁同步
                 if (role === 'rider' && this.currentUser?.rider) {
                     this.checkAndSyncBan();
                 }
             },
             
             switchToRider() {
+                // 封禁用户不能切换到配送端
                 if (this.currentUser?.banned) {
                     this.showToast('账号已封禁，无法使用配送端');
                     return;
@@ -1893,6 +1651,7 @@
                 
                 if (this.currentUser?.rider) {
                     this.role = 'rider';
+                    // 切换到配送端时检查是否需要同步封禁
                     this.checkAndSyncBan();
                 } else {
                     this.showRiderRegister = true;
@@ -1901,6 +1660,10 @@
             
             // 检查并同步封禁数据（仅在满足所有条件时调用一次API）
             async checkAndSyncBan() {
+                // 条件1: 当前用户是管理员
+                // 条件2: 最近有一次封禁操作
+                // 条件3: 封禁的是当前配送员的金额
+                // 条件4: 还未同步过
                 if (this.currentUser?.name === 'admin' && 
                     this.lastBanInfo.riderId === this.currentUser.stuId &&
                     this.lastBanInfo.amount > 0 &&
@@ -1908,6 +1671,8 @@
                     
                     console.log('满足封禁同步条件，调用API一次');
                     await this.saveToJSONBin();
+                    
+                    // 标记为已同步
                     this.lastBanInfo.synced = true;
                     this.showToast('封禁数据已同步');
                 }
@@ -1915,6 +1680,7 @@
             
             // 配送员注册方法
             async registerAsRider() {
+                // 封禁用户不能注册配送端
                 if (this.currentUser?.banned) {
                     this.showToast('账号已封禁，无法注册配送端');
                     this.showRiderRegister = false;
@@ -1950,6 +1716,11 @@
                     this.showToast('账号已封禁，无法发布订单');
                     return;
                 }
+                
+                if (!this.isValidPhone(this.newOrder.phone)) {
+                    this.showToast('请填写正确的11位手机号');
+                    return;
+                }
 
                 let newOrder = {
                     id: 'ord' + Date.now(),
@@ -1965,9 +1736,7 @@
                     riderId: null,
                     riderPhone: null,
                     createdAt: new Date().toISOString(),
-                    grabbing: false,
-                    tempRating: null,
-                    hoverRating: null
+                    grabbing: false
                 };
                 this.orders.push(newOrder);
                 this.newOrder = { point: '', code: '', location: '', phone: '', amount: 2 };
@@ -2001,6 +1770,7 @@
                     this.$forceUpdate();
                     await this.saveToJSONBin();
                     this.showToast('抢单成功！订单已转移到我的任务，等待管理端确认付款');
+                    
                 }, 500);
             },
             
@@ -2011,6 +1781,7 @@
                 order.status = '待确认';
                 order.deliveredAt = new Date().toISOString();
                 
+                // 更新配送员待确认金额
                 let rider = this.users.find(u => u.stuId === this.currentUser.stuId);
                 if (rider) {
                     rider.pendingBalance = (rider.pendingBalance || 0) + order.amount * 0.8;
@@ -2024,6 +1795,7 @@
             async confirmDelivery(order) {
                 order.status = '已完成';
                 
+                // 从待确认转到可提现余额
                 let rider = this.users.find(u => u.stuId === order.riderId);
                 if (rider) {
                     rider.pendingBalance = (rider.pendingBalance || 0) - order.amount * 0.8;
@@ -2035,38 +1807,11 @@
                 this.showToast('已确认送达，款项已转入配送员账户');
             },
             
-            // 提交评价
-            async submitReview(order) {
-                if (!order.tempRating) {
-                    this.showToast('请选择评分');
-                    return;
-                }
-                
-                const rider = this.users.find(u => u.stuId === order.riderId);
-                
-                const newReview = {
-                    id: Date.now(),
-                    orderId: order.id,
-                    userId: this.currentUser.stuId,
-                    userName: this.currentUser.name,
-                    riderId: order.riderId,
-                    riderName: rider ? rider.name : '未知配送员',
-                    rating: order.tempRating,
-                    comment: '',
-                    createdAt: new Date().toISOString()
-                };
-                
-                this.reviews.push(newReview);
-                order.tempRating = null;
-                
-                await this.saveToJSONBin();
-                this.showToast('评价成功，感谢您的反馈！');
-            },
-            
             // 管理端标记未确认 - 改为订单异常（立即上传版）
             async markUnconfirmed(order) {
                 if (!confirm('标记为未确认？订单将变为异常状态，配送员将无法获得这笔款项')) return;
                 
+                // 从待确认转到封禁金额
                 let rider = this.users.find(u => u.stuId === order.riderId);
                 if (rider) {
                     rider.pendingBalance = (rider.pendingBalance || 0) - order.amount * 0.8;
@@ -2075,7 +1820,10 @@
                 
                 order.status = '异常';
                 
+                // 立即保存到JSONBin
                 await this.saveToJSONBin();
+                
+                // 立即重新获取最新数据
                 await this.loadFromJSONBin();
                 
                 this.showToast('已标记为异常订单，款项已计入封禁金额');
@@ -2095,37 +1843,45 @@
                 }
             },
             
+            // 封号方法
             async banUser(user) {
                 if (confirm(`确定封禁 ${user.name} 吗？`)) {
                     user.banned = true;
+                    // 立即保存到JSONBin
                     await this.saveToJSONBin();
                     this.showToast(`用户 ${user.name} 已封禁`);
                 }
             },
 
+            // 解封方法
             async unbanUser(user) {
                 if (confirm(`确定解封 ${user.name} 吗？`)) {
                     user.banned = false;
+                    // 立即保存到JSONBin
                     await this.saveToJSONBin();
                     this.showToast(`用户 ${user.name} 已解封`);
                 }
             },
             
+            // 提交申诉（学号验证版）
             async submitAppeal() {
                 if (this.appealReason.length < 15) {
                     this.showToast('申诉原因至少需要15字');
                     return;
                 }
                 
+                // 检查 currentUser 是否存在
                 if (!this.currentUser) {
                     this.showToast('用户未登录');
                     return;
                 }
                 
+                // 确保 appeals 数组存在
                 if (!this.appeals) {
                     this.appeals = [];
                 }
                 
+                // 验证学号是否存在（从 users 数组中查找）
                 const user = this.users.find(u => u.stuId === this.currentUser.stuId);
                 if (!user) {
                     this.showToast('用户不存在');
@@ -2134,7 +1890,7 @@
                 
                 const newAppeal = {
                     id: Date.now(),
-                    name: user.name,
+                    name: user.name,  // 使用从 users 中找到的用户名
                     stuId: user.stuId,
                     reason: this.appealReason,
                     time: new Date().toLocaleDateString()
@@ -2144,6 +1900,7 @@
                 this.showBanModal = false;
                 this.appealReason = '';
                 
+                // 保存到JSONBin
                 await this.saveToJSONBin();
                 this.showToast('申诉已提交');
             },
@@ -2185,6 +1942,27 @@
             this.showRules = false;
             this.showAppealList = false;
             this.showRiderRegister = false;
+            
+            // 模拟24h自动确认（实际项目中应该用后端定时任务）
+            setInterval(() => {
+                const now = new Date();
+                this.orders.forEach(order => {
+                    if (order.status === '待确认' && order.deliveredAt) {
+                        const delivered = new Date(order.deliveredAt);
+                        const diff = now - delivered;
+                        if (diff >= 24 * 60 * 60 * 1000) {
+                            // 24h自动确认
+                            let rider = this.users.find(u => u.stuId === order.riderId);
+                            if (rider) {
+                                rider.pendingBalance = (rider.pendingBalance || 0) - order.amount * 0.8;
+                                rider.balance = (rider.balance || 0) + order.amount * 0.8;
+                                rider.completed = (rider.completed || 0) + 1;
+                            }
+                            order.status = '已完成';
+                        }
+                    }
+                });
+            }, 60000); // 每分钟检查一次
             
             setTimeout(() => {
                 this.loading = false;
