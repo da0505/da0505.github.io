@@ -1,0 +1,2260 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+    <title>校园速递</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #e6f0fa 0%, #bdd3e8 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 1400px;
+            background: #ffffff;
+            border-radius: 40px;
+            box-shadow: 0 30px 60px -20px rgba(0, 70, 150, 0.4);
+            padding: 2rem 2rem 1rem 2rem;
+            border: 1px solid rgba(70, 130, 200, 0.2);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding: 0.5rem 1rem;
+            background: #f0f7ff;
+            border-radius: 60px;
+            border: 1px solid #c7dfff;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .logo h1 {
+            color: #1e4b7a;
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sync-badge {
+            background: #e1efff;
+            color: #1e4b7a;
+            padding: 5px 15px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            margin-left: 10px;
+        }
+
+        .user-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        
+        .logout-btn, .change-pwd-btn {
+            background: white;
+            border: 1px solid #1e4b7a;
+            color: #1e4b7a;
+            padding: 6px 18px;
+            border-radius: 40px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+        
+        .logout-btn:hover, .change-pwd-btn:hover {
+            background: #1e4b7a;
+            color: white;
+        }
+
+        .role-menu {
+            display: flex;
+            gap: 8px;
+            background: white;
+            padding: 4px;
+            border-radius: 50px;
+            box-shadow: 0 2px 8px rgba(0,60,130,0.1);
+        }
+
+        .role-btn {
+            border: none;
+            padding: 10px 28px;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #2b5c8a;
+            background: transparent;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .role-btn.active {
+            background: #1e4b7a;
+            color: white;
+            box-shadow: 0 4px 10px #b0cde0;
+        }
+
+        .login-card {
+            background: white;
+            border-radius: 30px;
+            padding: 2.5rem;
+            box-shadow: 0 15px 35px -10px #abc0d6;
+            max-width: 500px;
+            margin: 0 auto;
+            border: 1px solid #d2e5ff;
+        }
+
+        .login-title {
+            color: #1e4b7a;
+            margin-bottom: 2rem;
+            text-align: center;
+            font-size: 1.8rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.3rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #2b5c8a;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid #d4e3f5;
+            border-radius: 20px;
+            font-size: 1rem;
+            transition: all 0.2s;
+            background: #f8fcff;
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #3a7bb5;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(58,123,181,0.1);
+        }
+
+        .form-group .error-message {
+            color: #c74545;
+            font-size: 0.8rem;
+            margin-top: 5px;
+            display: block;
+        }
+
+        .btn {
+            background: #1e4b7a;
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1rem;
+            transition: background 0.2s;
+        }
+
+        .btn:hover {
+            background: #0f3b5e;
+        }
+
+        .btn:disabled {
+            background: #9bb3cf;
+            cursor: not-allowed;
+        }
+
+        .btn-small {
+            padding: 8px 20px;
+            font-size: 0.9rem;
+            width: auto;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 25px;
+        }
+
+        .info-card, .stats-card {
+            background: white;
+            border-radius: 28px;
+            padding: 1.8rem;
+            box-shadow: 0 8px 25px -8px #b0cde0;
+            border: 1px solid #d7e8ff;
+        }
+
+        .card-title {
+            color: #1e4b7a;
+            margin-bottom: 1.5rem;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 2px solid #e1efff;
+            padding-bottom: 0.8rem;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px dashed #c7dfff;
+        }
+
+        .stat-label {
+            color: #4a6f8f;
+        }
+
+        .stat-value {
+            font-weight: 700;
+            color: #1e4b7a;
+            font-size: 1.2rem;
+        }
+
+        .location-badge {
+            background: #e5f0ff;
+            padding: 12px 16px;
+            border-radius: 20px;
+            margin-top: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #1e4b7a;
+            border: 1px solid #b6d2f0;
+        }
+
+        .order-list {
+            background: white;
+            border-radius: 28px;
+            padding: 1.8rem;
+            margin-top: 25px;
+            border: 1px solid #d7e8ff;
+        }
+
+        .scrollable-orders {
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .scrollable-orders::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .scrollable-orders::-webkit-scrollbar-track {
+            background: #e1efff;
+            border-radius: 10px;
+        }
+
+        .scrollable-orders::-webkit-scrollbar-thumb {
+            background: #1e4b7a;
+            border-radius: 10px;
+        }
+
+        .order-item {
+            background: #f5faff;
+            border-radius: 20px;
+            padding: 1.2rem;
+            margin-bottom: 1rem;
+            border-left: 6px solid;
+            transition: all 0.2s;
+        }
+
+        .order-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(30,75,122,0.1);
+        }
+
+        .order-pending { border-left-color: #f6ad55; }
+        .order-pickup { border-left-color: #1e4b7a; }
+        .order-delivered { border-left-color: #48bb78; }
+        .order-waiting { border-left-color: #9ca3af; }
+        .order-confirming { border-left-color: #f59e0b; }
+        .order-abnormal { border-left-color: #c74545; }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .order-badge {
+            padding: 4px 16px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .order-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+            margin: 0.8rem 0;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #4a6f8f;
+            font-size: 0.9rem;
+        }
+
+        .info-item i {
+            color: #1e4b7a;
+            width: 20px;
+        }
+
+        .order-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            background: white;
+            border: 2px solid #1e4b7a;
+            color: #1e4b7a;
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+
+        .action-btn:hover {
+            background: #1e4b7a;
+            color: white;
+        }
+
+        .action-btn.danger {
+            border-color: #c74545;
+            color: #c74545;
+        }
+
+        .action-btn.danger:hover {
+            background: #c74545;
+            color: white;
+        }
+
+        .action-btn.warning {
+            border-color: #f59e0b;
+            color: #f59e0b;
+        }
+
+        .action-btn.warning:hover {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .action-btn.success {
+            border-color: #48bb78;
+            color: #48bb78;
+        }
+
+        .action-btn.success:hover {
+            background: #48bb78;
+            color: white;
+        }
+
+        .rider-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .rider-stat-card {
+            background: white;
+            border-radius: 24px;
+            padding: 1.5rem;
+            text-align: center;
+            border: 1px solid #d7e8ff;
+            box-shadow: 0 5px 15px rgba(30,75,122,0.05);
+        }
+
+        .rider-stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1e4b7a;
+            margin: 10px 0;
+        }
+
+        .stat-warning {
+            color: #f59e0b;
+        }
+
+        .stat-danger {
+            color: #c74545;
+        }
+
+        .withdraw-section {
+            background: #f5faff;
+            border-radius: 24px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            text-align: center;
+            border: 1px solid #d7e8ff;
+        }
+
+        .withdraw-qr {
+            width: 150px;
+            height: 150px;
+            background: #1e4b7a;
+            border-radius: 20px;
+            margin: 1rem auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .data-table th {
+            text-align: left;
+            padding: 1rem;
+            background: #f5faff;
+            color: #1e4b7a;
+            font-weight: 600;
+        }
+
+        .data-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #e1efff;
+        }
+
+        .small-text {
+            font-size: 0.75rem;
+            color: #6b8eb3;
+            margin-top: 2px;
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 30px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            border: 1px solid #d7e8ff;
+        }
+
+        .modal-title {
+            color: #1e4b7a;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+        }
+
+        .rules-link {
+            color: #1e4b7a;
+            text-decoration: underline;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #1e4b7a;
+            color: white;
+            padding: 1rem 2.2rem;
+            border-radius: 60px;
+            z-index: 1000;
+            display: none;
+            box-shadow: 0 10px 25px -5px #0a3352;
+            font-weight: 500;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-grid, .grid-2, .rider-stats {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .payment-section {
+            background: #f5faff;
+            border-radius: 20px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border: 2px dashed #1e4b7a;
+        }
+
+        .qr-code {
+            width: 180px;
+            height: 180px;
+            background: linear-gradient(135deg, #1e4b7a 0%, #3a7bb5 100%);
+            border-radius: 20px;
+            margin: 0 auto 1rem auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            box-shadow: 0 10px 20px rgba(30,75,122,0.3);
+        }
+
+        .qr-code i {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .qr-code span {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        .payment-checkbox {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin: 1rem 0;
+            padding: 1rem;
+            background: white;
+            border-radius: 50px;
+            border: 2px solid #1e4b7a;
+        }
+
+        .payment-checkbox input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .payment-checkbox label {
+            color: #1e4b7a;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .warning-text {
+            color: #c74545;
+            font-size: 0.8rem;
+            text-align: center;
+            margin-top: 0.5rem;
+        }
+
+        .footer {
+            margin-top: 3rem;
+            padding: 1.5rem 0 0.5rem 0;
+            text-align: center;
+            border-top: 2px solid #e1efff;
+            color: #6b8eb3;
+            font-size: 0.9rem;
+        }
+
+        .waiting-message {
+            background: #f3f4f6;
+            border-radius: 15px;
+            padding: 0.8rem;
+            margin-top: 0.5rem;
+            text-align: center;
+            color: #6b7280;
+            font-size: 0.9rem;
+            border: 1px dashed #9ca3af;
+        }
+
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #e1efff;
+            border-top-color: #1e4b7a;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .auth-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #e1efff;
+            padding-bottom: 1rem;
+        }
+
+        .auth-tab {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            cursor: pointer;
+            border-radius: 30px;
+            transition: all 0.2s;
+            font-weight: 600;
+        }
+
+        .auth-tab.active {
+            background: #1e4b7a;
+            color: white;
+        }
+
+        .auth-tab:not(.active) {
+            background: #f5faff;
+            color: #4a6f8f;
+        }
+
+        .countdown-timer {
+            font-size: 0.8rem;
+            color: #f59e0b;
+            margin-left: 10px;
+        }
+
+        .rating-stars {
+            display: flex;
+            gap: 5px;
+            margin: 10px 0;
+            justify-content: center;
+        }
+        
+        .rating-star {
+            font-size: 2rem;
+            color: #ddd;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        
+        .rating-star.active {
+            color: #ffc107;
+        }
+        
+        .rating-summary {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 10px 0;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 20px;
+        }
+        
+        .rating-average {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #1e4b7a;
+        }
+        
+        .rating-count {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        .rating-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 3px 10px;
+            background: #ffc107;
+            color: #1e4b7a;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .offline-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(8px);
+            z-index: 3000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .offline-card {
+            background: white;
+            border-radius: 40px;
+            padding: 2rem 3rem;
+            text-align: center;
+            max-width: 400px;
+            box-shadow: 0 25px 40px rgba(0,0,0,0.2);
+            border: 1px solid #c7dfff;
+        }
+        
+        .offline-card i {
+            font-size: 4rem;
+            color: #c74545;
+            margin-bottom: 1rem;
+        }
+        
+        .offline-card h3 {
+            color: #1e4b7a;
+            margin-bottom: 1rem;
+        }
+        
+        .offline-card p {
+            color: #4a6f8f;
+            margin-bottom: 1.5rem;
+        }
+        
+        .retry-btn {
+            background: #1e4b7a;
+            color: white;
+            border: none;
+            padding: 10px 28px;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .add-btn {
+            background: #48bb78;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        .add-btn:hover {
+            background: #38a169;
+        }
+
+        [v-cloak] {
+            display: none;
+        }
+        
+        .banned-tag {
+            color: #c74545;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+<div class="app-container" id="app" v-cloak>
+    <!-- 加载状态 -->
+    <div class="loading-screen" v-if="loading">
+        <div class="loading-spinner"></div>
+    </div>
+    
+    <!-- 离线提示UI -->
+    <div class="offline-overlay" v-if="offline && !loading">
+        <div class="offline-card">
+            <i class="fas fa-wifi"></i>
+            <h3>网络连接不可用</h3>
+            <p>请检查您的网络设置，连接互联网后重试。</p>
+            <button class="retry-btn" @click="retryLoad"><i class="fas fa-sync-alt"></i> 重新连接</button>
+        </div>
+    </div>
+
+    <div v-if="!loading && !offline">
+        <!-- 头部 -->
+        <div class="header">
+            <div class="logo">
+                <h1>
+                    <i class="fas fa-bolt"></i>
+                    校园速递
+                    <span class="sync-badge" v-if="syncing">
+                        <i class="fas fa-sync fa-spin"></i> 同步中
+                    </span>
+                    <span class="sync-badge" v-else-if="lastSync">
+                        <i class="fas fa-cloud-upload-alt"></i> {{lastSync}}
+                    </span>
+                </h1>
+            </div>
+            <div v-if="currentUser" class="user-actions">
+                <button class="change-pwd-btn" @click="openChangePassword"><i class="fas fa-key"></i> 修改密码</button>
+                <button class="logout-btn" @click="logout"><i class="fas fa-sign-out-alt"></i> 登出</button>
+            </div>
+            <div class="role-menu" v-if="currentUser && !currentUser.banned">
+                <button class="role-btn" :class="{active: role==='user'}" @click="switchRole('user')">
+                    <i class="fas fa-user"></i> 用户端
+                </button>
+                <button class="role-btn" :class="{active: role==='rider'}" @click="switchToRider">
+                    <i class="fas fa-truck"></i> 配送端
+                </button>
+                <button class="role-btn" :class="{active: role==='admin'}" @click="switchToAdmin" v-if="currentUser.isAdmin && !currentUser.banned">
+                    <i class="fas fa-user-tie"></i> 管理端
+                </button>
+            </div>
+            <div v-if="currentUser && currentUser.banned" class="banned-tag" style="padding: 8px 16px; background: #fee2e2; border-radius: 30px;">
+                <i class="fas fa-ban"></i> 账号已封禁
+            </div>
+        </div>
+
+        <!-- 登录/注册界面 -->
+        <div class="login-card" v-if="!currentUser">
+            <div class="auth-tabs">
+                <div class="auth-tab" :class="{active: authMode === 'login'}" @click="authMode = 'login'">
+                    <i class="fas fa-sign-in-alt"></i> 登录
+                </div>
+                <div class="auth-tab" :class="{active: authMode === 'register'}" @click="authMode = 'register'">
+                    <i class="fas fa-user-plus"></i> 注册
+                </div>
+            </div>
+
+            <h2 class="login-title">
+                <i class="fas" :class="authMode === 'login' ? 'fa-key' : 'fa-user-plus'"></i>
+                {{authMode === 'login' ? '账号登录' : '新用户注册'}}
+            </h2>
+
+            <!-- 登录表单 -->
+            <div v-if="authMode === 'login'">
+                <div class="form-group">
+                    <label>姓名</label>
+                    <input type="text" v-model="loginForm.name" placeholder="请输入姓名">
+                </div>
+                <div class="form-group">
+                    <label>学号</label>
+                    <input type="text" v-model="loginForm.stuId" placeholder="请输入学号">
+                </div>
+                <div class="form-group">
+                    <label>密码</label>
+                    <input type="password" v-model="loginForm.pwd" placeholder="请输入密码">
+                </div>
+                <button class="btn" @click="handleLogin" :disabled="syncing">
+                    <i class="fas fa-sign-in-alt"></i> {{syncing ? '登录中...' : '登录'}}
+                </button>
+            </div>
+
+            <!-- 注册表单 -->
+            <div v-else>
+                <div class="form-group">
+                    <label>姓名</label>
+                    <input type="text" v-model="registerForm.name" placeholder="请输入姓名">
+                </div>
+                <div class="form-group">
+                    <label>学号</label>
+                    <input type="text" v-model="registerForm.stuId" placeholder="请输入学号">
+                </div>
+                <div class="form-group">
+                    <label>密码</label>
+                    <input type="password" v-model="registerForm.pwd" placeholder="请输入密码">
+                </div>
+                <div class="form-group">
+                    <label>确认密码</label>
+                    <input type="password" v-model="registerForm.confirmPwd" placeholder="请再次输入密码">
+                    <span class="error-message" v-if="registerForm.pwd && registerForm.confirmPwd && registerForm.pwd !== registerForm.confirmPwd">
+                        两次密码不一致
+                    </span>
+                </div>
+                <button class="btn" @click="handleRegister" :disabled="!canRegister || syncing">
+                    <i class="fas fa-user-plus"></i> {{syncing ? '注册中...' : '注册'}}
+                </button>
+            </div>
+        </div>
+
+        <!-- 修改密码模态框 -->
+        <div class="modal" v-if="showChangePwd">
+            <div class="modal-content">
+                <h3 class="modal-title"><i class="fas fa-key"></i> 修改密码</h3>
+                <div class="form-group">
+                    <label>原密码</label>
+                    <input type="password" v-model="changePwd.oldPwd" placeholder="请输入原密码">
+                </div>
+                <div class="form-group">
+                    <label>新密码</label>
+                    <input type="password" v-model="changePwd.newPwd" placeholder="请输入新密码">
+                </div>
+                <div class="form-group">
+                    <label>确认新密码</label>
+                    <input type="password" v-model="changePwd.confirmNew" placeholder="请再次输入新密码">
+                </div>
+                <span class="error-message" v-if="changePwd.newPwd && changePwd.confirmNew && changePwd.newPwd !== changePwd.confirmNew">两次新密码不一致</span>
+                <button class="btn" @click="submitChangePassword" :disabled="syncing || !changePwd.oldPwd || !changePwd.newPwd || changePwd.newPwd !== changePwd.confirmNew">确认修改</button>
+                <button class="btn" style="margin-top: 10px; background: #9bb3cf;" @click="showChangePwd = false">取消</button>
+            </div>
+        </div>
+
+        <!-- 添加管理员模态框 -->
+        <div class="modal" v-if="showAddAdmin">
+            <div class="modal-content">
+                <h3 class="modal-title"><i class="fas fa-user-plus"></i> 添加管理员</h3>
+                <div class="form-group">
+                    <label>姓名</label>
+                    <input type="text" v-model="newAdmin.name" placeholder="请输入姓名">
+                </div>
+                <div class="form-group">
+                    <label>学号</label>
+                    <input type="text" v-model="newAdmin.stuId" placeholder="请输入学号">
+                </div>
+                <div class="form-group">
+                    <label>密码</label>
+                    <input type="password" v-model="newAdmin.pwd" placeholder="请输入密码">
+                </div>
+                <div class="form-group">
+                    <label>确认密码</label>
+                    <input type="password" v-model="newAdmin.confirmPwd" placeholder="请再次输入密码">
+                    <span class="error-message" v-if="newAdmin.pwd && newAdmin.confirmPwd && newAdmin.pwd !== newAdmin.confirmPwd">两次密码不一致</span>
+                </div>
+                <button class="btn" @click="addAdmin" :disabled="!canAddAdmin || syncing">确认添加</button>
+                <button class="btn" style="margin-top: 10px; background: #9bb3cf;" @click="showAddAdmin = false">取消</button>
+            </div>
+        </div>
+
+        <!-- 配送端注册弹窗 -->
+        <div class="modal" v-if="showRiderRegister">
+            <div class="modal-content">
+                <h3 class="modal-title"><i class="fas fa-truck"></i> 配送端开通</h3>
+                <div class="form-group">
+                    <label>姓名</label>
+                    <input type="text" :value="currentUser?.name" readonly>
+                </div>
+                <div class="form-group">
+                    <label>学号</label>
+                    <input type="text" :value="currentUser?.stuId" readonly>
+                </div>
+                <div class="form-group">
+                    <label>手机号</label>
+                    <input type="tel" v-model="riderRegister.phone" placeholder="请输入11位手机号" @input="validatePhone('rider')">
+                    <span class="error-message" v-if="riderPhoneError">{{riderPhoneError}}</span>
+                </div>
+                <div v-if="currentUser?.banned" class="warning-text" style="text-align: center; padding: 1rem; background: #fee2e2; border-radius: 30px; margin-bottom: 1rem;">
+                    <i class="fas fa-exclamation-triangle"></i> 账号已封禁，无法注册配送端
+                </div>
+                <button class="btn" @click="registerAsRider" :disabled="!isRiderPhoneValid || syncing || currentUser?.banned" v-if="!currentUser?.banned">
+                    确认开通
+                </button>
+                <button class="btn" style="margin-top: 10px; background: #9bb3cf;" @click="showRiderRegister = false">取消</button>
+            </div>
+        </div>
+
+        <!-- 封号提示弹窗 -->
+        <div class="modal" v-if="showBanModal">
+            <div class="modal-content">
+                <h3 class="modal-title"><i class="fas fa-exclamation-triangle" style="color: #c74545;"></i> 账号已封禁</h3>
+                <div style="margin: 1.5rem 0;">
+                    <p>您的账号因违反<a href="#" class="rules-link" @click.prevent="showRules = true">《用户守则》</a>已被封禁。</p>
+                    <p style="margin-top: 1rem; color: #4a6f8f;">解封申诉：</p>
+                    <textarea v-model="appealReason" rows="4" style="width: 100%; padding: 1rem; border: 2px solid #d4e3f5; border-radius: 15px;" placeholder="请输入至少15字的申诉原因"></textarea>
+                    <p style="font-size: 0.8rem; color: #6b8eb3;">{{appealReason.length}}/15字</p>
+                </div>
+                <button class="btn" @click="submitAppeal" :disabled="appealReason.length < 15 || syncing">提交申诉</button>
+            </div>
+        </div>
+
+        <!-- 封禁提示弹窗（用于管理端/配送端访问被拒） -->
+        <div class="modal" v-if="showBannedAlert">
+            <div class="modal-content">
+                <h3 class="modal-title"><i class="fas fa-exclamation-triangle" style="color: #c74545;"></i> 账号已封禁</h3>
+                <div style="margin: 1.5rem 0; text-align: center;">
+                    <i class="fas fa-ban" style="font-size: 3rem; color: #c74545; margin-bottom: 1rem;"></i>
+                    <p>您的账号已被封禁，无法使用此功能。</p>
+                    <p style="margin-top: 0.5rem; color: #6b8eb3;">如需申诉，请联系超级管理员。</p>
+                </div>
+                <button class="btn" @click="showBannedAlert = false">关闭</button>
+            </div>
+        </div>
+
+        <!-- 用户守则弹窗 -->
+        <div class="modal" v-if="showRules">
+            <div class="modal-content">
+                <h3 class="modal-title"><i class="fas fa-book"></i> 用户守则</h3>
+                <div style="line-height: 1.8; color: #4a6f8f;">
+                    <p>1. 请如实填写快递信息</p>
+                    <p>2. 付款后请及时确认</p>
+                    <p>3. 配送员需按时送达</p>
+                    <p>4. 禁止私下交易</p>
+                    <p>5. 不得泄露他人隐私</p>
+                    <p style="margin-top: 1rem;">详细规则：<a href="xieyi.html" style="color: #1e4b7a;">《用户守则》</a></p>
+                </div>
+                <button class="btn" style="margin-top: 1.5rem;" @click="showRules = false">关闭</button>
+            </div>
+        </div>
+
+        <!-- 用户端 -->
+        <div v-else-if="role === 'user' && currentUser && !currentUser.banned">
+            <div class="dashboard-grid">
+                <div class="info-card">
+                    <h3 class="card-title"><i class="fas fa-user-circle"></i> 个人中心</h3>
+                    <div class="stat-item">
+                        <span class="stat-label">姓名</span>
+                        <span class="stat-value">{{currentUser.name}}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">学号</span>
+                        <span class="stat-value">{{currentUser.stuId}}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">已完成</span>
+                        <span class="stat-value">{{userStats.delivered}}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">进行中</span>
+                        <span class="stat-value">{{userStats.pending}}</span>
+                    </div>
+                    <div class="location-badge">
+                        <i class="fas fa-map-marker-alt"></i> 当前校园
+                    </div>
+                    <div v-if="currentUser.rider" style="margin-top: 1rem; color: #1e4b7a;">
+                        <i class="fas fa-truck"></i> 您已是配送员
+                    </div>
+                </div>
+
+                <div class="stats-card">
+                    <h3 class="card-title"><i class="fas fa-plus-circle"></i> 发布代取</h3>
+                    <div class="form-group">
+                        <select v-model="newOrder.point">
+                            <option value="">选择快递点</option>
+                            <option>校内驿站</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" v-model="newOrder.code" placeholder="取件码">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" v-model="newOrder.location" placeholder="送达位置（例如：X#宿舍楼X楼）">
+                    </div>
+                    <div class="form-group">
+                        <input type="tel" v-model="newOrder.phone" placeholder="联系电话" @input="validatePhone('order')">
+                        <span class="error-message" v-if="orderPhoneError">{{orderPhoneError}}</span>
+                    </div>
+                    <div class="form-group">
+                        <input type="number" v-model="newOrder.amount" placeholder="金额" min="1" step="1" value="2">
+                    </div>
+                    
+                    <div class="payment-section">
+                        <div class="qr-code">
+                            <img src="image.png" alt="微信收款码" style="width: 100%; height: 100%; object-fit: cover; border-radius: 16px;">
+                        </div>
+                        <div class="payment-checkbox">
+                            <input type="checkbox" id="paymentConfirm" v-model="paymentConfirmed">
+                            <label for="paymentConfirm">我已付款，金额正确</label>
+                        </div>
+                        <div class="warning-text">
+                            <i class="fas fa-exclamation-triangle"></i> 虚假付款损失自负，贵重物品损坏自负
+                        </div>
+                    </div>
+
+                    <button class="btn" @click="submitOrder" :disabled="!canSubmit || syncing || currentUser?.banned" v-if="!currentUser?.banned">
+                        <i class="fas fa-paper-plane"></i> {{syncing ? '提交中...' : '发布订单'}}
+                    </button>
+                    <div v-else class="warning-text" style="text-align: center; padding: 1rem; background: #fee2e2; border-radius: 30px;">
+                        <i class="fas fa-exclamation-triangle"></i> 账号已封禁，无法发布订单
+                    </div>
+                </div>
+            </div>
+
+            <div class="order-list">
+                <h3 class="card-title">我的订单</h3>
+                <div class="scrollable-orders">
+                    <div v-for="(order, index) in userOrders" :key="order.id" class="order-item" :class="{
+                        'order-pending': order.status === '待付款确认',
+                        'order-pickup': order.status === '待取件',
+                        'order-confirming': order.status === '待确认',
+                        'order-abnormal': order.status === '异常',
+                        'order-delivered': order.status === '已完成'
+                    }">
+                        <div class="order-header">
+                            <span class="order-badge" :style="{
+                                background: order.status === '待付款确认' ? '#fff3d8' : 
+                                          order.status === '待取件' ? '#d9ecff' : 
+                                          order.status === '待确认' ? '#fef3c7' :
+                                          order.status === '异常' ? '#fee2e2' : '#d8f0e5',
+                                color: order.status === '待付款确认' ? '#b45b0a' :
+                                       order.status === '待取件' ? '#1e4b7a' :
+                                       order.status === '待确认' ? '#f59e0b' :
+                                       order.status === '异常' ? '#c74545' : '#1d7a5c'
+                            }">#{{index+1}} {{order.status}}</span>
+                            <span style="color:#6b8eb3;">{{formatTime(order.createdAt)}}</span>
+                        </div>
+                        <div class="order-info-grid">
+                            <div class="info-item"><i class="fas fa-store"></i> {{order.point}}</div>
+                            <div class="info-item"><i class="fas fa-map-marker-alt"></i> {{order.location}}</div>
+                            <div class="info-item"><i class="fas fa-qrcode"></i> {{order.showPickup ? order.code : '******'}}</div>
+                            <div class="info-item"><i class="fas fa-phone"></i> {{order.phone}}</div>
+                            <div class="info-item"><i class="fas fa-money-bill"></i> ¥{{order.amount}}</div>
+                            <div class="info-item" v-if="order.riderPhone"><i class="fas fa-truck"></i> 配送员: {{order.riderPhone}}</div>
+                        </div>
+                        
+                        <div v-if="order.status === '待确认'" class="order-actions">
+                            <span class="countdown-timer">
+                                <i class="fas fa-clock"></i> 剩余 {{getRemainingTime(order)}} 自动确认
+                            </span>
+                            <button class="action-btn success btn-small" @click="confirmDelivery(order)">确认送达</button>
+                        </div>
+                        
+                        <div v-else-if="order.status === '已完成' && !hasReviewed(order.id)" class="order-actions" style="flex-direction: column; align-items: flex-start;">
+                            <div style="font-weight: 600; margin-bottom: 5px;">评价配送员：</div>
+                            <div class="rating-stars">
+                                <span v-for="star in 5" :key="star" 
+                                      class="rating-star" 
+                                      :class="{active: star <= (order.tempRating || 0)}"
+                                      @click="order.tempRating = star">
+                                    ★
+                                </span>
+                            </div>
+                            <button class="action-btn btn-small" @click="submitReview(order)" :disabled="!order.tempRating || syncing">
+                                提交评价
+                            </button>
+                        </div>
+                        
+                        <div v-else-if="order.status === '已完成' && hasReviewed(order.id)" class="rating-badge">
+                            <i class="fas fa-star"></i> 已评价 {{getReviewRating(order.id)}}分
+                        </div>
+                    </div>
+                    <div v-if="userOrders.length === 0" style="text-align: center; padding: 2rem; color: #6b8eb3;">
+                        暂无订单
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 配送端 -->
+        <div v-else-if="role === 'rider' && currentUser && !currentUser.banned && currentUser.rider">
+            <div class="rider-stats">
+                <div class="rider-stat-card">
+                    <i class="fas fa-wallet fa-2x" style="color:#1e4b7a;"></i>
+                    <div class="rider-stat-number">¥{{riderStats.balance}}</div>
+                    <div>可提现余额</div>
+                </div>
+                <div class="rider-stat-card">
+                    <i class="fas fa-clock fa-2x stat-warning"></i>
+                    <div class="rider-stat-number stat-warning">¥{{riderStats.pendingBalance}}</div>
+                    <div>待确认金额</div>
+                </div>
+                <div class="rider-stat-card">
+                    <i class="fas fa-hand-holding-usd fa-2x" style="color:#1e4b7a;"></i>
+                    <div class="rider-stat-number">¥{{riderStats.totalEarned}}</div>
+                    <div>累计赚取</div>
+                </div>
+                <div class="rider-stat-card">
+                    <i class="fas fa-exclamation-triangle fa-2x stat-danger"></i>
+                    <div class="rider-stat-number stat-danger">¥{{riderStats.frozenBalance}}</div>
+                    <div>封禁金额</div>
+                </div>
+            </div>
+            
+            <div class="stats-card" style="margin-bottom: 25px;">
+                <h3 class="card-title"><i class="fas fa-star"></i> 我的评分</h3>
+                <div class="rating-summary">
+                    <div class="rating-average">{{riderAverageRating}}</div>
+                    <div>
+                        <div class="rating-stars" style="justify-content: flex-start;">
+                            <span v-for="star in 5" :key="star" class="rating-star" :class="{active: star <= Math.round(riderAverageRating)}">★</span>
+                        </div>
+                        <div class="rating-count">共 {{riderReviewCount}} 条评价</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <div class="stats-card">
+                    <h3 class="card-title"><i class="fas fa-hourglass-half"></i> 可抢订单</h3>
+                    <div class="scrollable-orders" style="max-height: 300px;">
+                        <div v-for="order in availableOrders" :key="order.id" class="order-item order-pending">
+                            <div class="info-item"><i class="fas fa-store"></i> {{order.point}}</div>
+                            <div class="info-item"><i class="fas fa-map-marker-alt"></i> {{order.location}}</div>
+                            <div class="info-item"><i class="fas fa-money-bill"></i> ¥{{order.amount}} (到手 ¥{{(order.amount * 0.8).toFixed(2)}})</div>
+                            <button class="action-btn btn-small" style="margin-top: 10px;" @click="grabOrder(order)" :disabled="order.grabbing || syncing">抢单</button>
+                        </div>
+                        <div v-if="availableOrders.length === 0" style="text-align: center; padding: 1rem; color: #6b8eb3;">
+                            暂无可用订单
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stats-card">
+                    <h3 class="card-title"><i class="fas fa-tasks"></i> 我的任务</h3>
+                    <div class="scrollable-orders" style="max-height: 300px;">
+                        <div v-for="order in riderOrders" :key="order.id" class="order-item" :class="{
+                            'order-waiting': order.status === '待付款确认',
+                            'order-pickup': order.status === '待取件',
+                            'order-confirming': order.status === '待确认',
+                            'order-abnormal': order.status === '异常',
+                            'order-delivered': order.status === '已完成'
+                        }">
+                            <div class="order-header">
+                                <span class="order-badge" :style="{
+                                    background: order.status === '待付款确认' ? '#f3f4f6' : 
+                                              order.status === '待取件' ? '#d9ecff' : 
+                                              order.status === '待确认' ? '#fef3c7' :
+                                              order.status === '异常' ? '#fee2e2' : '#d8f0e5',
+                                    color: order.status === '待付款确认' ? '#6b7280' :
+                                           order.status === '待取件' ? '#1e4b7a' :
+                                           order.status === '待确认' ? '#f59e0b' :
+                                           order.status === '异常' ? '#c74545' : '#1d7a5c'
+                                }">{{order.status}}</span>
+                                
+                                <span v-if="order.status === '已完成' && getOrderReview(order.id)" class="rating-badge">
+                                    <i class="fas fa-star"></i> {{getOrderReview(order.id)}}分
+                                </span>
+                            </div>
+                            
+                            <div v-if="order.status === '待付款确认'" class="waiting-message">
+                                <i class="fas fa-hourglass-half"></i> 等待管理端确认付款...
+                                <div class="info-item" style="justify-content: center; margin-top: 5px;">
+                                    <i class="fas fa-store"></i> {{order.point}} - ¥{{order.amount}}
+                                </div>
+                            </div>
+                            
+                            <div v-else-if="order.status === '待取件'">
+                                <div class="info-item"><i class="fas fa-store"></i> {{order.point}}</div>
+                                <div class="info-item"><i class="fas fa-map-marker-alt"></i> {{order.location}}</div>
+                                <div class="info-item"><i class="fas fa-qrcode"></i> 取件码: {{order.code}}</div>
+                                <div class="info-item"><i class="fas fa-phone"></i> 用户: {{order.phone}}</div>
+                                <div class="info-item"><i class="fas fa-money-bill"></i> ¥{{order.amount}} (待确认 {{(order.amount * 0.8).toFixed(2)}})</div>
+                                <div class="order-actions">
+                                    <button class="action-btn warning btn-small" @click="confirmPickup(order)">已送达</button>
+                                </div>
+                            </div>
+                            
+                            <div v-else-if="order.status === '待确认'">
+                                <div class="info-item"><i class="fas fa-store"></i> {{order.point}}</div>
+                                <div class="info-item"><i class="fas fa-map-marker-alt"></i> {{order.location}}</div>
+                                <div class="info-item"><i class="fas fa-money-bill"></i> ¥{{order.amount}} (待确认 {{(order.amount * 0.8).toFixed(2)}})</div>
+                                <div class="waiting-message">
+                                    <i class="fas fa-clock"></i> 等待用户确认送达
+                                </div>
+                            </div>
+                            
+                            <div v-else-if="order.status === '异常'">
+                                <div class="info-item"><i class="fas fa-store"></i> {{order.point}}</div>
+                                <div class="info-item"><i class="fas fa-map-marker-alt"></i> {{order.location}}</div>
+                                <div class="info-item"><i class="fas fa-money-bill stat-danger"></i> 订单异常 ¥{{order.amount}} (封禁 ¥{{(order.amount * 0.8).toFixed(2)}})</div>
+                                <div class="waiting-message" style="background: #fee2e2; color: #c74545;">
+                                    <i class="fas fa-exclamation-triangle"></i> 订单异常，金额已封禁
+                                </div>
+                            </div>
+                            
+                            <div v-else>
+                                <div class="info-item"><i class="fas fa-store"></i> {{order.point}}</div>
+                                <div class="info-item"><i class="fas fa-map-marker-alt"></i> {{order.location}}</div>
+                                <div class="info-item"><i class="fas fa-money-bill"></i> ¥{{order.amount}} (已到账 {{(order.amount * 0.8).toFixed(2)}})</div>
+                            </div>
+                        </div>
+                        <div v-if="riderOrders.length === 0" style="text-align: center; padding: 1rem; color: #6b8eb3;">
+                            暂无任务
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="withdraw-section">
+                <h3 style="color:#1e4b7a;"><i class="fas fa-hand-holding-usd"></i> 提现</h3>
+                <div class="withdraw-qr">
+                    <i class="fas fa-qrcode fa-3x"></i>
+                    <span>提现码</span>
+                </div>
+                <button class="btn" style="width: auto; padding: 12px 40px;" @click="withdraw">申请提现</button>
+            </div>
+        </div>
+        
+        <!-- 配送端未开通提示 -->
+        <div v-else-if="role === 'rider' && currentUser && !currentUser.banned && !currentUser.rider" style="text-align: center; padding: 3rem;">
+            <i class="fas fa-truck" style="font-size: 4rem; color: #9bb3cf;"></i>
+            <h3 style="color: #1e4b7a; margin-top: 1rem;">您尚未开通配送端</h3>
+            <p style="color: #6b8eb3; margin: 1rem 0;">请点击"配送端"按钮进行开通</p>
+            <button class="btn" style="width: auto; padding: 12px 30px;" @click="showRiderRegister = true">立即开通</button>
+        </div>
+
+        <!-- 管理端 -->
+        <div v-else-if="role === 'admin' && currentUser && !currentUser.banned && currentUser.isAdmin">
+            <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 20px; margin-bottom: 30px;">
+                <div class="rider-stat-card">
+                    <div class="stat-label">平台总额</div>
+                    <div class="rider-stat-number">¥{{adminFinance.platform}}</div>
+                </div>
+                <div class="rider-stat-card">
+                    <div class="stat-label">配送总额</div>
+                    <div class="rider-stat-number">¥{{adminFinance.riderTotal}}</div>
+                </div>
+                <div class="rider-stat-card">
+                    <div class="stat-label">用户总额</div>
+                    <div class="rider-stat-number">¥{{adminFinance.userTotal}}</div>
+                </div>
+                <div class="rider-stat-card">
+                    <div class="stat-label">平台抽成</div>
+                    <div class="rider-stat-number">¥{{adminFinance.platformFee}}</div>
+                </div>
+                <div class="rider-stat-card">
+                    <div class="stat-label">封禁金额</div>
+                    <div class="rider-stat-number stat-danger">¥{{adminFinance.frozenTotal}}</div>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap;">
+                <button class="action-btn" :class="{active: adminTab === 'orders'}" @click="adminTab = 'orders'">订单管理</button>
+                <button class="action-btn" :class="{active: adminTab === 'users'}" @click="adminTab = 'users'">用户列表</button>
+                <button class="action-btn" :class="{active: adminTab === 'riders'}" @click="adminTab = 'riders'">配送员列表</button>
+                <button class="action-btn" :class="{active: adminTab === 'reviews'}" @click="adminTab = 'reviews'">评价管理</button>
+                <button class="action-btn" :class="{active: adminTab === 'appeals'}" @click="showAppealList = true">申诉管理</button>
+                <!-- 仅超级管理员可见管理员列表按钮 -->
+                <button class="action-btn" :class="{active: adminTab === 'admins'}" @click="adminTab = 'admins'" v-if="currentUser.isSuperAdmin">
+                    <i class="fas fa-user-shield"></i> 管理员列表
+                </button>
+            </div>
+
+            <!-- 订单管理 -->
+            <div class="stats-card" v-if="adminTab === 'orders'">
+                <h3 class="card-title">全部订单</h3>
+                <div class="scrollable-orders" style="max-height: 400px;">
+                    <table class="data-table">
+                        <thead>
+                            <tr><th>#</th><th>用户</th><th>快递点</th><th>取件码</th><th>手机号</th><th>金额</th><th>状态</th><th>配送员</th><th>评价</th><th>操作</th> </thead>
+                        <tbody>
+                            <tr v-for="(order, index) in allOrders" :key="order.id">
+                                <td>{{index+1}}</td>
+                                <td>{{order.userName}}<br><span class="small-text">{{order.userStuId}}</span></td>
+                                <td>{{order.point}}</td>
+                                <td>{{order.code}}</td>
+                                <td>{{order.phone}}</td>
+                                <td>¥{{order.amount}}<br><span class="small-text">抽成: ¥{{(order.amount * 0.2).toFixed(2)}}</span></td>
+                                <td>{{order.status}}</td>
+                                <td><span v-if="order.riderPhone">{{order.riderPhone}}</span><span v-else>-</span></td>
+                                <td><span v-if="getOrderReview(order.id)" class="rating-badge" style="background: #ffc107;"><i class="fas fa-star"></i> {{getOrderReview(order.id)}}分</span><span v-else>-</span></td>
+                                <td><button class="action-btn btn-small" @click="confirmPayment(order)" v-if="order.status === '待付款确认' && order.riderId" :disabled="syncing">确认收款</button><button class="action-btn warning btn-small" @click="markUnconfirmed(order)" v-if="order.status === '待确认'" :disabled="syncing">未确认</button><button class="action-btn danger btn-small" @click="cancelOrder(order)" :disabled="syncing">取消</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 用户列表 -->
+<div class="stats-card" v-if="adminTab === 'users'">
+    <h3 class="card-title">用户列表</h3>
+    <div class="scrollable-orders" style="max-height: 400px;">
+        <table class="data-table">
+            <thead>
+                <tr><th>#</th><th>姓名</th><th>学号</th><th>类型</th><th>状态</th><th>操作</th> </thead>
+            <tbody>
+                <tr v-for="(user, index) in users" :key="user.stuId" :style="user.banned ? 'background: #fff0f0;' : ''">
+                    <td>{{index+1}}</td>
+                    <td :style="user.banned ? 'color: #c74545; font-weight: bold;' : ''">{{user.name}}</td>
+                    <td>{{user.stuId}}</td>
+                    <td>
+                        <span v-if="user.isSuperAdmin" style="color:#9b59b6; font-weight: bold; background: #f3e8ff; padding: 2px 8px; border-radius: 12px;">
+                            <i class="fas fa-crown"></i> 超级管理员
+                        </span>
+                        <span v-else-if="user.isAdmin" style="color:#9b59b6; font-weight: bold; background: #f3e8ff; padding: 2px 8px; border-radius: 12px;">
+                            <i class="fas fa-user-shield"></i> 管理员
+                        </span>
+                        <span v-else-if="user.rider" style="color:#1e4b7a; font-weight: bold; background: #e1efff; padding: 2px 8px; border-radius: 12px;">
+                            <i class="fas fa-truck"></i> 配送员
+                        </span>
+                        <span v-else style="color:#6b8eb3; background: #f0f7ff; padding: 2px 8px; border-radius: 12px;">
+                            <i class="fas fa-user"></i> 普通用户
+                        </span>
+                    </td>
+                    <td>
+                        <span v-if="user.banned" style="color:#c74545; font-weight: bold; background: #fee2e2; padding: 2px 8px; border-radius: 12px;"><i class="fas fa-ban"></i> 封禁</span>
+                        <span v-else style="color:#48bb78; background: #e3f9e5; padding: 2px 8px; border-radius: 12px;"><i class="fas fa-check-circle"></i> 正常</span>
+                    </td>
+                    <td>
+                        <!-- 超级管理员显示"超级管理员"文字，不显示操作按钮 -->
+                        <template v-if="user.isSuperAdmin">
+                            <span style="color:#6b8eb3; ">超级管理员</span>
+                        </template>
+                        <!-- 其他用户根据权限显示按钮 -->
+                        <template v-else>
+                            <button v-if="!user.banned" 
+                                class="action-btn danger btn-small" 
+                                @click="banUser(user)" 
+                                :disabled="syncing || (user.isAdmin && !currentUser.isSuperAdmin)"
+                                :title="(user.isAdmin && !currentUser.isSuperAdmin) ? '只有超级管理员可以封禁管理员' : ''">
+                                封号
+                            </button>
+                            <button v-else 
+                                class="action-btn btn-small" 
+                                @click="unbanUser(user)" 
+                                :disabled="syncing || (user.isAdmin && !currentUser.isSuperAdmin)"
+                                :title="(user.isAdmin && !currentUser.isSuperAdmin) ? '只有超级管理员可以解封管理员' : ''">
+                                解封
+                            </button>
+                        </template>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+            <!-- 配送员列表 -->
+<div class="stats-card" v-if="adminTab === 'riders'">
+    <h3 class="card-title">配送员列表</h3>
+    <div class="scrollable-orders" style="max-height: 400px;">
+        <table class="data-table">
+            <thead>
+                <tr><th>#</th><th>姓名</th><th>学号</th><th>手机号</th><th>完成单</th><th>可提现</th><th>待确认</th><th>封禁金额</th><th>平均评分</th><th>评价数</th><th>状态</th><th>操作</th> </thead>
+            <tbody>
+                <tr v-for="(rider, index) in riders" :key="rider.stuId">
+                    <td>{{index+1}}</td>
+                    <td>{{rider.name}}</td>
+                    <td>{{rider.stuId}}</td>
+                    <td>{{rider.phone}}</td>
+                    <td>{{rider.completed || 0}}</td>
+                    <td>¥{{(rider.balance || 0).toFixed(2)}}</td>
+                    <td class="stat-warning">¥{{(rider.pendingBalance || 0).toFixed(2)}}</td>
+                    <td class="stat-danger">¥{{(rider.frozenBalance || 0).toFixed(2)}}</td>
+                    <td><span class="rating-badge" style="background: #ffc107;"><i class="fas fa-star"></i> {{getRiderAverageRating(rider.stuId)}}</span></td>
+                    <td>{{getRiderReviewCount(rider.stuId)}}</td>
+                    <td><span v-if="rider.banned" style="color:#c74545;">封禁</span><span v-else style="color:#48bb78;">正常</span></td>
+                    <td>
+                        <!-- 超级管理员显示"超级管理员"文字，不显示操作按钮 -->
+                        <template v-if="rider.isSuperAdmin">
+                            <span style="color:#6b8eb3;">超级管理员</span>
+                        </template>
+                        <template v-else>
+                            <button v-if="!rider.banned" 
+                                class="action-btn danger btn-small" 
+                                @click="banUser(rider)" 
+                                :disabled="syncing || (rider.isAdmin && !currentUser.isSuperAdmin)">
+                                封号
+                            </button>
+                            <button v-else 
+                                class="action-btn btn-small" 
+                                @click="unbanUser(rider)" 
+                                :disabled="syncing || (rider.isAdmin && !currentUser.isSuperAdmin)">
+                                解封
+                            </button>
+                        </template>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+            
+            <!-- 评价管理 -->
+            <div class="stats-card" v-if="adminTab === 'reviews'">
+                <h3 class="card-title">评价管理</h3>
+                <div class="scrollable-orders" style="max-height: 400px;">
+                    <table class="data-table">
+                        <thead>
+                            <tr><th>#</th><th>订单号</th><th>用户</th><th>配送员</th><th>评分</th><th>评价时间</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="(review, index) in reviews" :key="review.id">
+                                <td>{{index+1}}</td>
+                                <td>{{review.orderId}}</td>
+                                <td>{{review.userName}}<br><span class="small-text">{{review.userId}}</span></td>
+                                <td>{{review.riderName}}<br><span class="small-text">{{review.riderId}}</span></td>
+                                <td><span class="rating-badge" style="background: #ffc107;">{{review.rating}}分 <i class="fas fa-star"></i></span></td>
+                                <td>{{formatDate(review.createdAt)}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 管理员列表（仅超级管理员可见） -->
+            <div class="stats-card" v-if="adminTab === 'admins' && currentUser.isSuperAdmin">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <h3 class="card-title" style="margin-bottom: 0;"><i class="fas fa-user-shield"></i> 管理员列表</h3>
+                    <button class="add-btn" @click="openAddAdmin"><i class="fas fa-plus"></i> 添加管理员</button>
+                </div>
+                <div class="scrollable-orders" style="max-height: 400px;">
+                    <table class="data-table">
+                        <thead>
+                            <tr><th>#</th><th>姓名</th><th>学号</th><th>密码</th><th>是否开通配送端</th><th>手机号</th><th>状态</th><th>操作</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="(admin, index) in adminList" :key="admin.stuId">
+                                <td>{{index+1}}</td>
+                                <td><strong>{{admin.name}}</strong> <span v-if="admin.isSuperAdmin" style="color:#9b59b6;">(超级管理员)</span></td>
+                                <td>{{admin.stuId}}</td>
+                                <td><code>{{admin.pwd}}</code></td>
+                                <td>
+                                    <span v-if="admin.rider" style="color:#1e4b7a; background: #e1efff; padding: 2px 8px; border-radius: 12px;">
+                                        <i class="fas fa-check-circle"></i> 已开通
+                                    </span>
+                                    <span v-else style="color:#6b8eb3; background: #f0f7ff; padding: 2px 8px; border-radius: 12px;">
+                                        <i class="fas fa-times-circle"></i> 未开通
+                                    </span>
+                                </td>
+                                <td>{{admin.phone || '未设置'}}</td>
+                                <td>
+                                    <span v-if="admin.banned" style="color:#c74545; background: #fee2e2; padding: 2px 8px; border-radius: 12px;">封禁</span>
+                                    <span v-else style="color:#48bb78; background: #e3f9e5; padding: 2px 8px; border-radius: 12px;">正常</span>
+                                </td>
+                                <td>
+                                    <template v-if="!admin.banned && !admin.isSuperAdmin">
+                                        <button class="action-btn danger btn-small" @click="banUser(admin)" :disabled="syncing">封号</button>
+                                    </template>
+                                    <template v-else-if="admin.banned && !admin.isSuperAdmin">
+                                        <button class="action-btn btn-small" @click="unbanUser(admin)" :disabled="syncing">解封</button>
+                                    </template>
+                                    <span v-else-if="admin.isSuperAdmin" style="color:#6b8eb3;">超级管理员</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 申诉管理弹窗 -->
+        <div class="modal" v-if="showAppealList">
+            <div class="modal-content" style="max-width: 600px;">
+                <h3 class="modal-title">解封申诉</h3>
+                <div class="scrollable-orders" style="max-height: 400px;">
+                    <div v-for="appeal in appeals" :key="appeal.id" style="border-bottom: 1px solid #e1efff; padding: 1rem 0;">
+                        <div style="display: flex; justify-content: space-between;">
+                            <span><strong>{{appeal.name}}</strong> ({{appeal.stuId}})</span>
+                            <span class="small-text">{{appeal.time}}</span>
+                        </div>
+                        <p style="margin: 0.5rem 0; color: #4a6f8f;">{{appeal.reason}}</p>
+                        <div style="display: flex; gap: 10px;">
+                            <button class="action-btn btn-small" @click="handleAppeal(appeal, true)" :disabled="syncing">同意解封</button>
+                            <button class="action-btn danger btn-small" @click="handleAppeal(appeal, false)" :disabled="syncing">拒绝</button>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn" style="margin-top: 1rem;" @click="showAppealList = false">关闭</button>
+            </div>
+        </div>
+
+        <!-- Footer版权信息 -->
+        <div class="footer">
+            <p>Copyright © 2026 da0505 All Rights Reserved.</p>
+        </div>
+    </div>
+
+    <div class="toast" id="toast">提示</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/vue@2.7.14/dist/vue.js"></script>
+<script>
+    // JSONBin 配置
+    const JSONBIN_BIN_ID = '69bede8bb7ec241ddc8cf2fb';
+    const JSONBIN_API_KEY = '$2a$10$AeBBV3QRbqxacd6sLjYM4uKZGElJz1vO91JUcn/Zn/wFBP3li/pq6';
+    const JSONBIN_URL = `https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`;
+
+    new Vue({
+        el: '#app',
+        data: {
+            loading: true,
+            offline: false,
+            role: 'user',
+            currentUser: null,
+            
+            authMode: 'login',
+            loginForm: { name: '', stuId: '', pwd: '' },
+            registerForm: { name: '', stuId: '', pwd: '', confirmPwd: '' },
+            
+            newOrder: { point: '', code: '', location: '', phone: '', amount: 2 },
+            paymentConfirmed: false,
+            
+            syncing: false,
+            lastSync: '',
+            
+            orderPhoneError: '',
+            riderPhoneError: '',
+            
+            showRiderRegister: false,
+            riderRegister: { phone: '' },
+            
+            showBanModal: false,
+            showRules: false,
+            showAppealList: false,
+            showAddAdmin: false,
+            showBannedAlert: false,
+            appealReason: '',
+            
+            adminTab: 'orders',
+            showChangePwd: false,
+            changePwd: { oldPwd: '', newPwd: '', confirmNew: '' },
+            newAdmin: { name: '', stuId: '', pwd: '', confirmPwd: '' },
+            
+            users: [],
+            orders: [],
+            reviews: [],
+            appeals: []
+        },
+        computed: {
+            canSubmit() {
+                if (this.currentUser?.banned) return false;
+                return this.newOrder.point && this.newOrder.code && 
+                       this.newOrder.location && this.newOrder.phone && 
+                       this.newOrder.amount >= 1 && this.paymentConfirmed &&
+                       this.isValidPhone(this.newOrder.phone);
+            },
+            isRiderPhoneValid() {
+                return this.isValidPhone(this.riderRegister.phone);
+            },
+            canRegister() {
+                return this.registerForm.name && 
+                       this.registerForm.stuId && 
+                       this.registerForm.pwd && 
+                       this.registerForm.confirmPwd &&
+                       this.registerForm.pwd === this.registerForm.confirmPwd;
+            },
+            canAddAdmin() {
+                return this.newAdmin.name && 
+                       this.newAdmin.stuId && 
+                       this.newAdmin.pwd && 
+                       this.newAdmin.confirmPwd &&
+                       this.newAdmin.pwd === this.newAdmin.confirmPwd;
+            },
+            userOrders() {
+                if (!this.currentUser) return [];
+                return this.orders.filter(o => o.userStuId === this.currentUser.stuId);
+            },
+            userStats() {
+                if (!this.currentUser) return { delivered: 0, pending: 0 };
+                let delivered = this.orders.filter(o => o.userStuId === this.currentUser.stuId && o.status === '已完成').length;
+                let pending = this.orders.filter(o => o.userStuId === this.currentUser.stuId && o.status !== '已完成').length;
+                return { delivered, pending };
+            },
+            allOrders() {
+                return this.orders;
+            },
+            availableOrders() {
+                return this.orders.filter(o => o.status === '待付款确认' && !o.riderId);
+            },
+            riderOrders() {
+                if (!this.currentUser?.rider) return [];
+                return this.orders.filter(o => o.riderId === this.currentUser.stuId);
+            },
+            riders() {
+                return this.users.filter(u => u.rider);
+            },
+            adminList() {
+                return this.users.filter(u => u.isAdmin === true);
+            },
+            riderStats() {
+                if (!this.currentUser?.rider) return { balance: 0, pendingBalance: 0, totalEarned: 0, frozenBalance: 0, completedOrders: 0 };
+                let rider = this.users.find(u => u.stuId === this.currentUser.stuId) || {};
+                return {
+                    balance: (rider.balance || 0).toFixed(2),
+                    pendingBalance: (rider.pendingBalance || 0).toFixed(2),
+                    totalEarned: ((rider.balance || 0) + (rider.frozenBalance || 0)).toFixed(2),
+                    frozenBalance: (rider.frozenBalance || 0).toFixed(2),
+                    completedOrders: rider.completed || 0
+                };
+            },
+            adminFinance() {
+                let deliveredOrders = this.orders.filter(o => o.status === '已完成' || o.status === '异常');
+                let userTotal = deliveredOrders.reduce((sum, o) => sum + o.amount, 0);
+                let riderTotal = deliveredOrders.reduce((sum, o) => sum + o.amount * 0.8, 0);
+                let platformFee = deliveredOrders.reduce((sum, o) => sum + o.amount * 0.2, 0);
+                let frozenTotal = this.users.reduce((sum, u) => sum + (u.frozenBalance || 0), 0);
+                return {
+                    platform: userTotal.toFixed(2),
+                    riderTotal: riderTotal.toFixed(2),
+                    userTotal: userTotal.toFixed(2),
+                    platformFee: platformFee.toFixed(2),
+                    frozenTotal: frozenTotal.toFixed(2)
+                };
+            },
+            riderAverageRating() {
+                if (!this.currentUser?.rider) return 0;
+                const riderReviews = this.reviews.filter(r => r.riderId === this.currentUser.stuId);
+                if (riderReviews.length === 0) return 0;
+                const sum = riderReviews.reduce((acc, cur) => acc + cur.rating, 0);
+                return (sum / riderReviews.length).toFixed(1);
+            },
+            riderReviewCount() {
+                if (!this.currentUser?.rider) return 0;
+                return this.reviews.filter(r => r.riderId === this.currentUser.stuId).length;
+            }
+        },
+        methods: {
+            isValidPhone(phone) {
+                return phone && /^1[3-9]\d{9}$/.test(phone);
+            },
+            validatePhone(type) {
+                if (type === 'order') {
+                    if (this.newOrder.phone && !this.isValidPhone(this.newOrder.phone)) {
+                        this.orderPhoneError = '请输入正确的11位手机号';
+                    } else {
+                        this.orderPhoneError = '';
+                    }
+                } else if (type === 'rider') {
+                    if (this.riderRegister.phone && !this.isValidPhone(this.riderRegister.phone)) {
+                        this.riderPhoneError = '请输入正确的11位手机号';
+                    } else {
+                        this.riderPhoneError = '';
+                    }
+                }
+            },
+            getRemainingTime(order) {
+                if (!order.deliveredAt) return '24:00';
+                const now = new Date();
+                const delivered = new Date(order.deliveredAt);
+                const end = new Date(delivered.getTime() + 24 * 60 * 60 * 1000);
+                const remaining = end - now;
+                if (remaining <= 0) return '00:00';
+                const hours = Math.floor(remaining / (60 * 60 * 1000));
+                const minutes = Math.floor((remaining % (60 * 60 * 1000)) / (60 * 1000));
+                return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+            },
+            formatDate(isoString) {
+                if (!isoString) return '';
+                const d = new Date(isoString);
+                return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+            },
+            hasReviewed(orderId) {
+                return this.reviews.some(r => r.orderId === orderId);
+            },
+            getReviewRating(orderId) {
+                const review = this.reviews.find(r => r.orderId === orderId);
+                return review ? review.rating : 0;
+            },
+            getOrderReview(orderId) {
+                const review = this.reviews.find(r => r.orderId === orderId);
+                return review ? review.rating : null;
+            },
+            getRiderAverageRating(riderId) {
+                const riderReviews = this.reviews.filter(r => r.riderId === riderId);
+                if (riderReviews.length === 0) return '0.0';
+                const sum = riderReviews.reduce((acc, cur) => acc + cur.rating, 0);
+                return (sum / riderReviews.length).toFixed(1);
+            },
+            getRiderReviewCount(riderId) {
+                return this.reviews.filter(r => r.riderId === riderId).length;
+            },
+            formatTime(isoString) {
+                if (!isoString) return '';
+                let d = new Date(isoString);
+                return `${d.getMonth()+1}-${d.getDate()} ${d.getHours()}:${String(d.getMinutes()).padStart(2,'0')}`;
+            },
+            
+            // Cookie 操作
+            setCookie(name, val, days) {
+                let d = new Date();
+                d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
+                document.cookie = `${name}=${encodeURIComponent(val)};expires=${d.toUTCString()};path=/`;
+            },
+            getCookie(name) {
+                let ca = document.cookie.split(';');
+                for (let c of ca) {
+                    let [k, v] = c.trim().split('=');
+                    if (k === name) return decodeURIComponent(v);
+                }
+                return null;
+            },
+            deleteCookie(name) {
+                document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/`;
+            },
+            
+            // 加载数据
+            async loadFromJSONBin() {
+                this.syncing = true;
+                try {
+                    const response = await fetch(JSONBIN_URL, {
+                        headers: { 'X-Master-Key': JSONBIN_API_KEY }
+                    });
+                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                    const data = await response.json();
+                    if (data.record) {
+                        this.users = data.record.users || [];
+                        this.orders = (data.record.orders || []).map(o => ({ ...o, tempRating: null }));
+                        this.reviews = data.record.reviews || [];
+                        this.appeals = data.record.appeals || [];
+                        this.lastSync = new Date().toLocaleTimeString();
+                    }
+                    this.offline = false;
+                } catch (error) {
+                    console.error('加载失败:', error);
+                    this.offline = true;
+                } finally {
+                    this.syncing = false;
+                    this.loading = false;
+                }
+            },
+            
+            async saveToJSONBin() {
+                if (this.offline) return;
+                this.syncing = true;
+                try {
+                    const ordersToSave = this.orders.map(({ tempRating, ...rest }) => rest);
+                    const dataToSave = {
+                        users: this.users || [],
+                        orders: ordersToSave,
+                        reviews: this.reviews || [],
+                        appeals: this.appeals || [],
+                        lastUpdate: new Date().toISOString()
+                    };
+                    const response = await fetch(JSONBIN_URL, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Master-Key': JSONBIN_API_KEY
+                        },
+                        body: JSON.stringify(dataToSave)
+                    });
+                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                    this.lastSync = new Date().toLocaleTimeString();
+                    this.showToast('数据已保存');
+                } catch (error) {
+                    console.error('保存失败:', error);
+                    this.showToast('保存失败，请重试');
+                } finally {
+                    this.syncing = false;
+                }
+            },
+            
+            retryLoad() {
+                this.loading = true;
+                this.offline = false;
+                this.loadFromJSONBin();
+            },
+            
+            async handleLogin() {
+                let user = this.users.find(u => u.name === this.loginForm.name && 
+                                               u.stuId === this.loginForm.stuId && 
+                                               u.pwd === this.loginForm.pwd);
+                if (!user) {
+                    this.showToast('账号或密码错误');
+                    return;
+                }
+                if (user.banned) {
+                    this.currentUser = user;
+                    this.showBanModal = true;
+                    return;
+                }
+                this.currentUser = user;
+                this.setCookie('campusUser', JSON.stringify({ stuId: user.stuId }), 7);
+                
+                if (user.isAdmin) {
+                    this.role = 'admin';
+                } else if (user.rider) {
+                    this.role = 'rider';
+                } else {
+                    this.role = 'user';
+                }
+            },
+            
+            async handleRegister() {
+                if (!this.canRegister) {
+                    this.showToast('请完整填写注册信息');
+                    return;
+                }
+                if (this.users.some(u => u.stuId === this.registerForm.stuId)) {
+                    this.showToast('该学号已注册');
+                    return;
+                }
+                let newUser = {
+                    name: this.registerForm.name,
+                    stuId: this.registerForm.stuId,
+                    pwd: this.registerForm.pwd,
+                    banned: false,
+                    isAdmin: false,
+                    isSuperAdmin: false,
+                    registerTime: new Date().toISOString()
+                };
+                this.users.push(newUser);
+                await this.saveToJSONBin();
+                this.currentUser = newUser;
+                this.role = 'user';
+                this.setCookie('campusUser', JSON.stringify({ stuId: newUser.stuId }), 7);
+                this.registerForm = { name: '', stuId: '', pwd: '', confirmPwd: '' };
+                this.authMode = 'login';
+                this.showToast('注册成功！');
+            },
+            
+            logout() {
+                this.currentUser = null;
+                this.role = 'user';
+                this.deleteCookie('campusUser');
+                this.showToast('已登出');
+            },
+            
+            switchRole(role) {
+                if (this.currentUser?.banned) {
+                    this.showBannedAlert = true;
+                    return;
+                }
+                this.role = role;
+            },
+            
+            switchToRider() {
+                if (this.currentUser?.banned) {
+                    this.showBannedAlert = true;
+                    return;
+                }
+                if (this.currentUser?.rider) {
+                    this.role = 'rider';
+                } else {
+                    this.showRiderRegister = true;
+                }
+            },
+            
+            switchToAdmin() {
+                if (this.currentUser?.banned) {
+                    this.showBannedAlert = true;
+                    return;
+                }
+                if (this.currentUser?.isAdmin) {
+                    this.role = 'admin';
+                }
+            },
+            
+            async registerAsRider() {
+                if (this.currentUser?.banned) {
+                    this.showToast('账号已封禁，无法注册配送端');
+                    this.showRiderRegister = false;
+                    return;
+                }
+                if (!this.isRiderPhoneValid) {
+                    this.showToast('请填写正确的11位手机号');
+                    return;
+                }
+                let user = this.users.find(u => u.stuId === this.currentUser.stuId);
+                user.rider = true;
+                user.phone = this.riderRegister.phone;
+                user.completed = 0;
+                user.balance = 0;
+                user.pendingBalance = 0;
+                user.frozenBalance = 0;
+                this.currentUser.rider = true;
+                this.currentUser.phone = this.riderRegister.phone;
+                this.showRiderRegister = false;
+                this.role = 'rider';
+                await this.saveToJSONBin();
+                this.showToast('注册成功！');
+            },
+            
+            async submitOrder() {
+                if (!this.isValidPhone(this.newOrder.phone)) {
+                    this.showToast('请填写正确的11位手机号');
+                    return;
+                }
+                if (this.currentUser?.banned) {
+                    this.showToast('账号已封禁，无法发布订单');
+                    return;
+                }
+                let newOrder = {
+                    id: 'ord' + Date.now(),
+                    userName: this.currentUser.name,
+                    userStuId: this.currentUser.stuId,
+                    phone: this.newOrder.phone,
+                    point: this.newOrder.point,
+                    code: this.newOrder.code,
+                    location: this.newOrder.location,
+                    amount: parseInt(this.newOrder.amount),
+                    status: '待付款确认',
+                    showPickup: false,
+                    riderId: null,
+                    riderPhone: null,
+                    createdAt: new Date().toISOString(),
+                    grabbing: false,
+                    tempRating: null
+                };
+                this.orders.push(newOrder);
+                this.newOrder = { point: '', code: '', location: '', phone: '', amount: 2 };
+                this.paymentConfirmed = false;
+                this.orderPhoneError = '';
+                await this.saveToJSONBin();
+                this.showToast('订单发布成功');
+            },
+            
+            async grabOrder(order) {
+                if (order.grabbing) return;
+                if (order.riderId) {
+                    this.showToast('订单已被其他配送员抢走');
+                    return;
+                }
+                this.$set(order, 'grabbing', true);
+                order.riderId = this.currentUser.stuId;
+                order.riderPhone = this.currentUser.phone;
+                order.grabbing = false;
+                this.$forceUpdate();
+                await this.saveToJSONBin();
+                this.showToast('抢单成功！');
+            },
+            
+            async confirmPickup(order) {
+                if (!confirm('确认已取件？')) return;
+                order.status = '待确认';
+                order.deliveredAt = new Date().toISOString();
+                let rider = this.users.find(u => u.stuId === this.currentUser.stuId);
+                if (rider) {
+                    rider.pendingBalance = (rider.pendingBalance || 0) + order.amount * 0.8;
+                }
+                await this.saveToJSONBin();
+                this.showToast('已标记为已取件，等待用户确认');
+            },
+            
+            async confirmDelivery(order) {
+                order.status = '已完成';
+                let rider = this.users.find(u => u.stuId === order.riderId);
+                if (rider) {
+                    rider.pendingBalance = (rider.pendingBalance || 0) - order.amount * 0.8;
+                    rider.balance = (rider.balance || 0) + order.amount * 0.8;
+                    rider.completed = (rider.completed || 0) + 1;
+                }
+                await this.saveToJSONBin();
+                this.showToast('已确认送达，款项已转入配送员账户');
+            },
+            
+            async submitReview(order) {
+                if (!order.tempRating) {
+                    this.showToast('请选择评分');
+                    return;
+                }
+                const rider = this.users.find(u => u.stuId === order.riderId);
+                const newReview = {
+                    id: Date.now(),
+                    orderId: order.id,
+                    userId: this.currentUser.stuId,
+                    userName: this.currentUser.name,
+                    riderId: order.riderId,
+                    riderName: rider ? rider.name : '未知配送员',
+                    rating: order.tempRating,
+                    comment: '',
+                    createdAt: new Date().toISOString()
+                };
+                this.reviews.push(newReview);
+                order.tempRating = null;
+                await this.saveToJSONBin();
+                this.showToast('评价成功，感谢您的反馈！');
+            },
+            
+            async confirmPayment(order) {
+                order.status = '待取件';
+                order.showPickup = true;
+                await this.saveToJSONBin();
+                this.showToast('已确认付款，配送员现在可以看到取件码');
+            },
+            
+            async markUnconfirmed(order) {
+                if (!confirm('标记为未确认？订单将变为异常状态，配送员将无法获得这笔款项')) return;
+                let rider = this.users.find(u => u.stuId === order.riderId);
+                if (rider) {
+                    rider.pendingBalance = (rider.pendingBalance || 0) - order.amount * 0.8;
+                    rider.frozenBalance = (rider.frozenBalance || 0) + order.amount * 0.8;
+                }
+                order.status = '异常';
+                await this.saveToJSONBin();
+                this.showToast('已标记为异常订单，款项已计入封禁金额');
+            },
+            
+            async cancelOrder(order) {
+                if (confirm('确定取消订单？')) {
+                    this.orders = this.orders.filter(o => o.id !== order.id);
+                    await this.saveToJSONBin();
+                }
+            },
+            
+            async banUser(user) {
+                // 超级管理员不能被封禁
+                if (user.isSuperAdmin) {
+                    this.showToast('无法封禁超级管理员');
+                    return;
+                }
+                // 普通管理员不能封禁其他管理员
+                if (user.isAdmin && !this.currentUser.isSuperAdmin) {
+                    this.showToast('只有超级管理员可以封禁管理员');
+                    return;
+                }
+                if (confirm(`确定封禁 ${user.name} 吗？`)) {
+                    user.banned = true;
+                    await this.saveToJSONBin();
+                    this.showToast(`用户 ${user.name} 已封禁`);
+                }
+            },
+            
+            async unbanUser(user) {
+                // 超级管理员不需要解封
+                if (user.isSuperAdmin) {
+                    this.showToast('超级管理员无需解封');
+                    return;
+                }
+                // 普通管理员不能解封其他管理员
+                if (user.isAdmin && !this.currentUser.isSuperAdmin) {
+                    this.showToast('只有超级管理员可以解封管理员');
+                    return;
+                }
+                if (confirm(`确定解封 ${user.name} 吗？`)) {
+                    user.banned = false;
+                    await this.saveToJSONBin();
+                    this.showToast(`用户 ${user.name} 已解封`);
+                }
+            },
+            
+            async submitAppeal() {
+                if (this.appealReason.length < 15) {
+                    this.showToast('申诉原因至少需要15字');
+                    return;
+                }
+                if (!this.currentUser) {
+                    this.showToast('用户未登录');
+                    return;
+                }
+                const newAppeal = {
+                    id: Date.now(),
+                    name: this.currentUser.name,
+                    stuId: this.currentUser.stuId,
+                    reason: this.appealReason,
+                    time: new Date().toLocaleDateString()
+                };
+                this.appeals.push(newAppeal);
+                this.showBanModal = false;
+                this.appealReason = '';
+                await this.saveToJSONBin();
+                this.showToast('申诉已提交');
+            },
+            
+            async handleAppeal(appeal, accept) {
+                if (accept) {
+                    let user = this.users.find(u => u.stuId === appeal.stuId);
+                    if (user) user.banned = false;
+                    this.showToast(`已解封 ${appeal.name}`);
+                } else {
+                    this.showToast('已拒绝申诉');
+                }
+                this.appeals = this.appeals.filter(a => a.id !== appeal.id);
+                await this.saveToJSONBin();
+            },
+            
+            withdraw() {
+                this.showToast('提现申请已提交');
+            },
+            
+            openChangePassword() {
+                this.changePwd = { oldPwd: '', newPwd: '', confirmNew: '' };
+                this.showChangePwd = true;
+            },
+            
+            async submitChangePassword() {
+                if (!this.changePwd.oldPwd || !this.changePwd.newPwd || this.changePwd.newPwd !== this.changePwd.confirmNew) {
+                    this.showToast('请正确填写密码');
+                    return;
+                }
+                let user = this.users.find(u => u.stuId === this.currentUser.stuId);
+                if (user.pwd !== this.changePwd.oldPwd) {
+                    this.showToast('原密码错误');
+                    return;
+                }
+                user.pwd = this.changePwd.newPwd;
+                await this.saveToJSONBin();
+                this.showChangePwd = false;
+                this.showToast('密码修改成功，请重新登录');
+                this.logout();
+            },
+            
+            openAddAdmin() {
+                this.newAdmin = { name: '', stuId: '', pwd: '', confirmPwd: '' };
+                this.showAddAdmin = true;
+            },
+            
+            async addAdmin() {
+                if (!this.canAddAdmin) {
+                    this.showToast('请完整填写管理员信息');
+                    return;
+                }
+                if (this.users.some(u => u.stuId === this.newAdmin.stuId)) {
+                    this.showToast('该学号已存在');
+                    return;
+                }
+                let newAdminUser = {
+                    name: this.newAdmin.name,
+                    stuId: this.newAdmin.stuId,
+                    pwd: this.newAdmin.pwd,
+                    banned: false,
+                    isAdmin: true,
+                    isSuperAdmin: false,
+                    registerTime: new Date().toISOString()
+                };
+                this.users.push(newAdminUser);
+                await this.saveToJSONBin();
+                this.showAddAdmin = false;
+                this.showToast(`管理员 ${this.newAdmin.name} 添加成功`);
+            },
+            
+            showToast(msg) {
+                let t = document.getElementById('toast');
+                t.style.display = 'block';
+                t.textContent = msg;
+                setTimeout(() => t.style.display = 'none', 2500);
+            }
+        },
+        async mounted() {
+            this.loading = true;
+            await this.loadFromJSONBin();
+            
+            // 检查Cookie自动登录
+            let cookieUser = this.getCookie('campusUser');
+            if (cookieUser && !this.offline) {
+                try {
+                    let { stuId } = JSON.parse(cookieUser);
+                    let user = this.users.find(u => u.stuId === stuId);
+                    if (user && !user.banned) {
+                        this.currentUser = user;
+                        if (user.isAdmin) {
+                            this.role = 'admin';
+                        } else if (user.rider) {
+                            this.role = 'rider';
+                        } else {
+                            this.role = 'user';
+                        }
+                    } else if (user && user.banned) {
+                        this.currentUser = user;
+                        this.showBanModal = true;
+                    }
+                } catch (e) {}
+            }
+        }
+    });
+</script>
+</body>
+</html>
