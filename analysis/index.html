@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>铭析校园</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js">
+</script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: '仿宋', 'FangSong', 'STFangsong', '华文仿宋', serif; }
+        body { background: #eef7fc; min-height: 100vh; }
+        .app-container { max-width: 1400px; width: 100%; margin: 0 auto; padding: 1rem; }
+        @media (min-width: 768px) { .app-container { padding: 1.5rem; } }
+        .login-page { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 1rem; }
+        .login-card { max-width: 500px; width: 100%; background: white; border-radius: 28px; box-shadow: 0 6px 18px rgba(0, 55, 70, 0.06); padding: 1.5rem; border: 1px solid #d4e9f2; margin: 0 auto; }
+        .loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.94); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 3000; gap: 12px; }
+        .loader { width: 48px; height: 48px; border: 5px solid #cde9f2; border-top: 5px solid #2c9b8a; border-radius: 50%; animation: spin 0.8s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .loading-text { color: #1b6b5e; font-size: 0.9rem; font-weight: 500; }
+        .card { background: white; border-radius: 28px; box-shadow: 0 6px 18px rgba(0, 55, 70, 0.06); padding: 1.2rem; border: 1px solid #d4e9f2; margin-bottom: 1.5rem; }
+        @media (min-width: 768px) { .card { padding: 1.6rem; } }
+        .btn, button[class*="btn-"]:not(.btn-icon) { border-radius: 60px; font-weight: 600; padding: 8px 18px; font-size: 0.85rem; cursor: pointer; transition: all 0.2s ease; display: inline-flex; align-items: center; gap: 6px; border: none; }
+        @media (min-width: 768px) { .btn, button[class*="btn-"]:not(.btn-icon) { padding: 10px 26px; font-size: 0.9rem; gap: 8px; } }
+        .btn-primary { background: #2c9b8a; color: white; box-shadow: 0 2px 6px rgba(44,155,138,0.2); }
+        .btn-primary:hover { background: #238472; }
+        .btn-outline { background: white; border: 1.5px solid #2c9b8a; color: #2c9b8a; }
+        .btn-outline:hover { background: #e0f4f0; }
+        .btn-danger { background: #e55c3c; color: white; }
+        .btn-danger:hover { background: #cc4527; }
+        .btn-sm { padding: 5px 12px; font-size: 0.75rem; }
+        .btn-icon { background: #eef4f8; border: none; border-radius: 30px; padding: 5px 10px; cursor: pointer; font-size: 0.7rem; }
+        .form-group { margin-bottom: 0.8rem; }
+        .form-group label { font-weight: 600; color: #1b6b5e; font-size: 0.8rem; display: block; margin-bottom: 0.3rem; }
+        input, select, textarea { width: 100%; padding: 8px 12px; border: 1.5px solid #d6e9f2; border-radius: 24px; font-size: 0.85rem; background: white; }
+        @media (min-width: 768px) { .form-group { margin-bottom: 1rem; } .form-group label { font-size: 0.85rem; } input, select, textarea { padding: 10px 16px; font-size: 0.9rem; } }
+        .header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 1rem; gap: 10px; }
+        .role-tabs { display: flex; gap: 6px; background: #e4f2f7; border-radius: 60px; padding: 4px; width: fit-content; flex-wrap: wrap; }
+        .role-tab { padding: 6px 16px; border-radius: 40px; cursor: pointer; font-weight: 500; transition: 0.2s; font-size: 0.8rem; }
+        @media (min-width: 768px) { .role-tab { padding: 8px 26px; font-size: 0.9rem; } }
+        .role-tab.active { background: #2c9b8a; color: white; }
+        .badge-school { background: #dff2f0; padding: 4px 10px; border-radius: 40px; font-size: 0.7rem; color: #1e6f62; display: inline-flex; align-items: center; gap: 4px; }
+        .status-badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 30px; font-size: 0.7rem; font-weight: 500; }
+        .status-normal { background: #d9f0e6; color: #1c7a64; }
+        .status-banned { background: #ffe2db; color: #c55a3e; }
+        .data-table { width: 100%; border-collapse: collapse; font-size: 0.75rem; }
+        @media (min-width: 768px) { .data-table { font-size: 0.85rem; } }
+        .data-table th, .data-table td { padding: 8px 4px; border-bottom: 1px solid #ddecF2; text-align: left; vertical-align: middle; }
+        @media (min-width: 768px) { .data-table th, .data-table td { padding: 12px 8px; } }
+        .data-table th { background: #f6fbfe; font-weight: 600; color: #1b6b5e; }
+        .flex-between { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+        .toast { position: fixed; bottom: 20px; right: 20px; background: #1e6f62; color: white; padding: 10px 20px; border-radius: 60px; z-index: 2100; display: none; font-weight: 500; font-size: 0.8rem; }
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.4); display: flex; align-items: center; justify-content: center; z-index: 4000; backdrop-filter: blur(3px); }
+        .modal-card { background: white; border-radius: 28px; width: 95%; max-width: 700px; padding: 1.2rem; max-height: 85vh; overflow-y: auto; }
+        @media (min-width: 768px) { .modal-card { width: 90%; padding: 1.8rem; } }
+        .batch-grid { display: flex; flex-direction: column; gap: 12px; margin-top: 10px; }
+        .batch-row { background: #f6fbfe; border-radius: 24px; padding: 1rem; border: 1px solid #d2e6f0; display: grid; grid-template-columns: 1fr; gap: 10px; align-items: end; }
+        @media (min-width: 640px) { .batch-row { grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); } }
+        .admin-tab-group { display: flex; gap: 8px; margin: 15px 0; border-bottom: 2px solid #d4e9f2; padding-bottom: 6px; flex-wrap: wrap; }
+        .admin-tab { padding: 6px 14px; border-radius: 40px; cursor: pointer; font-weight: 500; background: #f0f7fa; font-size: 0.75rem; display: inline-flex; align-items: center; gap: 4px; }
+        @media (min-width: 768px) { .admin-tab { padding: 8px 20px; font-size: 0.85rem; gap: 6px; } }
+        .admin-tab.active { background: #2c9b8a; color: white; }
+        .exam-tab-bar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+        .exam-chip { background: #eef4f8; border-radius: 40px; padding: 5px 14px; cursor: pointer; font-weight: 500; font-size: 0.7rem; display: inline-block; margin-right: 8px; margin-bottom: 8px; }
+        @media (min-width: 768px) { .exam-chip { padding: 8px 22px; font-size: 0.85rem; } }
+        .exam-chip.active { background: #2c9b8a; color: white; }
+        .student-selector-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 8px; max-height: 280px; overflow-y: auto; margin: 10px 0; border: 1px solid #d4e9f2; border-radius: 20px; padding: 10px; background: #fafefe; }
+        .student-card { background: white; border-radius: 24px; padding: 8px 10px; text-align: center; cursor: pointer; border: 1px solid #cce3ed; font-size: 0.75rem; transition: all 0.1s; }
+        .student-card:hover { background: #e0f4f0; border-color: #2c9b8a; }
+        .student-card strong { display: block; font-size: 0.85rem; margin-bottom: 4px; }
+        .btn-center { display: flex; justify-content: center; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
+        .excel-zone { background: #f4fbf8; border-radius: 20px; padding: 0.8rem; margin: 0.8rem 0; border: 1px dashed #2c9b8a; }
+        .score-table-wrapper { max-height: 400px; overflow-y: auto; margin-top: 0.8rem; }
+        .inline-checkbox { display: flex; align-items: center; gap: 10px; margin: 10px 0; }
+        .inline-checkbox label { margin: 0; cursor: pointer; font-size: 0.85rem; font-weight: normal; color: #1b6b5e; }
+        .inline-checkbox input { width: 18px; height: 18px; margin: 0; cursor: pointer; accent-color: #2c9b8a; }
+        .analysis-grid { display: grid; grid-template-columns: 1fr; gap: 12px; margin-top: 0.8rem; }
+        @media (min-width: 640px) { .analysis-grid { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); } }
+        .analysis-sub-card { background: white; border-radius: 20px; padding: 0.8rem; border-left: 4px solid; }
+        .progress-bar { height: 6px; background: #e2eef5; border-radius: 10px; overflow: hidden; margin: 6px 0; }
+        .progress-fill { height: 100%; border-radius: 10px; background: #2c9b8a; }
+        .score-compact { background: #f9fefd; border-radius: 20px; padding: 0.8rem; margin-bottom: 10px; border-left: 4px solid #2c9b8a; cursor: pointer; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
+        .class-badge { background: #e8f0fe; padding: 2px 8px; border-radius: 30px; font-size: 0.65rem; margin: 2px 3px; display: inline-block; }
+        .teacher-class-list { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 5px; }
+        .class-grid-modal { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 8px; max-height: 260px; overflow-y: auto; padding: 8px; border: 1px solid #e2edf7; border-radius: 20px; background: #fafefe; margin: 6px 0; }
+        .class-item { background: white; border-radius: 24px; padding: 8px; text-align: center; cursor: pointer; border: 1px solid #cce3ed; font-size: 0.75rem; display: flex; align-items: center; justify-content: space-between; }
+        .class-item.selected { background: #2c9b8a; color: white; }
+        .add-class-row { display: flex; gap: 6px; margin-top: 10px; }
+        .row-actions { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; justify-content: flex-start; }
+        @media (min-width: 768px) { .row-actions { justify-content: flex-end; } }
+        .score-list { max-height: 450px; overflow-y: auto; }
+        .grid-2 { display: grid; grid-template-columns: 1fr; gap: 16px; }
+        @media (min-width: 768px) { .grid-2 { grid-template-columns: 1fr 2fr; gap: 24px; } }
+        .chart-container { position: relative; width: 100%; max-width: 450px; margin: 0 auto; padding: 1rem; background: rgba(44, 155, 138, 0.02); border-radius: 20px; border: 1px solid rgba(44, 155, 138, 0.08); }
+        .chart-container canvas { width: 100% !important; height: auto !important; }
+        .student-radar-grid { display: grid; grid-template-columns: 1fr; gap: 16px; margin-top: 1rem; }
+        @media (min-width: 768px) { .student-radar-grid { grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); } }
+        .student-radar-card { background: #fafefe; border-radius: 20px; padding: 1rem; border: 1px solid #d4e9f2; text-align: center; }
+        .student-radar-card h4 { margin-bottom: 0.5rem; color: #1b6b5e; font-size: 0.9rem; }
+        .teacher-tip { padding: 12px; background: #fff8e1; border-radius: 16px; border: 1px solid #ffe082; margin-top: 16px; }
+        .copyright-footer { margin-top: 2rem; padding: 1.5rem 0 0.5rem 0; text-align: center; border-top: 1px solid #eef4fc; color: #8aaec9; font-size: 0.9rem; }
+        @media (max-width: 768px) { .copyright-footer { font-size: 0.7rem; margin-top: 1.5rem; } }
+    </style>
+</head>
+<body>
+    <div id="app" v-cloak>
+        <div class="loading-overlay" v-if="globalLoading">
+            <div class="loader"></div>
+            <div class="loading-text">数据载入中...</div>
+        </div>
+
+        <!-- 登录界面 -->
+        <div v-if="!currentUser && !globalLoading" class="login-page">
+            <div class="login-card">
+                <div style="text-align:center; margin-bottom:20px;">
+                    <i class="fas fa-chart-simple" style="font-size: 2rem; color:#2c9b8a;"></i>
+                    <h2 style="color:#1b6b5e; font-size: 1.4rem;">铭析校园</h2>
+                    <p style="color:#659f92; font-size: 0.8rem;">寸分铭录，细析洞明</p>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-user"></i> 姓名</label>
+                    <input v-model="loginForm.name" placeholder="请输入姓名">
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-id-card"></i> 学号/工号</label>
+                    <input v-model="loginForm.staffId" placeholder="请输入学号/工号">
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-phone"></i> 手机号</label>
+                    <input v-model="loginForm.phone" placeholder="请输入手机号">
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-lock"></i> 密码</label>
+                    <input type="password" v-model="loginForm.pwd" placeholder="请输入密码">
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-school"></i> 学校</label>
+                    <select v-model="loginForm.school">
+                        <option value="">-- 选择学校 --</option>
+                        <option v-for="s in schoolsList" :value="s">{{s}}</option>
+                    </select>
+                </div>
+                <button class="btn-primary" style="width:100%; justify-content:center;" @click="handleLogin">登录 <i class="fas fa-arrow-right"></i></button>
+            </div>
+        </div>
+
+        <!-- 主界面 -->
+        <div class="app-container" v-else-if="currentUser">
+            <div class="header">
+                <div>
+                    <h2 style="color:#1b6b5e; font-size:1.2rem;"><i class="fas fa-chart-line"></i>铭析校园</h2>
+                    <div class="badge-school"><i class="fas fa-building"></i> {{currentUser.school==='全域'?'超级管理员':currentUser.school}} · {{currentUser.roleName}}</div>
+                </div>
+                <div>
+                    <span><i class="fas fa-user-circle"></i> {{currentUser.name}}</span>
+                    <button class="btn-icon" style="margin-left:8px;" @click="logout"><i class="fas fa-sign-out-alt"></i> 退出</button>
+                </div>
+            </div>
+            <div class="role-tabs" style="margin-bottom:16px;">
+                <div class="role-tab" :class="{active:roleView==='student'}" @click="switchView('student')" v-if="currentUser.role==='student'"><i class="fas fa-graduation-cap"></i> 学生端</div>
+                <div class="role-tab" :class="{active:roleView==='teacher'}" @click="switchView('teacher')" v-if="currentUser.role==='teacher'"><i class="fas fa-chalkboard-user"></i> 教师端</div>
+                <div class="role-tab" :class="{active:roleView==='admin'}" @click="switchView('admin')" v-if="currentUser.role==='schoolAdmin'||currentUser.role==='superAdmin'"><i class="fas fa-user-shield"></i> 管理端</div>
+            </div>
+
+            <!-- 学生端 -->
+            <div v-if="roleView==='student'&&currentStudentData">
+                <div class="grid-2">
+                    <div class="card">
+                        <h3 style="font-size:1rem;"><i class="fas fa-calendar-alt"></i> 历次考试</h3>
+                        <div class="score-list">
+                            <div v-for="exam in currentStudentData.exams" :key="exam.examId" class="score-compact" @click="selectStudentExam(exam)">
+                                <div>
+                                    <strong>{{exam.examName}}</strong>
+                                    <div style="margin-top:4px;">
+                                        <span class="badge-school">总分:{{exam.totalScore}}</span>
+                                        <span class="badge-school">{{exam.className}}</span>
+                                        <span class="badge-school">年级排名:{{exam.rankGrade||'-'}}</span>
+                                    </div>
+                                </div>
+                                <i class="fas fa-chevron-right"></i>
+                            </div>
+                            <div v-if="!currentStudentData.exams.length">暂无成绩</div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="flex-between">
+                            <h3 style="font-size:1rem;">{{selectedExam?selectedExam.examName:'成绩详情'}}</h3>
+                            <button v-if="selectedExam" class="btn-icon" @click="selectedExam=null;destroyStudentChart()">× 关闭</button>
+                        </div>
+                        <div v-if="selectedExam">
+                            <div class="chart-container" style="margin-bottom:1rem;">
+                                <canvas id="studentRadarChart"></canvas>
+                            </div>
+                            <table class="data-table">
+                                <thead><tr><th>科目</th><th>原始分</th><th>赋分</th><th>班级排名</th><th>组合排名</th></tr></thead>
+                                <tbody><tr v-for="sub in selectedExam.subjects"><td>{{sub.subject}}</td><td>{{sub.rawScore}}</td><td>{{sub.gradedScore}}</td><td>{{sub.classRank||'-'}}</td><td>{{sub.groupRank||'-'}}</td></tr></tbody>
+                            </table>
+                            <div style="margin-top:1rem;">
+                                <h4 style="font-size:0.9rem;">成绩分析</h4>
+                                <div class="analysis-grid">
+                                    <div v-for="sub in selectedExam.subjects" :key="sub.subject" class="analysis-sub-card" :style="{borderLeftColor:sub.gradedScore>=80?'#2c9b8a':(sub.gradedScore<60?'#e55c3c':'#ffc107')}">
+                                        <div class="flex-between"><strong>{{sub.subject}}</strong><span>{{sub.gradedScore}}分</span></div>
+                                        <div class="progress-bar"><div class="progress-fill" :style="{width:(sub.gradedScore/100*70+30)+'%'}"></div></div>
+                                        <div><i class="fas fa-lightbulb"></i> {{getSubjectAdvice(sub,selectedExam.subjects)}}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div v-else style="text-align:center;padding:1.5rem;color:#8db7ab;">点击左侧考试查看详细成绩单</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 教师端 -->
+            <div v-if="roleView==='teacher'&&currentTeacherInfo">
+                <div class="card" style="margin-bottom:16px;">
+                    <div class="flex-between">
+                        <div>
+                            <i class="fas fa-chalkboard"></i> {{currentTeacherInfo.subject}}教师
+                            <span v-if="isHomeroomTeacher" class="badge-school" style="margin-left:8px;"><i class="fas fa-star"></i> 班主任</span>
+                            <span v-else class="badge-school" style="margin-left:8px;background:#f0f0f0;">科任老师</span>
+                        </div>
+                        <button class="btn-outline btn-sm" @click="fetchTeacherData">刷新</button>
+                    </div>
+                    <div class="teacher-class-list">
+                        <strong>任教班级：</strong>
+                        <span v-for="c in currentTeacherInfo.classes" :key="c" class="class-badge">{{c}}</span>
+                    </div>
+
+                    <!-- 班主任上传功能 -->
+                    <div v-if="isHomeroomTeacher" style="margin-top:16px;border-top:2px dashed #d4e9f2;padding-top:14px;">
+                        <div class="flex-between">
+                            <h4 style="font-size:0.9rem;">在线录入成绩（班主任）</h4>
+                            <button class="btn-primary btn-sm" @click="addScoreRow">+ 添加一条</button>
+                        </div>
+                        <div class="batch-grid">
+                            <div v-for="(item,idx) in pendingScores" :key="idx" class="batch-row">
+                                <div class="form-group"><label>考试名称</label><input v-model="item.examName" placeholder="期中考试"></div>
+                                <div class="form-group"><label>班级</label><input :value="item.className||'点击选择'" @click="openTeacherClassSelector(idx)" readonly style="cursor:pointer;"></div>
+                                <div class="form-group"><label>学生</label><input readonly :value="item.studentName||'点击选择'" @click="openStudentPicker(idx,item.className)" style="cursor:pointer;"></div>
+                                <div class="form-group"><label>科目</label><select v-model="item.subject"><option value="">请选择</option><option v-for="sub in subjectOptions" :value="sub">{{sub}}</option></select></div>
+                                <div class="form-group"><label>原始分</label><input type="number" v-model="item.rawScore"></div>
+                                <div class="form-group"><label>赋分</label><input type="number" v-model="item.gradedScore"></div>
+                                <div class="form-group"><label>班级排名</label><input v-model="item.classRank"></div>
+                                <div class="form-group"><label>组合排名</label><input v-model="item.groupRank"></div>
+                                <div class="row-actions"><button class="btn-danger btn-sm" @click="removeScoreRow(idx)">移除</button></div>
+                            </div>
+                        </div>
+                        <div v-if="pendingScores.length" class="btn-center">
+                            <button class="btn-primary" @click="commitScoresUpload">确认上传</button>
+                            <button class="btn-outline btn-sm" @click="pendingScores=[]">清空</button>
+                        </div>
+                        <div class="excel-zone">
+                            <div class="flex-between">
+                                <span><i class="fas fa-file-excel"></i> Excel批量导入</span>
+                                <button class="btn-outline btn-sm" @click="downloadTemplate">下载模板</button>
+                                <button class="btn-primary btn-sm" @click="triggerExcelUpload">选择文件</button>
+                                <input type="file" ref="excelUploadInput" style="display:none;" @change="parseExcelFile">
+                            </div>
+                            <div v-if="pendingExcelData.length" class="flex-between">
+                                <span>待上传 {{pendingExcelData.length}} 条</span>
+                                <button class="btn-primary btn-sm" @click="commitExcelUpload">确认上传</button>
+                                <button class="btn-outline btn-sm" @click="pendingExcelData=[]">清空</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 非班主任提示 -->
+                    <div v-else class="teacher-tip">
+                        <i class="fas fa-info-circle" style="color:#f57c00;"></i> 您为{{currentTeacherInfo.subject}}科任老师，可查看所教班级的{{currentTeacherInfo.subject}}成绩并进行修改，如需上传成绩请联系班主任。
+                    </div>
+
+                    <div class="flex-between" style="margin-top:12px;">
+                        <select v-model="teacherExamFilter"><option value="">全部考试</option><option v-for="e in teacherExamList" :value="e.examId">{{e.examName}}</option></select>
+                        <select v-model="teacherClassFilter"><option value="">全部班级</option><option v-for="c in currentTeacherInfo.classes" :value="c">{{c}}</option></select>
+                        <button class="btn-outline btn-sm" @click="filterTeacherData">筛选</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3 style="font-size:0.9rem;">
+                        成绩明细
+                        <span v-if="!isHomeroomTeacher" style="color:#e55c3c;font-size:0.8rem;">（仅显示{{currentTeacherInfo.subject}}科目）</span>
+                        <span v-else style="color:#2c9b8a;font-size:0.8rem;">（全部科目）</span>
+                    </h3>
+                    <div class="score-table-wrapper">
+                        <table class="data-table">
+                            <thead><tr><th>班级</th><th>学生</th><th>学号</th><th>考试</th><th>科目</th><th>原始分</th><th>赋分</th><th>班级排名</th><th>组合排名</th><th>操作</th></tr></thead>
+                            <tbody>
+                                <tr v-for="sc in filteredTeacherScores" :key="sc.id">
+                                    <td>{{sc.className}}</td><td>{{sc.studentName}}</td><td>{{sc.studentId}}</td><td>{{sc.examName}}</td><td>{{sc.subject}}</td>
+                                    <td>{{sc.rawScore}}</td><td>{{sc.gradedScore}}</td><td>{{sc.classRank}}</td><td>{{sc.groupRank}}</td>
+                                    <td class="row-actions">
+                                        <button v-if="isHomeroomTeacher||sc.subject===currentTeacherInfo.subject" class="btn-icon btn-sm" @click="openScoreEdit(sc)">修改</button>
+                                    </td>
+                                </tr>
+                                <tr v-if="!filteredTeacherScores.length"><td colspan="10" style="text-align:center;">暂无数据</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- 教师端学生偏科 -->
+                    <div v-if="teacherStudentAnalysis.length>0" style="margin-top:2rem;border-top:2px dashed #d4e9f2;padding-top:1rem;">
+                        <h4 style="font-size:0.95rem;margin-bottom:1rem;"><i class="fas fa-chart-pie"></i> 学生偏科分析（雷达图）</h4>
+                        <div class="student-radar-grid">
+                            <div v-for="stu in teacherStudentAnalysis" :key="stu.studentId" class="student-radar-card">
+                                <h4>{{stu.studentName}} ({{stu.className}})</h4>
+                                <div class="chart-container">
+                                    <canvas :id="'teacherRadar_'+stu.studentId"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 管理端 -->
+            <div v-if="roleView==='admin'&&(currentUser.role==='schoolAdmin'||currentUser.role==='superAdmin')">
+                <div class="card">
+                    <div class="flex-between">
+                        <h3 style="font-size:1rem;"><i class="fas fa-crown"></i> 管理控制台</h3>
+                        <span><i class="fas fa-school-flag"></i> {{currentUser.role==='superAdmin'?'全域权限':currentUser.school}}</span>
+                    </div>
+                    <div class="admin-tab-group">
+                        <div class="admin-tab" :class="{active:adminTab==='users'}" @click="adminTab='users'"><i class="fas fa-users-gear"></i> 用户管理</div>
+                        <div class="admin-tab" :class="{active:adminTab==='exams'}" @click="adminTab='exams'"><i class="fas fa-chart-line"></i> 成绩管理</div>
+                        <div class="admin-tab" :class="{active:adminTab==='batch'}" @click="adminTab='batch'"><i class="fas fa-layer-group"></i> 批量添加</div>
+                        <div class="admin-tab" v-if="currentUser.role==='superAdmin'" :class="{active:adminTab==='schools'}" @click="adminTab='schools'"><i class="fas fa-building"></i> 学校管理</div>
+                    </div>
+
+                    <div v-if="adminTab==='users'">
+                        <div class="flex-between"><h4>账号列表</h4><button class="btn-outline btn-sm" @click="openAddUserModal">+ 添加用户</button></div>
+                        <div class="score-table-wrapper">
+                            <table class="data-table">
+                                <thead><tr><th>姓名</th><th>工号</th><th>角色</th><th>学校</th><th>班级/科目</th><th>手机号</th><th>状态</th><th>操作</th></tr></thead>
+                                <tbody>
+                                    <tr v-for="u in displayUsers" :key="u.staffId">
+                                        <td>{{u.name}}</td><td>{{u.staffId}}</td><td>{{u.roleName}}</td><td>{{u.school==='全域'?'—':u.school}}</td>
+                                        <td>{{u.teacherInfo?.subject||u.studentInfo?.className||(u.role==='schoolAdmin'?'管理员':'')}}</td><td>{{u.phone}}</td>
+                                        <td><span class="status-badge" :class="u.banned?'status-banned':'status-normal'"><i :class="u.banned?'fas fa-ban':'fas fa-check-circle'"></i> {{u.banned?'封禁':'正常'}}</span></td>
+                                        <td class="row-actions">
+                                            <button class="btn-outline btn-sm" @click="toggleBan(u)" v-if="canManageUser(u)">{{u.banned?'解封':'封禁'}}</button>
+                                            <button class="btn-danger btn-sm" @click="deleteUserAccount(u)" v-if="canDeleteUser(u)">删除</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div v-if="adminTab==='exams'">
+                        <div class="flex-between">
+                            <div>
+                                <select v-model="schoolFilterForExams" v-if="currentUser.role==='superAdmin'" style="width:auto;display:inline-block;">
+                                    <option value="">全部学校</option><option v-for="s in schoolsList" :value="s">{{s}}</option>
+                                </select>
+                                <button class="btn-outline btn-sm" @click="refreshExamsView">刷新</button>
+                            </div>
+                            <button class="btn-primary btn-sm" @click="addAdminScoreRow">+ 录入成绩</button>
+                        </div>
+                        <div class="exam-tab-bar">
+                            <div v-for="exam in filteredExamsList" :key="exam.examId" class="exam-chip" :class="{active:selectedExamId===exam.examId}" @click="selectExamForAdmin(exam.examId)">
+                                <i class="fas fa-clipboard-list"></i> {{exam.examName}} ({{exam.school}})
+                            </div>
+                            <div v-if="!filteredExamsList.length">暂无考试数据</div>
+                        </div>
+                        <div style="margin:16px 0;border-top:2px dashed #d4e9f2;padding-top:14px;">
+                            <div class="flex-between"><h4>在线录入成绩</h4><button class="btn-primary btn-sm" @click="addAdminScoreRow">+ 添加一条</button></div>
+                            <div class="batch-grid">
+                                <div v-for="(item,idx) in adminPendingScores" :key="idx" class="batch-row">
+                                    <div class="form-group"><label>考试名称</label><input v-model="item.examName"></div>
+                                    <div class="form-group"><label>班级</label><input :value="item.className||'点击选择'" @click="openAdminClassSelector(idx)" readonly style="cursor:pointer;"></div>
+                                    <div class="form-group"><label>学生</label><input readonly :value="item.studentName||'点击选择'" @click="openAdminStudentPicker(idx,item.className)" style="cursor:pointer;"></div>
+                                    <div class="form-group"><label>科目</label><select v-model="item.subject"><option value="">请选择</option><option v-for="sub in subjectOptions" :value="sub">{{sub}}</option></select></div>
+                                    <div class="form-group"><label>原始分</label><input type="number" v-model="item.rawScore"></div>
+                                    <div class="form-group"><label>赋分</label><input type="number" v-model="item.gradedScore"></div>
+                                    <div class="form-group"><label>班级排名</label><input v-model="item.classRank"></div>
+                                    <div class="form-group"><label>组合排名</label><input v-model="item.groupRank"></div>
+                                    <div class="row-actions"><button class="btn-danger btn-sm" @click="removeAdminScoreRow(idx)">移除</button></div>
+                                </div>
+                            </div>
+                            <div v-if="adminPendingScores.length" class="btn-center">
+                                <button class="btn-primary" @click="commitAdminScoresUpload">确认上传</button>
+                                <button class="btn-outline btn-sm" @click="adminPendingScores=[]">清空</button>
+                            </div>
+                        </div>
+                        <div class="excel-zone">
+                            <div class="flex-between">
+                                <span>Excel批量导入</span>
+                                <button class="btn-outline btn-sm" @click="downloadTemplate">下载模板</button>
+                                <button class="btn-primary btn-sm" @click="triggerAdminExcelUpload">选择文件</button>
+                                <input type="file" ref="adminExcelInput" style="display:none;" @change="parseAdminExcelFile">
+                            </div>
+                            <div v-if="adminExcelData.length" class="flex-between">
+                                <span>待上传 {{adminExcelData.length}} 条</span>
+                                <button class="btn-primary btn-sm" @click="commitAdminExcelUpload">确认上传</button>
+                                <button class="btn-outline btn-sm" @click="adminExcelData=[]">清空</button>
+                            </div>
+                        </div>
+                        <div v-if="selectedExamId">
+                            <h4>{{currentExamDetail?.examName}} 成绩明细</h4>
+                            <div class="score-table-wrapper">
+                                <table class="data-table">
+                                    <thead><tr><th v-if="currentUser.role==='superAdmin'">学校</th><th>班级</th><th>学生</th><th>学号</th><th>科目</th><th>原始分</th><th>赋分</th><th>班级排名</th><th>组合排名</th><th>操作</th></thead>
+                                    <tbody>
+                                        <tr v-for="sc in examScoresList" :key="sc.id">
+                                            <td v-if="currentUser.role==='superAdmin'">{{sc.school}}</td>
+                                            <td>{{sc.className}}</td><td>{{sc.studentName}}</td><td>{{sc.studentId}}</td><td>{{sc.subject}}</td>
+                                            <td>{{sc.rawScore}}</td><td>{{sc.gradedScore}}</td><td>{{sc.classRank}}</td><td>{{sc.groupRank}}</td>
+                                            <td class="row-actions">
+                                                <button class="btn-outline btn-sm" @click="openScoreEdit(sc)">修改</button>
+                                                <button class="btn-danger btn-sm" @click="deleteSingleScore(sc)">删除</button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="analysis-card">
+                                <h4>班级综合分析</h4>
+                                <div class="analysis-grid">
+                                    <div v-for="subStat in classSubjectAnalysis" :key="subStat.subject" class="analysis-sub-card">
+                                        <strong>{{subStat.subject}}</strong>
+                                        <div>平均赋分:{{subStat.avgGraded}}分</div><div>最高分:{{subStat.maxScore}}</div><div>低分段:{{subStat.lowCount}}人</div><div>{{subStat.suggestion}}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div v-if="adminTab==='batch'">
+                        <div class="batch-grid">
+                            <div v-for="(item,idx) in batchItems" :key="idx" class="batch-row">
+                                <div class="form-group"><label>类型</label><select v-model="item.type"><option>学生</option><option>教师</option></select></div>
+                                <div class="form-group"><label>姓名</label><input v-model="item.name"></div>
+                                <div class="form-group"><label>学号</label><input v-model="item.staffId"></div>
+                                <div class="form-group"><label>手机号</label><input v-model="item.phone"></div>
+                                <div class="form-group"><label>密码</label><input v-model="item.pwd"></div>
+                                <div class="form-group" v-if="currentUser.role==='superAdmin'"><label>学校</label><select v-model="item.school"><option v-for="s in schoolsList">{{s}}</option></select></div>
+                                <div v-if="item.type==='学生'"><div class="form-group"><label>班级</label><input :value="item.className||'点击选择'" @click="openClassSelector(item,'student')" readonly></div></div>
+                                <div v-if="item.type==='教师'">
+                                    <div class="form-group"><label>科目</label><input v-model="item.subject"></div>
+                                    <div class="form-group"><label>任教班级</label><input :value="item.classesList.length?item.classesList.join(','):'点击选择'" @click="openClassSelector(item,'teacher')" readonly></div>
+                                    <div class="inline-checkbox"><input type="checkbox" v-model="item.isHomeroom"><label>班主任</label></div>
+                                </div>
+                                <div class="row-actions"><button class="btn-danger btn-sm" @click="removeBatchItem(idx)">移除</button></div>
+                            </div>
+                        </div>
+                        <div class="btn-center">
+                            <button class="btn-outline btn-sm" @click="addBatchRow">+ 添加模块</button>
+                            <button class="btn-primary" @click="submitBatchUpload">批量上传保存</button>
+                        </div>
+                    </div>
+
+                    <div v-if="adminTab==='schools'&&currentUser.role==='superAdmin'">
+                        <div class="flex-between"><h4>学校列表</h4><button class="btn-primary btn-sm" @click="openAddSchoolModal">+ 新建学校</button></div>
+                        <table class="data-table">
+                            <thead><th>学校名称</th><th>师生总数</th><th>操作</th></thead>
+                            <tbody>
+                                <tr v-for="sch in schoolsList" :key="sch"><td>{{sch}}</td><td>{{schoolStats[sch]||0}}</td><td><button class="btn-danger btn-sm" @click="deleteSchool(sch)">删除学校</button></td></tr>
+                            </tbody>
+                        </table>
+                        <div class="info-text" style="margin-top:12px;color:#659f92;">提示：删除学校将同时删除该校所有师生账号和成绩数据。</div>
+                    </div>
+                </div>
+            </div>
+            <div class="copyright-footer"><p>Copyright © 2026 da0505 All Rights Reserved.</p></div>
+        </div>
+
+        <div id="toastMsg" class="toast"></div>
+
+        <!-- 修改成绩模态框 -->
+        <div class="modal" v-if="editModal.show"><div class="modal-card"><h3>修改成绩</h3><div class="form-group"><label>原始分</label><input type="number" v-model="editModal.rawScore"></div><div class="form-group"><label>赋分</label><input type="number" v-model="editModal.gradedScore"></div><div class="form-group"><label>班级排名</label><input v-model="editModal.classRank"></div><div class="form-group"><label>组合排名</label><input v-model="editModal.groupRank"></div><div class="btn-center"><button class="btn-primary" @click="saveScoreEdit">保存</button><button class="btn-outline" @click="editModal.show=false">取消</button></div></div></div>
+        <!-- 用户模态框 -->
+        <div class="modal" v-if="showUserModal"><div class="modal-card"><h3>{{userModalTitle}}</h3><div class="form-group"><label>类型</label><select v-model="userForm.type"><option value="student">学生</option><option value="teacher">教师</option><option value="schoolAdmin" v-if="currentUser.role==='superAdmin'">学校管理员</option></select></div><div class="form-group" v-if="currentUser.role==='superAdmin'"><label>所属学校</label><select v-model="userForm.school"><option v-for="s in schoolsList">{{s}}</option></select></div><div class="form-group"><label>姓名</label><input v-model="userForm.name"></div><div class="form-group"><label>学号/工号</label><input v-model="userForm.staffId"></div><div class="form-group"><label>手机号</label><input v-model="userForm.phone"></div><div class="form-group"><label>密码</label><input v-model="userForm.pwd"></div><div v-if="userForm.type==='student'"><div class="form-group"><label>班级</label><input :value="userForm.className||'点击选择班级'" @click="openClassSelectorForUser('student')" readonly></div></div><div v-if="userForm.type==='teacher'"><div class="form-group"><label>科目</label><input v-model="userForm.subject"></div><div class="form-group"><label>任教班级</label><input :value="userForm.classesList.length?userForm.classesList.join(','):'点击选择班级'" @click="openClassSelectorForUser('teacher')" readonly></div><div class="inline-checkbox"><input type="checkbox" v-model="userForm.isHomeroom"><label>班主任</label></div></div><div class="btn-center"><button class="btn-primary" @click="confirmAddEditUser">确认保存</button><button class="btn-outline" @click="showUserModal=false">取消</button></div></div></div>
+        <!-- 班级选择模态框 -->
+        <div class="modal" v-if="classSelectorVisible"><div class="modal-card"><h3>选择班级</h3><div class="class-grid-modal"><div v-for="cls in allClassesList" :key="cls" class="class-item" :class="{selected:classSelectorMulti?tempSelectedClasses.includes(cls):tempSelectedClass===cls}" @click="classSelectorMulti?toggleClassSelection(cls):selectSingleClass(cls)">{{cls}}<span v-if="classSelectorMulti&&tempSelectedClasses.includes(cls)"><i class="fas fa-check-circle"></i></span></div></div><div class="add-class-row"><input v-model="newClassName" placeholder="新班级名称"><button class="btn-outline btn-sm" @click="addNewClass">+</button></div><div class="btn-center"><button class="btn-primary" @click="confirmClassSelection">确认</button><button class="btn-outline" @click="classSelectorVisible=false">取消</button></div></div></div>
+        <!-- 教师班级选择 -->
+        <div class="modal" v-if="teacherClassSelectorVisible"><div class="modal-card"><h3>选择班级</h3><div class="class-grid-modal"><div v-for="cls in currentTeacherInfo?.classes" :key="cls" class="class-item" :class="{selected:tempTeacherClass===cls}" @click="selectTeacherClass(cls)">{{cls}}</div></div><div class="btn-center"><button class="btn-primary" @click="confirmTeacherClass">确认</button><button class="btn-outline" @click="teacherClassSelectorVisible=false">取消</button></div></div></div>
+        <!-- 管理员班级选择 -->
+        <div class="modal" v-if="adminClassSelectorVisible"><div class="modal-card"><h3>选择班级</h3><div class="class-grid-modal"><div v-for="cls in allClassesList" :key="cls" class="class-item" :class="{selected:tempAdminClass===cls}" @click="selectAdminClass(cls)">{{cls}}</div></div><div class="add-class-row"><input v-model="newClassName" placeholder="新班级名称"><button class="btn-outline btn-sm" @click="addNewClass">+</button></div><div class="btn-center"><button class="btn-primary" @click="confirmAdminClass">确认</button><button class="btn-outline" @click="adminClassSelectorVisible=false">取消</button></div></div></div>
+        <!-- 学生选择 -->
+        <div class="modal" v-if="studentPickerVisible&&currentPickerClass"><div class="modal-card"><h3>选择学生 - {{currentPickerClass}}</h3><div class="student-selector-grid"><div v-for="stu in filteredStudentList" :key="stu.staffId" class="student-card" @click="pickStudent(stu)"><strong>{{stu.name}}</strong><span>{{stu.staffId}}</span><br><span class="class-badge">{{stu.studentInfo?.className}}</span></div><div v-if="!filteredStudentList.length" style="text-align:center;padding:20px;color:#999;">该班级暂无学生</div></div><div class="btn-center"><button class="btn-outline" @click="studentPickerVisible=false">取消</button></div></div></div>
+        <!-- 管理员学生选择 -->
+        <div class="modal" v-if="adminStudentPickerVisible&&currentPickerClass"><div class="modal-card"><h3>选择学生 - {{currentPickerClass}}</h3><div class="student-selector-grid"><div v-for="stu in filteredStudentList" :key="stu.staffId" class="student-card" @click="pickAdminStudent(stu)"><strong>{{stu.name}}</strong><span>{{stu.staffId}}</span><br><span class="class-badge">{{stu.studentInfo?.className}}</span></div><div v-if="!filteredStudentList.length" style="text-align:center;padding:20px;color:#999;">该班级暂无学生</div></div><div class="btn-center"><button class="btn-outline" @click="adminStudentPickerVisible=false">取消</button></div></div></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.7.14/dist/vue.js">
+</script>
+    <script>
+        const BIN_ID = '6a22c252da38895dfe8c2a38';
+        const API_KEY = '$2a$10$AeBBV3QRbqxacd6sLjYM4uKZGElJz1vO91JUcn/Zn/wFBP3li/pq6';
+        const BASE_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
+
+        let studentChartInstance = null;
+        let teacherChartInstances = {};
+
+        new Vue({
+            el: '#app',
+            data: {
+                globalLoading: true,
+                currentUser: null,
+                roleView: 'student',
+                loginForm: { name: '', staffId: '', phone: '', pwd: '', school: '' },
+                schoolsList: ['第一中学', '实验高级中学', '第二中学'],
+                usersMaster: [],
+                scoresMaster: [],
+                selectedExam: null,
+                teacherExamFilter: '',
+                teacherClassFilter: '',
+                teacherScoresRaw: [],
+                adminTab: 'users',
+                editModal: { show: false, target: null, rawScore: 0, gradedScore: 0, classRank: '', groupRank: '' },
+                batchItems: [{ type: '学生', name: '', staffId: '', phone: '', pwd: '123456', className: '', subject: '', classesList: [], isHomeroom: false, school: '' }],
+                showUserModal: false,
+                userModalTitle: '添加用户',
+                userForm: { type: 'student', name: '', staffId: '', phone: '', pwd: '123456', className: '', subject: '', classesList: [], isHomeroom: false, editMode: false, originalId: '', school: '' },
+                selectedExamId: null,
+                pendingScores: [],
+                adminPendingScores: [],
+                subjectOptions: ['语文', '数学', '英语', '物理', '化学', '生物', '政治', '历史', '地理'],
+                studentPickerVisible: false,
+                currentScoreIndex: null,
+                currentPickerClass: '',
+                adminStudentPickerVisible: false,
+                currentAdminScoreIndex: null,
+                pendingExcelData: [],
+                adminExcelData: [],
+                classSelectorVisible: false,
+                classSelectorContext: null,
+                classSelectorMulti: false,
+                tempSelectedClass: '',
+                tempSelectedClasses: [],
+                allClassesList: [],
+                newClassName: '',
+                teacherClassSelectorVisible: false,
+                teacherClassIndex: null,
+                tempTeacherClass: '',
+                adminClassSelectorVisible: false,
+                adminClassIndex: null,
+                tempAdminClass: '',
+                schoolFilterForExams: ''
+            },
+            computed: {
+                isHomeroomTeacher() {
+                    if (!this.currentUser || this.currentUser.role !== 'teacher') return false;
+                    return this.currentUser.teacherInfo?.isHomeroom === true;
+                },
+                currentStudentData() {
+                    if (!this.currentUser || this.currentUser.role !== 'student') return { exams: [] };
+                    let stuScores = this.scoresMaster.filter(s => s.studentId === this.currentUser.staffId);
+                    let examsMap = new Map();
+                    stuScores.forEach(sc => {
+                        if (!examsMap.has(sc.examId)) examsMap.set(sc.examId, { examId: sc.examId, examName: sc.examName, date: sc.date, className: sc.className, subjects: [], totalScore: 0, rankGrade: sc.rankGrade });
+                        let ex = examsMap.get(sc.examId);
+                        ex.subjects.push({ subject: sc.subject, rawScore: sc.rawScore, gradedScore: sc.gradedScore, classRank: sc.classRank, groupRank: sc.groupRank });
+                        ex.totalScore += sc.gradedScore;
+                    });
+                    return { exams: Array.from(examsMap.values()) };
+                },
+                currentTeacherInfo() {
+                    return this.currentUser?.teacherInfo || null;
+                },
+                schoolStudentList() {
+                    let school = this.currentUser.role === 'superAdmin' ? null : this.currentUser.school;
+                    return this.usersMaster.filter(u => u.role === 'student' && (school === null || u.school === school));
+                },
+                filteredStudentList() {
+                    if (!this.currentPickerClass) return [];
+                    return this.schoolStudentList.filter(s => s.studentInfo?.className === this.currentPickerClass);
+                },
+                teacherExamList() {
+                    let map = new Map();
+                    this.teacherScoresRaw.forEach(s => map.set(s.examId, { examId: s.examId, examName: s.examName }));
+                    return Array.from(map.values());
+                },
+                filteredTeacherScores() {
+                    let data = this.teacherScoresRaw;
+                    if (this.teacherExamFilter) data = data.filter(s => s.examId === this.teacherExamFilter);
+                    if (this.teacherClassFilter) data = data.filter(s => s.className === this.teacherClassFilter);
+                    if (!this.isHomeroomTeacher && this.currentTeacherInfo?.subject) {
+                        data = data.filter(s => s.subject === this.currentTeacherInfo.subject);
+                    }
+                    return data;
+                },
+                teacherStudentAnalysis() {
+                    let scores = this.filteredTeacherScores;
+                    if (!scores.length) return [];
+                    let studentMap = new Map();
+                    scores.forEach(sc => {
+                        let key = sc.studentId;
+                        if (!studentMap.has(key)) {
+                            studentMap.set(key, { studentId: sc.studentId, studentName: sc.studentName, className: sc.className, subjects: [] });
+                        }
+                        studentMap.get(key).subjects.push({ subject: sc.subject, gradedScore: sc.gradedScore });
+                    });
+                    return Array.from(studentMap.values()).filter(s => s.subjects.length >= 3);
+                },
+                filteredExamsList() {
+                    let map = new Map();
+                    let scores = this.scoresMaster.filter(s => !this.schoolFilterForExams || s.school === this.schoolFilterForExams);
+                    scores.forEach(s => { if (!map.has(s.examId)) map.set(s.examId, { examId: s.examId, examName: s.examName, school: s.school }); });
+                    return Array.from(map.values());
+                },
+                currentExamDetail() {
+                    return this.filteredExamsList.find(e => e.examId === this.selectedExamId);
+                },
+                examScoresList() {
+                    return this.scoresMaster.filter(s => s.examId === this.selectedExamId && (!this.schoolFilterForExams || s.school === this.schoolFilterForExams));
+                },
+                classSubjectAnalysis() {
+                    let scores = this.examScoresList, subjects = [...new Set(scores.map(s => s.subject))];
+                    return subjects.map(sub => {
+                        let subScores = scores.filter(s => s.subject === sub), avg = subScores.reduce((a, b) => a + b.gradedScore, 0) / subScores.length, maxS = Math.max(...subScores.map(s => s.gradedScore)), low = subScores.filter(s => s.gradedScore < 60).length, suggestion = low > 2 ? `加强基础，${low}人低分需关注` : (avg >= 80 ? '优秀，保持优势' : '中等，鼓励提升');
+                        return { subject: sub, avgGraded: avg.toFixed(1), maxScore: maxS, lowCount: low, suggestion };
+                    });
+                },
+                displayUsers() {
+                    if (!this.currentUser) return [];
+                    if (this.currentUser.role === 'superAdmin') return this.usersMaster.filter(u => u.staffId !== this.currentUser.staffId);
+                    else return this.usersMaster.filter(u => u.school === this.currentUser.school && u.role !== 'superAdmin');
+                },
+                schoolStats() {
+                    let stats = {};
+                    this.schoolsList.forEach(s => stats[s] = this.usersMaster.filter(u => u.school === s).length);
+                    return stats;
+                }
+            },
+            methods: {
+                async loadData() {
+                    this.globalLoading = true;
+                    try {
+                        let res = await fetch(BASE_URL, { headers: { 'X-Master-Key': API_KEY } });
+                        if (res.ok) {
+                            let data = await res.json();
+                            if (data.record) {
+                                this.usersMaster = data.record.users || [];
+                                this.scoresMaster = data.record.scores || [];
+                                this.schoolsList = data.record.schoolsMaster || ['第一中学', '实验高级中学', '第二中学'];
+                                this.subjectOptions = data.record.subjectOptions || ['语文', '数学', '英语', '物理', '化学', '生物', '政治', '历史', '地理'];
+                                this.normalizeRoles();
+                                this.ensureSuperAdmin();
+                                this.updateAllClassesList();
+                            } else { this.initDefault(); }
+                        } else { this.initDefault(); }
+                    } catch (e) { this.initDefault(); }
+                    finally { this.globalLoading = false; }
+                },
+                normalizeRoles() {
+                    this.usersMaster.forEach(u => {
+                        if (u.isSuperAdmin) {
+                            u.role = 'superAdmin'; u.roleName = '超级管理员'; u.school = '全域';
+                        } else if (u.isAdmin || u.role === 'schoolAdmin') {
+                            u.role = 'schoolAdmin'; u.roleName = '学校管理员';
+                        } else if (u.teacherInfo) {
+                            u.role = 'teacher'; u.roleName = '教师';
+                            if (!u.teacherInfo.classes) u.teacherInfo.classes = [];
+                            if (!u.teacherInfo.subject) u.teacherInfo.subject = '';
+                            if (u.teacherInfo.isHomeroom === undefined) u.teacherInfo.isHomeroom = false;
+                        } else if (u.studentInfo) {
+                            u.role = 'student'; u.roleName = '学生';
+                            if (!u.studentInfo.className) u.studentInfo.className = '';
+                        } else {
+                            u.role = 'student'; u.roleName = '学生';
+                            if (!u.studentInfo) u.studentInfo = { className: '' };
+                        }
+                        if (u.banned === undefined) u.banned = false;
+                    });
+                },
+                ensureSuperAdmin() { this.normalizeRoles(); this.saveToBin(); },
+                initDefault() {
+                    if (!this.usersMaster.length) {
+                        this.usersMaster = [
+                            { staffId: '100000', name: 'da0505', phone: '13932611066', pwd: '100000', school: '全域', role: 'superAdmin', roleName: '超级管理员', isSuperAdmin: true, banned: false },
+                            { staffId: 'ADMIN_FZ', name: '张校长', phone: '13888880001', pwd: 'admin123', school: '第一中学', role: 'schoolAdmin', roleName: '学校管理员', isAdmin: true, banned: false },
+                            { staffId: 'T001', name: '王慧敏', phone: '13912345678', pwd: '123', school: '第一中学', role: 'teacher', roleName: '教师', teacherInfo: { subject: '数学', classes: ['高一(1)班', '高一(2)班'], isHomeroom: true, roleTag: '班主任' }, banned: false },
+                            { staffId: 'T002', name: '陈建国', phone: '13912345679', pwd: '123', school: '第一中学', role: 'teacher', roleName: '教师', teacherInfo: { subject: '语文', classes: ['高一(1)班'], isHomeroom: false, roleTag: '科任' }, banned: false },
+                            { staffId: 'S001', name: '李明', phone: '13800138001', pwd: '123', school: '第一中学', role: 'student', roleName: '学生', studentInfo: { className: '高一(1)班' }, banned: false },
+                            { staffId: 'S002', name: '王芳', phone: '13800138002', pwd: '123', school: '第一中学', role: 'student', roleName: '学生', studentInfo: { className: '高一(1)班' }, banned: false }
+                        ];
+                    }
+                    if (!this.scoresMaster.length) {
+                        this.scoresMaster = [
+                            { id: 1, examId: 'exam_01', examName: '期中考试', className: '高一(1)班', studentId: 'S001', studentName: '李明', subject: '数学', rawScore: 85, gradedScore: 88, classRank: '12', groupRank: '35', date: '2024-04-15', school: '第一中学', rankGrade: '45' },
+                            { id: 2, examId: 'exam_01', examName: '期中考试', className: '高一(1)班', studentId: 'S001', studentName: '李明', subject: '语文', rawScore: 78, gradedScore: 80, classRank: '8', groupRank: '28', date: '2024-04-15', school: '第一中学', rankGrade: '45' },
+                            { id: 3, examId: 'exam_01', examName: '期中考试', className: '高一(1)班', studentId: 'S001', studentName: '李明', subject: '英语', rawScore: 92, gradedScore: 93, classRank: '3', groupRank: '12', date: '2024-04-15', school: '第一中学', rankGrade: '45' },
+                            { id: 4, examId: 'exam_01', examName: '期中考试', className: '高一(1)班', studentId: 'S001', studentName: '李明', subject: '物理', rawScore: 65, gradedScore: 68, classRank: '20', groupRank: '65', date: '2024-04-15', school: '第一中学', rankGrade: '45' },
+                            { id: 5, examId: 'exam_01', examName: '期中考试', className: '高一(1)班', studentId: 'S002', studentName: '王芳', subject: '数学', rawScore: 92, gradedScore: 94, classRank: '3', groupRank: '12', date: '2024-04-15', school: '第一中学', rankGrade: '18' },
+                            { id: 6, examId: 'exam_01', examName: '期中考试', className: '高一(1)班', studentId: 'S002', studentName: '王芳', subject: '语文', rawScore: 88, gradedScore: 89, classRank: '2', groupRank: '8', date: '2024-04-15', school: '第一中学', rankGrade: '18' },
+                            { id: 7, examId: 'exam_01', examName: '期中考试', className: '高一(1)班', studentId: 'S002', studentName: '王芳', subject: '英语', rawScore: 85, gradedScore: 86, classRank: '6', groupRank: '22', date: '2024-04-15', school: '第一中学', rankGrade: '18' },
+                            { id: 8, examId: 'exam_01', examName: '期中考试', className: '高一(1)班', studentId: 'S002', studentName: '王芳', subject: '物理', rawScore: 90, gradedScore: 91, classRank: '1', groupRank: '5', date: '2024-04-15', school: '第一中学', rankGrade: '18' }
+                        ];
+                    }
+                    if (!this.subjectOptions.length) this.subjectOptions = ['语文', '数学', '英语', '物理', '化学', '生物', '政治', '历史', '地理'];
+                    this.normalizeRoles(); this.updateAllClassesList(); this.saveToBin();
+                },
+                updateAllClassesList() {
+                    let classes = new Set();
+                    let targetSchool = this.currentUser?.role === 'superAdmin' ? null : this.currentUser?.school;
+                    let users = targetSchool ? this.usersMaster.filter(u => u.school === targetSchool) : this.usersMaster;
+                    users.forEach(u => {
+                        if (u.studentInfo?.className) classes.add(u.studentInfo.className);
+                        if (u.teacherInfo?.classes) u.teacherInfo.classes.forEach(c => classes.add(c));
+                    });
+                    this.allClassesList = Array.from(classes).sort();
+                },
+                async saveToBin() {
+                    try {
+                        await fetch(BASE_URL, { method: 'PUT', headers: { 'Content-Type': 'application/json', 'X-Master-Key': API_KEY }, body: JSON.stringify({ users: this.usersMaster, scores: this.scoresMaster, schoolsMaster: this.schoolsList, subjectOptions: this.subjectOptions }) });
+                    } catch (e) {}
+                },
+                handleLogin() {
+                    let f = this.loginForm;
+                    if (!f.name || !f.staffId || !f.phone || !f.pwd || !f.school) { this.showToast('请填写完整'); return; }
+                    let user = this.usersMaster.find(u => u.name === f.name && u.staffId === f.staffId && u.phone === f.phone && u.pwd === f.pwd);
+                    if (user && !user.banned && (user.role === 'superAdmin' || user.school === f.school)) {
+                        this.currentUser = JSON.parse(JSON.stringify(user));
+                        if (this.currentUser.role === 'student') this.refreshStudentData();
+                        this.roleView = (this.currentUser.role === 'student' ? 'student' : (this.currentUser.role === 'teacher' ? 'teacher' : 'admin'));
+                        if (this.roleView === 'teacher') this.fetchTeacherData();
+                        this.updateAllClassesList(); this.closeAllModals();
+                        this.showToast(`欢迎 ${this.currentUser.name}`);
+                    } else { this.showToast('账号或学校错误/已封禁'); }
+                },
+                closeAllModals() {
+                    this.editModal.show = false; this.showUserModal = false; this.classSelectorVisible = false;
+                    this.teacherClassSelectorVisible = false; this.adminClassSelectorVisible = false;
+                    this.studentPickerVisible = false; this.adminStudentPickerVisible = false;
+                },
+                refreshStudentData() {
+                    let stuScores = this.scoresMaster.filter(s => s.studentId === this.currentUser.staffId);
+                    let examsMap = new Map();
+                    stuScores.forEach(sc => {
+                        if (!examsMap.has(sc.examId)) examsMap.set(sc.examId, { examId: sc.examId, examName: sc.examName, date: sc.date, className: sc.className, subjects: [], totalScore: 0, rankGrade: sc.rankGrade });
+                        let ex = examsMap.get(sc.examId);
+                        ex.subjects.push({ subject: sc.subject, rawScore: sc.rawScore, gradedScore: sc.gradedScore, classRank: sc.classRank, groupRank: sc.groupRank });
+                        ex.totalScore += sc.gradedScore;
+                    });
+                    this.currentUser.studentData = { exams: Array.from(examsMap.values()) };
+                },
+                selectStudentExam(exam) { this.selectedExam = exam; this.$nextTick(() => { this.drawStudentRadarChart(exam); }); },
+                drawStudentRadarChart(exam) {
+                    this.destroyStudentChart();
+                    let canvas = document.getElementById('studentRadarChart');
+                    if (!canvas || !exam || !exam.subjects.length) return;
+                    let labels = exam.subjects.map(s => s.subject);
+                    let data = exam.subjects.map(s => s.gradedScore);
+                    studentChartInstance = new Chart(canvas, {
+                        type: 'radar',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: exam.examName + ' - 赋分',
+                                data: data,
+                                backgroundColor: 'rgba(44, 155, 138, 0.2)',
+                                borderColor: '#2c9b8a',
+                                borderWidth: 2,
+                                pointBackgroundColor: '#2c9b8a',
+                                pointBorderColor: '#fff',
+                                pointHoverBackgroundColor: '#fff',
+                                pointHoverBorderColor: '#2c9b8a'
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: true,
+                            scales: {
+                                r: {
+                                    beginAtZero: true,
+                                    max: 100,
+                                    min: 0,
+                                    ticks: { stepSize: 20, backdropColor: 'transparent', font: { size: 11 }, color: '#666' },
+                                    pointLabels: { font: { size: 14, weight: 'bold' }, color: '#1b6b5e' },
+                                    grid: { color: 'rgba(44, 155, 138, 0.15)', circular: true },
+                                    angleLines: { color: 'rgba(44, 155, 138, 0.3)', lineWidth: 1 },
+                                    backgroundColor: 'rgba(44, 155, 138, 0.03)'
+                                }
+                            },
+                            plugins: { legend: { display: true, position: 'bottom' } }
+                        }
+                    });
+                },
+                destroyStudentChart() { if (studentChartInstance) { studentChartInstance.destroy(); studentChartInstance = null; } },
+                drawTeacherRadarCharts() {
+                    Object.values(teacherChartInstances).forEach(chart => chart.destroy());
+                    teacherChartInstances = {};
+                    let analysis = this.teacherStudentAnalysis;
+                    if (!analysis.length) return;
+                    this.$nextTick(() => {
+                        analysis.forEach(stu => {
+                            let canvasId = 'teacherRadar_' + stu.studentId;
+                            let canvas = document.getElementById(canvasId);
+                            if (!canvas) return;
+                            let labels = stu.subjects.map(s => s.subject);
+                            let data = stu.subjects.map(s => s.gradedScore);
+                            teacherChartInstances[stu.studentId] = new Chart(canvas, {
+                                type: 'radar',
+                                data: {
+                                    labels: labels,
+                                    datasets: [{
+                                        label: stu.studentName + ' - 赋分',
+                                        data: data,
+                                        backgroundColor: 'rgba(44, 155, 138, 0.2)',
+                                        borderColor: '#2c9b8a',
+                                        borderWidth: 2,
+                                        pointBackgroundColor: '#2c9b8a',
+                                        pointBorderColor: '#fff',
+                                        pointHoverBackgroundColor: '#fff',
+                                        pointHoverBorderColor: '#2c9b8a'
+                                    }]
+                                },
+                                options: {
+                                    responsive: true,
+                                    maintainAspectRatio: true,
+                                    scales: {
+                                        r: {
+                                            beginAtZero: true,
+                                            max: 100,
+                                            min: 0,
+                                            ticks: { stepSize: 20, backdropColor: 'transparent', font: { size: 10 }, color: '#666' },
+                                            pointLabels: { font: { size: 12, weight: 'bold' }, color: '#1b6b5e' },
+                                            grid: { color: 'rgba(44, 155, 138, 0.15)', circular: true },
+                                            angleLines: { color: 'rgba(44, 155, 138, 0.3)', lineWidth: 1 },
+                                            backgroundColor: 'rgba(44, 155, 138, 0.03)'
+                                        }
+                                    },
+                                    plugins: { legend: { display: true, position: 'bottom' } }
+                                }
+                            });
+                        });
+                    });
+                },
+                fetchTeacherData() {
+                    let school = this.currentUser.school;
+                    let classes = this.currentUser.teacherInfo.classes || [];
+                    let all = this.scoresMaster.filter(s => s.school === school && classes.includes(s.className));
+                    this.teacherScoresRaw = all;
+                    this.$nextTick(() => { setTimeout(() => this.drawTeacherRadarCharts(), 200); });
+                },
+                filterTeacherData() { this.fetchTeacherData(); },
+                addScoreRow() { this.pendingScores.push({ examName: '', className: '', studentId: '', studentName: '', subject: '', rawScore: '', gradedScore: '', classRank: '', groupRank: '' }); },
+                removeScoreRow(idx) { if (this.pendingScores.length > 1) this.pendingScores.splice(idx, 1); else this.showToast('至少保留一条'); },
+                openTeacherClassSelector(idx) { this.teacherClassIndex = idx; this.tempTeacherClass = this.pendingScores[idx].className || ''; this.teacherClassSelectorVisible = true; },
+                selectTeacherClass(cls) { this.tempTeacherClass = cls; },
+                confirmTeacherClass() { if (this.teacherClassIndex !== null) { this.pendingScores[this.teacherClassIndex].className = this.tempTeacherClass; } this.teacherClassSelectorVisible = false; },
+                openStudentPicker(idx, className) {
+                    if (!className || className.trim() === '') { this.showToast('请先选择班级'); this.studentPickerVisible = false; return; }
+                    this.currentScoreIndex = idx; this.currentPickerClass = className; this.studentPickerVisible = true;
+                },
+                pickStudent(stu) {
+                    if (this.currentScoreIndex !== null) { this.pendingScores[this.currentScoreIndex].studentId = stu.staffId; this.pendingScores[this.currentScoreIndex].studentName = stu.name; this.pendingScores[this.currentScoreIndex].className = stu.studentInfo?.className || this.pendingScores[this.currentScoreIndex].className; }
+                    this.studentPickerVisible = false;
+                },
+                async commitScoresUpload() {
+                    for (let item of this.pendingScores) {
+                        if (!item.examName || !item.studentId || !item.subject) continue;
+                        let student = this.usersMaster.find(u => u.staffId === item.studentId);
+                        if (!student) continue;
+                        let existExam = this.filteredExamsList.find(e => e.examName === item.examName);
+                        let examId, examName;
+                        if (existExam) { examId = existExam.examId; examName = existExam.examName; }
+                        else { examId = 'exam_' + Date.now() + '_' + Math.random(); examName = item.examName; }
+                        let existingScore = this.scoresMaster.find(s => s.examId === examId && s.studentId === item.studentId && s.subject === item.subject);
+                        if (existingScore) { existingScore.rawScore = parseInt(item.rawScore) || 0; existingScore.gradedScore = parseInt(item.gradedScore) || 0; existingScore.classRank = item.classRank; existingScore.groupRank = item.groupRank; }
+                        else { this.scoresMaster.push({ id: Date.now() + Math.random(), examId, examName, className: item.className, studentId: item.studentId, studentName: student.name, subject: item.subject, rawScore: parseInt(item.rawScore) || 0, gradedScore: parseInt(item.gradedScore) || 0, classRank: item.classRank, groupRank: item.groupRank, date: new Date().toISOString().slice(0, 10), school: this.currentUser.school }); }
+                    }
+                    await this.saveToBin(); this.pendingScores = []; this.fetchTeacherData(); this.refreshStudentData(); this.showToast('成绩上传成功');
+                },
+                addAdminScoreRow() { this.adminPendingScores.push({ examName: '', className: '', studentId: '', studentName: '', subject: '', rawScore: '', gradedScore: '', classRank: '', groupRank: '' }); },
+                removeAdminScoreRow(idx) { if (this.adminPendingScores.length > 1) this.adminPendingScores.splice(idx, 1); else this.showToast('至少保留一条'); },
+                openAdminClassSelector(idx) { this.adminClassIndex = idx; this.tempAdminClass = this.adminPendingScores[idx].className || ''; this.adminClassSelectorVisible = true; },
+                selectAdminClass(cls) { this.tempAdminClass = cls; },
+                confirmAdminClass() { if (this.adminClassIndex !== null) { this.adminPendingScores[this.adminClassIndex].className = this.tempAdminClass; } this.adminClassSelectorVisible = false; },
+                openAdminStudentPicker(idx, className) {
+                    if (!className || className.trim() === '') { this.showToast('请先选择班级'); this.adminStudentPickerVisible = false; return; }
+                    this.currentAdminScoreIndex = idx; this.currentPickerClass = className; this.adminStudentPickerVisible = true;
+                },
+                pickAdminStudent(stu) {
+                    if (this.currentAdminScoreIndex !== null) { this.adminPendingScores[this.currentAdminScoreIndex].studentId = stu.staffId; this.adminPendingScores[this.currentAdminScoreIndex].studentName = stu.name; this.adminPendingScores[this.currentAdminScoreIndex].className = stu.studentInfo?.className || this.adminPendingScores[this.currentAdminScoreIndex].className; }
+                    this.adminStudentPickerVisible = false;
+                },
+                async commitAdminScoresUpload() {
+                    for (let item of this.adminPendingScores) {
+                        if (!item.examName || !item.studentId || !item.subject) continue;
+                        let student = this.usersMaster.find(u => u.staffId === item.studentId);
+                        if (!student) continue;
+                        let existExam = this.filteredExamsList.find(e => e.examName === item.examName);
+                        let examId, examName;
+                        if (existExam) { examId = existExam.examId; examName = existExam.examName; }
+                        else { examId = 'exam_' + Date.now() + '_' + Math.random(); examName = item.examName; }
+                        let school = this.currentUser.role === 'superAdmin' ? (this.schoolFilterForExams || student.school) : this.currentUser.school;
+                        let existingScore = this.scoresMaster.find(s => s.examId === examId && s.studentId === item.studentId && s.subject === item.subject);
+                        if (existingScore) { existingScore.rawScore = parseInt(item.rawScore) || 0; existingScore.gradedScore = parseInt(item.gradedScore) || 0; existingScore.classRank = item.classRank; existingScore.groupRank = item.groupRank; }
+                        else { this.scoresMaster.push({ id: Date.now() + Math.random(), examId, examName, className: item.className, studentId: item.studentId, studentName: student.name, subject: item.subject, rawScore: parseInt(item.rawScore) || 0, gradedScore: parseInt(item.gradedScore) || 0, classRank: item.classRank, groupRank: item.groupRank, date: new Date().toISOString().slice(0, 10), school }); }
+                    }
+                    await this.saveToBin(); this.adminPendingScores = []; this.refreshStudentData(); this.showToast('成绩上传成功');
+                    if (this.selectedExamId) this.selectedExamId = this.selectedExamId;
+                },
+                triggerExcelUpload() { this.$refs.excelUploadInput.click(); },
+                parseExcelFile(e) {
+                    let file = e.target.files[0]; if (!file) return;
+                    let reader = new FileReader();
+                    reader.onload = ev => {
+                        let text = ev.target.result, rows = text.split(/\r?\n/).slice(1), parsed = [];
+                        for (let row of rows) { let cols = row.split(','); if (cols.length >= 8) parsed.push({ examName: cols[0].trim(), className: cols[1].trim(), studentId: cols[2].trim(), subject: cols[3].trim(), rawScore: parseInt(cols[4]), gradedScore: parseInt(cols[5]), classRank: cols[6].trim(), groupRank: cols[7].trim() }); }
+                        this.pendingExcelData = parsed; this.showToast(`解析${parsed.length}条`);
+                    };
+                    reader.readAsText(file, 'UTF-8');
+                },
+                async commitExcelUpload() {
+                    for (let item of this.pendingExcelData) {
+                        let student = this.usersMaster.find(u => u.staffId === item.studentId && u.school === this.currentUser.school);
+                        if (!student) continue;
+                        let existExam = this.filteredExamsList.find(e => e.examName === item.examName);
+                        let examId, examName;
+                        if (existExam) { examId = existExam.examId; examName = existExam.examName; }
+                        else { examId = 'exam_' + Date.now() + '_' + Math.random(); examName = item.examName; }
+                        let existingScore = this.scoresMaster.find(s => s.examId === examId && s.studentId === item.studentId && s.subject === item.subject);
+                        if (existingScore) { existingScore.rawScore = item.rawScore; existingScore.gradedScore = item.gradedScore; existingScore.classRank = item.classRank; existingScore.groupRank = item.groupRank; }
+                        else { this.scoresMaster.push({ id: Date.now() + Math.random(), examId, examName, className: item.className, studentId: item.studentId, studentName: student.name, subject: item.subject, rawScore: item.rawScore, gradedScore: item.gradedScore, classRank: item.classRank, groupRank: item.groupRank, date: new Date().toISOString().slice(0, 10), school: this.currentUser.school }); }
+                    }
+                    await this.saveToBin(); this.pendingExcelData = []; this.fetchTeacherData(); this.refreshStudentData(); this.showToast('Excel上传成功');
+                },
+                triggerAdminExcelUpload() { this.$refs.adminExcelInput.click(); },
+                parseAdminExcelFile(e) {
+                    let file = e.target.files[0]; if (!file) return;
+                    let reader = new FileReader();
+                    reader.onload = ev => {
+                        let text = ev.target.result, rows = text.split(/\r?\n/).slice(1), parsed = [];
+                        for (let row of rows) { let cols = row.split(','); if (cols.length >= 8) parsed.push({ examName: cols[0].trim(), className: cols[1].trim(), studentId: cols[2].trim(), subject: cols[3].trim(), rawScore: parseInt(cols[4]), gradedScore: parseInt(cols[5]), classRank: cols[6].trim(), groupRank: cols[7].trim() }); }
+                        this.adminExcelData = parsed; this.showToast(`解析${parsed.length}条`);
+                    };
+                    reader.readAsText(file, 'UTF-8');
+                },
+                async commitAdminExcelUpload() {
+                    for (let item of this.adminExcelData) {
+                        let student = this.usersMaster.find(u => u.staffId === item.studentId);
+                        if (!student) continue;
+                        let school = this.currentUser.role === 'superAdmin' ? (this.schoolFilterForExams || student.school) : this.currentUser.school;
+                        let existExam = this.filteredExamsList.find(e => e.examName === item.examName);
+                        let examId, examName;
+                        if (existExam) { examId = existExam.examId; examName = existExam.examName; }
+                        else { examId = 'exam_' + Date.now() + '_' + Math.random(); examName = item.examName; }
+                        let existingScore = this.scoresMaster.find(s => s.examId === examId && s.studentId === item.studentId && s.subject === item.subject);
+                        if (existingScore) { existingScore.rawScore = item.rawScore; existingScore.gradedScore = item.gradedScore; existingScore.classRank = item.classRank; existingScore.groupRank = item.groupRank; }
+                        else { this.scoresMaster.push({ id: Date.now() + Math.random(), examId, examName, className: item.className, studentId: item.studentId, studentName: student.name, subject: item.subject, rawScore: item.rawScore, gradedScore: item.gradedScore, classRank: item.classRank, groupRank: item.groupRank, date: new Date().toISOString().slice(0, 10), school }); }
+                    }
+                    await this.saveToBin(); this.adminExcelData = []; this.refreshStudentData(); this.showToast('Excel上传成功');
+                    if (this.selectedExamId) this.selectedExamId = this.selectedExamId;
+                },
+                downloadTemplate() {
+                    let csv = "\uFEFF考试名称,班级,学生学号,科目,原始分,赋分,班级排名,组合排名\n期中考试,高一(1)班,S001,数学,85,88,12,35";
+                    let blob = new Blob([csv], { type: "text/csv;charset=utf-8" }); let a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = '成绩导入模板.csv'; a.click();
+                },
+                openScoreEdit(score) { this.editModal = { show: true, target: score, rawScore: score.rawScore, gradedScore: score.gradedScore, classRank: score.classRank, groupRank: score.groupRank }; },
+                async saveScoreEdit() {
+                    let t = this.editModal.target;
+                    if (t) { t.rawScore = this.editModal.rawScore; t.gradedScore = this.editModal.gradedScore; t.classRank = this.editModal.classRank; t.groupRank = this.editModal.groupRank; await this.saveToBin(); this.editModal.show = false; if (this.roleView === 'teacher') this.fetchTeacherData(); this.refreshStudentData(); this.showToast('修改成功'); }
+                },
+                async deleteSingleScore(score) { if (confirm(`删除成绩？`)) { this.scoresMaster = this.scoresMaster.filter(s => s.id !== score.id); await this.saveToBin(); this.refreshStudentData(); if (this.selectedExamId) this.selectedExamId = this.selectedExamId; this.showToast('成绩已删除'); } },
+                async toggleBan(u) { if (u.role === 'superAdmin') { this.showToast('不可操作超级管理员'); return; } u.banned = !u.banned; await this.saveToBin(); this.showToast(u.banned ? '已封禁' : '已解封'); },
+                async deleteUserAccount(u) { if (confirm(`删除账号${u.name}不可恢复`)) { this.usersMaster = this.usersMaster.filter(us => us.staffId !== u.staffId); this.updateAllClassesList(); await this.saveToBin(); this.showToast('已删除'); } },
+                canManageUser(u) { if (this.currentUser.role === 'superAdmin') return true; if (u.role === 'schoolAdmin') return false; return u.school === this.currentUser.school; },
+                canDeleteUser(u) { if (this.currentUser.role === 'superAdmin') return u.staffId !== this.currentUser.staffId; if (u.role === 'schoolAdmin') return false; return u.school === this.currentUser.school; },
+                addBatchRow() { this.batchItems.push({ type: '学生', name: '', staffId: '', phone: '', pwd: '123456', className: '', subject: '', classesList: [], isHomeroom: false, school: this.currentUser.role === 'superAdmin' ? this.schoolsList[0] : this.currentUser.school }); },
+                removeBatchItem(idx) { if (this.batchItems.length > 1) this.batchItems.splice(idx, 1); else this.showToast('至少保留一个模块'); },
+                openClassSelector(item, type) { this.classSelectorContext = { item, type }; this.classSelectorMulti = (type === 'teacher'); this.tempSelectedClasses = item.classesList ? [...item.classesList] : []; this.tempSelectedClass = item.className || ''; this.classSelectorVisible = true; },
+                openClassSelectorForUser(roleType) { this.classSelectorContext = { roleType, isUserModal: true }; this.classSelectorMulti = (roleType === 'teacher'); this.tempSelectedClasses = this.userForm.classesList ? [...this.userForm.classesList] : []; this.tempSelectedClass = this.userForm.className || ''; this.classSelectorVisible = true; },
+                toggleClassSelection(cls) { let idx = this.tempSelectedClasses.indexOf(cls); if (idx > -1) this.tempSelectedClasses.splice(idx, 1); else this.tempSelectedClasses.push(cls); },
+                selectSingleClass(cls) { this.tempSelectedClass = cls; this.confirmClassSelection(); },
+                addNewClass() { if (this.newClassName && !this.allClassesList.includes(this.newClassName)) { this.allClassesList.push(this.newClassName); this.allClassesList.sort(); this.newClassName = ''; this.showToast('班级已添加'); } },
+                confirmClassSelection() { if (this.classSelectorContext?.isUserModal) { if (this.classSelectorMulti) { this.userForm.classesList = [...this.tempSelectedClasses]; this.userForm.className = ''; } else { this.userForm.className = this.tempSelectedClass; this.userForm.classesList = []; } } else if (this.classSelectorContext) { let ctx = this.classSelectorContext; if (ctx.type === 'teacher') { ctx.item.classesList = [...this.tempSelectedClasses]; ctx.item.className = ''; } else { ctx.item.className = this.tempSelectedClass; } } this.classSelectorVisible = false; this.updateAllClassesList(); },
+                async submitBatchUpload() { for (let item of this.batchItems) { if (!item.name || !item.staffId || !item.phone || !item.pwd) continue; if (this.usersMaster.find(u => u.staffId === item.staffId)) continue; let school = this.currentUser.role === 'superAdmin' ? item.school : this.currentUser.school; if (item.type === '学生') { this.usersMaster.push({ staffId: item.staffId, name: item.name, phone: item.phone, pwd: item.pwd, school, role: 'student', roleName: '学生', studentInfo: { className: item.className }, teacherInfo: null, isAdmin: false, banned: false }); } else if (item.type === '教师') { this.usersMaster.push({ staffId: item.staffId, name: item.name, phone: item.phone, pwd: item.pwd, school, role: 'teacher', roleName: '教师', teacherInfo: { subject: item.subject, classes: item.classesList, isHomeroom: item.isHomeroom, roleTag: item.isHomeroom ? '班主任' : '科任' }, isAdmin: false, banned: false }); } } this.updateAllClassesList(); await this.saveToBin(); this.showToast('批量添加成功'); this.batchItems = [{ type: '学生', name: '', staffId: '', phone: '', pwd: '123456', className: '', subject: '', classesList: [], isHomeroom: false, school: this.currentUser.role === 'superAdmin' ? this.schoolsList[0] : this.currentUser.school }]; },
+                openAddUserModal() { this.userForm = { type: 'student', name: '', staffId: '', phone: '', pwd: '123456', className: '', subject: '', classesList: [], isHomeroom: false, editMode: false, originalId: '', school: this.currentUser.role === 'superAdmin' ? this.schoolsList[0] : this.currentUser.school }; this.userModalTitle = '添加用户'; this.showUserModal = true; },
+                confirmAddEditUser() { let u = this.userForm; if (!u.name || !u.staffId) return; let school = this.currentUser.role === 'superAdmin' ? u.school : this.currentUser.school; if (!u.editMode && this.usersMaster.find(ex => ex.staffId === u.staffId)) { this.showToast('工号已存在'); return; } if (u.editMode) { let idx = this.usersMaster.findIndex(ex => ex.staffId === u.originalId); if (idx !== -1) { if (u.type === 'student') { this.usersMaster[idx] = { ...this.usersMaster[idx], name: u.name, phone: u.phone, pwd: u.pwd, studentInfo: { className: u.className }, teacherInfo: null, isAdmin: false, role: 'student', roleName: '学生' }; } else if (u.type === 'teacher') { this.usersMaster[idx] = { ...this.usersMaster[idx], name: u.name, phone: u.phone, pwd: u.pwd, teacherInfo: { subject: u.subject, classes: u.classesList, isHomeroom: u.isHomeroom, roleTag: u.isHomeroom ? '班主任' : '科任' }, studentInfo: null, isAdmin: false, role: 'teacher', roleName: '教师' }; } else { this.usersMaster[idx] = { ...this.usersMaster[idx], name: u.name, phone: u.phone, pwd: u.pwd, isAdmin: true, role: 'schoolAdmin', roleName: '学校管理员' }; } } } else { if (u.type === 'student') { this.usersMaster.push({ staffId: u.staffId, name: u.name, phone: u.phone, pwd: u.pwd, school, role: 'student', roleName: '学生', studentInfo: { className: u.className }, teacherInfo: null, isAdmin: false, banned: false }); } else if (u.type === 'teacher') { this.usersMaster.push({ staffId: u.staffId, name: u.name, phone: u.phone, pwd: u.pwd, school, role: 'teacher', roleName: '教师', teacherInfo: { subject: u.subject, classes: u.classesList, isHomeroom: u.isHomeroom, roleTag: u.isHomeroom ? '班主任' : '科任' }, isAdmin: false, banned: false }); } else if (u.type === 'schoolAdmin' && this.currentUser.role === 'superAdmin') { this.usersMaster.push({ staffId: u.staffId, name: u.name, phone: u.phone, pwd: u.pwd, school, role: 'schoolAdmin', roleName: '学校管理员', isAdmin: true, banned: false }); } } this.updateAllClassesList(); this.saveToBin(); this.showUserModal = false; this.showToast('保存成功'); },
+                selectExamForAdmin(examId) { this.selectedExamId = examId; },
+                refreshExamsView() { this.selectedExamId = null; },
+                getSubjectAdvice(sub, subjects) { let avg = subjects.reduce((a, b) => a + b.gradedScore, 0) / subjects.length; if (sub.gradedScore >= avg + 8) return '优势科目，保持领先'; if (sub.gradedScore <= avg - 8) return `偏科，低于平均分${(avg - sub.gradedScore).toFixed(1)}分，建议加强练习`; return '成绩稳定，继续努力'; },
+                switchView(view) { this.roleView = view; if (view === 'teacher') this.fetchTeacherData(); if (view === 'student') this.refreshStudentData(); },
+                logout() { this.destroyStudentChart(); Object.values(teacherChartInstances).forEach(chart => chart.destroy()); teacherChartInstances = {}; this.currentUser = null; this.selectedExamId = null; this.closeAllModals(); this.showToast('已退出'); },
+                openAddSchoolModal() { let name = prompt('请输入新学校名称'); if (name && !this.schoolsList.includes(name)) { this.schoolsList.push(name); this.saveToBin(); this.showToast('学校已添加'); } },
+                async deleteSchool(sch) { if (confirm(`删除学校 ${sch} 将删除所有师生和成绩，不可恢复！`)) { this.schoolsList = this.schoolsList.filter(s => s !== sch); this.usersMaster = this.usersMaster.filter(u => u.school !== sch); this.scoresMaster = this.scoresMaster.filter(s => s.school !== sch); await this.saveToBin(); if (this.currentUser && this.currentUser.school === sch) this.logout(); this.showToast('学校已删除'); } },
+                showToast(msg) { let t = document.getElementById('toastMsg'); t.style.display = 'block'; t.innerHTML = `<i class="fas fa-bell"></i> ${msg}`; setTimeout(() => t.style.display = 'none', 2500); }
+            },
+            mounted() { this.loadData(); }
+        });
+    </script>
+</body>
+</html>

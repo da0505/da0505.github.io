@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>校园速递 · 用户守则</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f4f7fb;
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            line-height: 1.6;
+            padding: 2rem 1rem;
+            color: #1e293b;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 32px;
+            box-shadow: 0 20px 35px -8px rgba(0, 34, 68, 0.12);
+            overflow: hidden;
+            border: 1px solid #e9eef3;
+        }
+
+        /* 页眉装饰 */
+        .header {
+            background: linear-gradient(115deg, #0b2b40 0%, #1a4b64 100%);
+            color: white;
+            padding: 2rem 2.5rem 1.8rem 2.5rem;
+        }
+
+        .header h1 {
+            font-weight: 600;
+            font-size: 2.2rem;
+            letter-spacing: -0.01em;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .header h1 span {
+            background: rgba(255,255,255,0.15);
+            font-size: 1rem;
+            font-weight: 400;
+            padding: 0.2rem 1rem;
+            border-radius: 40px;
+            letter-spacing: 0.3px;
+            margin-left: 1rem;
+        }
+
+        .header .sub {
+            font-size: 1.1rem;
+            opacity: 0.85;
+            border-left: 3px solid #ffcd7a;
+            padding-left: 1rem;
+            margin-top: 0.6rem;
+        }
+
+        /* 内容区域 */
+        .content {
+            padding: 2.5rem 2.5rem 2.8rem;
+        }
+
+        /* 章节通用样式 */
+        .chapter {
+            margin-bottom: 2.2rem;
+            border-bottom: 1px dashed #dce5ec;
+            padding-bottom: 1.8rem;
+        }
+
+        .chapter:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .chapter-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #0b2b40;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        .chapter-title .chap-num {
+            background: #e7edf4;
+            width: 36px;
+            height: 36px;
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: #1a4b64;
+            margin-right: 8px;
+        }
+
+        .section {
+            margin-bottom: 1.8rem;
+        }
+
+        .section h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1e3b4c;
+            margin-bottom: 0.75rem;
+            padding-left: 0.5rem;
+            border-left: 5px solid #68a6c9;
+        }
+
+        .rules-list {
+            list-style: none;
+            padding-left: 1rem;
+        }
+
+        .rules-list li {
+            margin-bottom: 0.7rem;
+            padding-left: 1.8rem;
+            position: relative;
+            font-size: 0.98rem;
+            color: #2c3e50;
+        }
+
+        .rules-list li::before {
+            content: "·";
+            position: absolute;
+            left: 6px;
+            color: #3a7b9b;
+            font-weight: 700;
+            font-size: 1.4rem;
+            top: -5px;
+        }
+
+        .rule-item {
+            margin-bottom: 0.9rem;
+            padding-left: 1.2rem;
+            border-left: 2px solid transparent;
+            transition: 0.1s;
+        }
+
+        .rule-item strong {
+            color: #0b3b4f;
+            font-weight: 600;
+            margin-right: 0.4rem;
+        }
+
+        .badge {
+            background: #ecf7ff;
+            color: #136b9c;
+            font-size: 0.8rem;
+            font-weight: 500;
+            padding: 0.2rem 0.8rem;
+            border-radius: 20px;
+            display: inline-block;
+            margin-right: 0.5rem;
+        }
+
+        .grid-tip {
+            display: flex;
+            gap: 1rem;
+            background: #f8fbfe;
+            padding: 1.2rem 1.5rem;
+            border-radius: 20px;
+            margin: 1.2rem 0 1rem;
+            border: 1px solid #d6e3ed;
+        }
+
+        .grid-tip .emoji {
+            font-size: 2rem;
+        }
+
+        .fine-print {
+            background: #f9f9fc;
+            padding: 1.2rem 1.8rem;
+            border-radius: 18px;
+            color: #4b5f73;
+            font-size: 0.9rem;
+            border: 1px solid #e4ecf3;
+        }
+
+        .fine-print p {
+            margin: 0.3rem 0;
+        }
+
+        .footer-note {
+            margin-top: 2.2rem;
+            text-align: right;
+            font-size: 0.85rem;
+            color: #7b8c9d;
+            border-top: 1px solid #e0eaf2;
+            padding-top: 1.2rem;
+        }
+
+        @media (max-width: 600px) {
+            .header { padding: 1.5rem; }
+            .content { padding: 1.5rem; }
+            .chapter-title { font-size: 1.3rem; }
+        }
+
+        /* 突出条款编号 */
+        .rule-item .article-num {
+            display: inline-block;
+            font-weight: 600;
+            color: #1f5777;
+            min-width: 2.2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 头部 -->
+        <div class="header">
+            <h1>
+                快递代取 · 用户守则
+            </h1>
+            <div class="sub">用户与配送员共同遵守 · 公平 · 安全 · 效率</div>
+        </div>
+
+        <!-- 守则主体 -->
+        <div class="content">
+
+            <!-- 第一章 总则 -->
+            <div class="chapter">
+                <div class="chapter-title">
+                    <span class="chap-num">一</span> 总则
+                </div>
+                <div class="rule-item"><span class="article-num">第1条</span> <strong>目的</strong> 为维护快递代取服务的正常运营秩序，保障下单用户（以下简称“用户”）与配送员（以下简称“配送员”）的合法权益，明确双方权利义务，特制定本守则。</div>
+                <div class="rule-item"><span class="article-num">第2条</span> <strong>适用范围</strong> 本守则适用于所有使用本平台发布代取需求的下单用户，以及接单并提供代取服务的配送端用户。</div>
+                <div class="rule-item"><span class="article-num">第3条</span> <strong>共识</strong> 双方通过平台发布或接受订单，即视为已阅读并同意遵守本守则之规定。</div>
+            </div>
+
+            <!-- 第二章 用户端（用户）守则 -->
+            <div class="chapter">
+                <div class="chapter-title">
+                    <span class="chap-num">二</span> 用户端（用户）守则
+                </div>
+
+                <div class="section">
+                    <h3>信息准确义务</h3>
+                    <ul class="rules-list">
+                        <li><span class="badge">第4条</span> <strong>取件信息：</strong> 下单时，必须准确填写取件码、快递公司、快递单号、收件人姓名及联系电话。因信息错误（如取件码输错）导致包裹无法取出或取错，责任由用户自行承担。</li>
+                        <li><span class="badge">特殊备注</span> 如包裹为易碎品、贵重物品（如电子产品、证件）、异形件（如超长、超重），必须在下单时备注说明。</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h3>配送地址与沟通</h3>
+                    <ul class="rules-list">
+                        <li><span class="badge">第5条</span> <strong>定位精准：</strong> 请将收货地址（宿舍楼/办公楼）定位准确至具体楼栋或约定俗成的放置点（如：XX号楼楼下外卖架）。</li>
+                        <li><span class="badge">保持联系</span> 下单后请保持手机畅通。若配送员因特殊情况（如驿站关闭、包裹破损）联系时，请在15分钟内响应处理。因联系不上导致配送延误或退回的，责任由用户自负。</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h3>取件码安全</h3>
+                    <ul class="rules-list">
+                        <li><span class="badge">第6条</span> <strong>唯一凭证：</strong> 取件码是配送员取件的唯一凭证。</li>
+                        <li><span class="badge">禁止违规</span> 禁止在未下单的情况下私自将取件码发送给配送员要求“顺路带”，一切代取行为需通过平台订单流转，以保障双方人身和财产安全。</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h3>验收与确认</h3>
+                    <ul class="rules-list">
+                        <li><span class="badge">第7条</span> <strong>当面验收：</strong> 建议在配送员送达时当面验收。如发现包裹外包装有明显挤压、破损、水渍，有权拒绝签收，并当场联系配送员/平台处理。</li>
+                        <li><span class="badge">确认送达</span> 收到包裹后，请及时在App端点击“确认收货”。长期不确认可能导致订单自动完成，视为默认验收合格。</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h3>费用与诚信</h3>
+                    <ul class="rules-list">
+                        <li><span class="badge">第8条</span> <strong>禁止逃单：</strong> 下单即视为同意支付标明的配送费用及可能产生的定金（如有）。不得以取件码错误、驿站关门等非配送员主观原因恶意拒绝支付或投诉。</li>
+                        <li><span class="badge">取消订单</span> 若在下单后、配送员取件前取消订单，请根据平台规则支付相应的违约金（如有）。若配送员已到达驿站取出包裹，原则上不可无故取消。</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 第三章 配送端（配送员/配送员）守则 -->
+            <div class="chapter">
+                <div class="chapter-title">
+                    <span class="chap-num">三</span> 配送端（配送员/配送员）守则
+                </div>
+
+                <div class="section">
+                    <h3>接单规范</h3>
+                    <ul class="rules-list">
+                        <li><span class="badge">第9条</span> <strong>能力匹配：</strong> 接单前请评估自身携带能力。如遇超大、超重或单量过多无法携带的订单，请勿强行接单，或及时与用户沟通改期。</li>
+                        <li><span class="badge">时效承诺</span> 接单后应在承诺时间内（或平台预估时间内）完成取件和配送。如需延迟，须提前在App内或通过电话告知用户。</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h3>取件流程</h3>
+                    <ul class="rules-list">
+                        <li><span class="badge">第10条</span> <strong>凭证保密：</strong> 获取用户取件码后，仅供本次取件使用，严禁泄露、留存或挪作他用。</li>
+                        <li><span class="badge">现场核对</span> 在驿站取件时，务必核对手机号后四位或姓名，确认拿对包裹。如发现包裹与订单描述严重不符（如两个包裹只找到一个），应立即联系用户确认。</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h3>配送与交付</h3>
+                    <ul class="rules-list">
+                        <li><span class="badge">第11条</span> <strong>安全运输：</strong> 在运输途中应妥善保管包裹，避免挤压、淋雨或丢失。</li>
+                        <li><span class="badge">交付确认：</span> 
+                            <ul style="margin-top:5px; list-style:circle; padding-left:1.8rem; color:#3f5468;">
+                                <li><strong>标准交付：</strong> 尽量将包裹交付给用户本人。如需放置于代收点（如宿舍楼下、门卫处），必须提前征得用户同意，并拍摄清晰、带有参照物的照片上传平台作为凭证。</li>
+                                <li><strong>身份核实：</strong> 若他人代收，建议核实领取人信息。</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h3>异常处理</h3>
+                    <ul class="rules-list">
+                        <li><span class="badge">第12条</span> <strong>包裹破损：</strong> 取件时发现包裹已有明显破损，应立即拍照并联系用户，询问是否继续代取，或建议用户直接联系商家/快递公司处理。</li>
+                        <li><span class="badge">无法取出</span> 如遇驿站已关闭、取件码失效、包裹丢失等情况，需第一时间在平台报备并联系用户说明情况，切勿隐瞒或虚假点击“已取件”。</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h3>服务态度</h3>
+                    <ul class="rules-list">
+                        <li><span class="badge">第13条</span> 在接单、配送及沟通全程，应保持礼貌、耐心。与用户发生纠纷时，应通过平台客服解决，严禁与用户发生言语辱骂或肢体冲突。</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 第四章 违规与处罚 -->
+            <div class="chapter">
+                <div class="chapter-title">
+                    <span class="chap-num">四</span> 违规与处罚
+                </div>
+
+                <div class="grid-tip">
+                    <div style="flex:1"><strong>平台红线</strong> · 信用分 / 保证金 / 账号封禁机制</div>
+                </div>
+
+                <div class="rule-item"><span class="article-num">第14条</span> <strong>用户违规</strong> 若用户出现以下行为，平台有权限制其下单权限或封禁账号：<br>
+                    &nbsp;&nbsp;&nbsp;• 恶意虚假下单，扰乱平台秩序；<br>
+                    &nbsp;&nbsp;&nbsp;• 多次提供错误取件码，导致配送员白跑一趟；<br>
+                    &nbsp;&nbsp;&nbsp;• 对配送员进行人身攻击、言语辱骂；<br>
+                    &nbsp;&nbsp;&nbsp;• 无理拒付配送费。
+                </div>
+
+                <div class="rule-item"><span class="article-num">第15条</span> <strong>配送员违规</strong> 若配送员出现以下行为，平台将扣除信用分/保证金，严重者永久封禁：<br>
+                    &nbsp;&nbsp;&nbsp;• <strong>丢件/错件</strong>：因个人疏忽导致包裹丢失或送错，需承担相应赔偿责任；<br>
+                    &nbsp;&nbsp;&nbsp;• <strong>虚假送达</strong>：未送达却点击“已送达”，或未征得同意随意将包裹丢在路边；<br>
+                    &nbsp;&nbsp;&nbsp;• <strong>泄露隐私</strong>：泄露用户的取件码、电话、地址等隐私信息；<br>
+                    &nbsp;&nbsp;&nbsp;• <strong>恶意加价</strong>：取件后以“包裹太重”等理由要求用户线下加价。
+                </div>
+            </div>
+
+            <!-- 第五章 附则 -->
+            <div class="chapter">
+                <div class="chapter-title">
+                    <span class="chap-num">五</span> 附则
+                </div>
+                <div class="fine-print">
+                    <p><span class="article-num">第16条</span> 本守则自发布之日起生效，平台保留根据运营情况对本守则进行修订的权利，修订后的条款一经公布即视为有效。如有争议，双方应友好协商；协商不成的，可提交平台所在地人民法院诉讼解决。</p>
+                </div>
+            </div>
+
+            <!-- 底部提示 -->
+            <div class="footer-note">
+                ⚖️ 发布即同意 · 最新修订日期 2025-03-01 | Copyright © 2026 da0505 & LiuYuhan All Rights Reserved.
+            </div>
+        </div>
+    </div>
+</body>
+</html>
