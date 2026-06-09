@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>铭析校园 - 使用说明</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --bg: #f4f7fb;
+            --card-bg: #ffffff;
+            --primary: #4f6ef7;
+            --primary-light: #eef1fe;
+            --text: #2a3547;
+            --text-secondary: #5a6a85;
+            --border: #e5eaf2;
+            --warning: #f59e0b;
+            --warning-bg: #fffbeb;
+            --success: #10b981;
+            --success-bg: #ecfdf5;
+            --danger: #ef4444;
+            --danger-bg: #fef2f2;
+            --radius-lg: 24px;
+            --radius-md: 16px;
+            --radius-sm: 10px;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.03);
+            --shadow-md: 0 4px 16px rgba(0,0,0,0.04), 0 2px 8px rgba(0,0,0,0.03);
+            --shadow-lg: 0 8px 32px rgba(79,110,247,0.12), 0 4px 16px rgba(0,0,0,0.04);
+            --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: var(--bg);
+            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', sans-serif;
+            color: var(--text);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+        .app-container { max-width: 960px; width: 100%; margin: 0 auto; padding: 1.5rem; }
+        @media (min-width: 768px) { .app-container { padding: 2.5rem 2rem; } }
+
+        /* ========== 卡片 ========== */
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            padding: 1.8rem;
+            border: 1px solid var(--border);
+            margin-bottom: 1.5rem;
+            transition: box-shadow var(--transition);
+        }
+        .card:hover { box-shadow: var(--shadow-md); }
+        @media (min-width: 768px) { .card { padding: 2.2rem; } }
+
+        /* ========== 现代大标题模块 ========== */
+        .hero-section {
+            position: relative;
+            background: var(--card-bg);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            padding: 0;
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+        .hero-inner {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 2.8rem 1.8rem 2.4rem;
+            position: relative;
+            z-index: 2;
+        }
+        @media (min-width: 768px) {
+            .hero-inner { padding: 3.6rem 2.4rem 3rem; }
+        }
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--primary-light);
+            color: var(--primary);
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            margin-bottom: 1.2rem;
+            backdrop-filter: blur(10px);
+        }
+        .hero-icon-wrap {
+            width: 72px;
+            height: 72px;
+            background: linear-gradient(135deg, #4f6ef7 0%, #6366f1 100%);
+            border-radius: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.4rem;
+            box-shadow: 0 8px 28px rgba(79,110,247,0.28);
+            transition: transform var(--transition);
+        }
+        .hero-icon-wrap:hover { transform: scale(1.04) rotate(-2deg); }
+        .hero-icon-wrap i { font-size: 2rem; color: white; }
+        @media (min-width: 768px) { .hero-icon-wrap { width: 88px; height: 88px; border-radius: 26px; } .hero-icon-wrap i { font-size: 2.4rem; } }
+
+        .hero-title {
+            font-size: 1.7rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #1e293b 0%, #3b4f6b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.4px;
+            margin-bottom: 0.3rem;
+        }
+        @media (min-width: 768px) { .hero-title { font-size: 2.2rem; } }
+        .hero-subtitle {
+            font-size: 0.92rem;
+            color: var(--text-secondary);
+            font-style: italic;
+            font-weight: 400;
+            letter-spacing: 0.3px;
+            margin-bottom: 0.3rem;
+        }
+        .hero-meta {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            font-weight: 400;
+        }
+        .hero-decoration {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.06;
+            pointer-events: none;
+        }
+        .hero-dec-1 {
+            width: 260px; height: 260px;
+            background: var(--primary);
+            top: -80px; right: -80px;
+        }
+        .hero-dec-2 {
+            width: 140px; height: 140px;
+            background: #6366f1;
+            bottom: -40px; left: -40px;
+        }
+        .hero-dec-3 {
+            width: 60px; height: 60px;
+            background: var(--primary);
+            top: 30px; left: 20px;
+            opacity: 0.04;
+        }
+
+        /* ========== 大标题 Section ========== */
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 1.2rem;
+            padding-bottom: 0.7rem;
+            border-bottom: 2px solid var(--border);
+            letter-spacing: -0.2px;
+        }
+        .section-icon {
+            width: 38px; height: 38px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+        .section-icon.blue { background: #eef1fe; color: #4f6ef7; }
+        .section-icon.amber { background: #fffbeb; color: #f59e0b; }
+        .section-icon.emerald { background: #ecfdf5; color: #10b981; }
+        .section-icon.rose { background: #fef2f2; color: #ef4444; }
+        .section-icon.slate { background: #f1f5f9; color: #64748b; }
+        .section-icon.indigo { background: #eef2ff; color: #6366f1; }
+
+        @media (min-width: 768px) { .section-title { font-size: 1.2rem; } .section-icon { width: 42px; height: 42px; font-size: 1.1rem; border-radius: 14px; } }
+
+        /* ========== 子标题 ========== */
+        .subsection-title {
+            font-size: 0.92rem;
+            font-weight: 650;
+            color: var(--text);
+            margin: 1.2rem 0 0.6rem 0;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+        .subsection-dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        .subsection-dot.blue { background: #4f6ef7; }
+        .subsection-dot.emerald { background: #10b981; }
+        .subsection-dot.amber { background: #f59e0b; }
+
+        /* ========== 信息框 ========== */
+        .info-box, .warning-box, .danger-box, .success-box {
+            border-radius: var(--radius-md);
+            padding: 1rem 1.2rem;
+            margin: 0.8rem 0;
+            font-size: 0.86rem;
+            line-height: 1.7;
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+        .info-box { background: #f8faff; border-left: 4px solid var(--primary); }
+        .warning-box { background: var(--warning-bg); border-left: 4px solid var(--warning); }
+        .danger-box { background: var(--danger-bg); border-left: 4px solid var(--danger); }
+        .success-box { background: var(--success-bg); border-left: 4px solid var(--success); }
+        .info-box .box-title, .warning-box .box-title, .danger-box .box-title, .success-box .box-title {
+            font-weight: 700; font-size: 0.9rem; display: flex; align-items: center; gap: 6px;
+        }
+        @media (min-width: 768px) { .info-box, .warning-box, .danger-box, .success-box { padding: 1.2rem 1.4rem; font-size: 0.9rem; } }
+
+        /* ========== 步骤列表 ========== */
+        .step-list { list-style: none; padding: 0; }
+        .step-list li { display: flex; gap: 14px; margin-bottom: 1.1rem; align-items: flex-start; }
+        .step-number {
+            background: var(--primary);
+            color: white;
+            width: 30px; height: 30px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.82rem;
+            flex-shrink: 0;
+            margin-top: 1px;
+            box-shadow: 0 3px 10px rgba(79,110,247,0.2);
+        }
+        .step-content { flex: 1; }
+        .step-content strong { color: var(--text); display: block; margin-bottom: 3px; font-size: 0.9rem; }
+        .step-content span { font-size: 0.84rem; color: var(--text-secondary); line-height: 1.6; }
+
+        /* ========== 角色卡片网格 ========== */
+        .role-grid { display: grid; grid-template-columns: 1fr; gap: 12px; margin: 1.2rem 0; }
+        @media (min-width: 640px) { .role-grid { grid-template-columns: repeat(3, 1fr); } }
+        .role-card {
+            background: #f8faff;
+            border-radius: var(--radius-md);
+            padding: 1.3rem 1rem;
+            text-align: center;
+            border: 1px solid var(--border);
+            transition: all var(--transition);
+        }
+        .role-card:hover { border-color: var(--primary); box-shadow: var(--shadow-md); transform: translateY(-2px); }
+        .role-card .role-icon {
+            width: 48px; height: 48px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 0.8rem;
+            font-size: 1.3rem;
+        }
+        .role-card .role-icon.student { background: #eef1fe; color: #4f6ef7; }
+        .role-card .role-icon.teacher { background: #ecfdf5; color: #10b981; }
+        .role-card .role-icon.admin { background: #fffbeb; color: #f59e0b; }
+        .role-card h4 { color: var(--text); font-size: 0.88rem; margin-bottom: 0.3rem; font-weight: 650; }
+        .role-card p { font-size: 0.76rem; color: var(--text-secondary); line-height: 1.5; }
+
+        /* ========== 标签 ========== */
+        .tag {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.2px;
+        }
+        .tag-student { background: #eef1fe; color: #4f6ef7; }
+        .tag-teacher { background: #ecfdf5; color: #059669; }
+        .tag-admin { background: #fffbeb; color: #d97706; }
+
+        /* ========== 表格 ========== */
+        .table-wrapper { overflow-x: auto; border-radius: var(--radius-sm); }
+        table { width: 100%; border-collapse: collapse; font-size: 0.82rem; margin: 0.8rem 0; }
+        table th, table td { padding: 11px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: middle; }
+        table th { background: #f8faff; font-weight: 650; color: var(--text); font-size: 0.76rem; letter-spacing: 0.2px; }
+        table td { font-size: 0.82rem; color: var(--text-secondary); }
+        table tbody tr:hover { background: #fafbfd; }
+
+        /* ========== FAQ ========== */
+        .faq-item { margin-bottom: 0.6rem; border-bottom: 1px solid var(--border); padding-bottom: 0.8rem; }
+        .faq-item:last-child { border-bottom: none; margin-bottom: 0; }
+        .faq-q {
+            font-weight: 650; color: var(--text); font-size: 0.9rem;
+            display: flex; align-items: center; gap: 8px;
+            padding: 6px 0;
+        }
+        .faq-q i { color: var(--primary); font-size: 0.7rem; transition: transform 0.3s; }
+        .faq-a { font-size: 0.84rem; color: var(--text-secondary); line-height: 1.7; margin-top: 0.3rem; padding-left: 22px; }
+
+        /* ========== 代码 ========== */
+        code {
+            background: #f1f5f9;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            color: #ef4444;
+            font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+            font-weight: 500;
+        }
+        .highlight {
+            background: #fef9e7;
+            padding: 2px 7px;
+            border-radius: 5px;
+            font-weight: 550;
+        }
+
+        /* ========== 底部 ========== */
+        .copyright-footer {
+            margin-top: 2rem;
+            padding: 1.5rem 0 0.5rem 0;
+            text-align: center;
+            border-top: 1px solid var(--border);
+            color: #94a3b8;
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+
+        <!-- ==================== 大标题模块 ==================== -->
+        <div class="hero-section">
+            <div class="hero-decoration hero-dec-1"></div>
+            <div class="hero-decoration hero-dec-2"></div>
+            <div class="hero-decoration hero-dec-3"></div>
+            <div class="hero-inner">
+                <div class="hero-badge">
+                    <i class="fas fa-book-open"></i> 用户手册
+                </div>
+                <!-- <div class="hero-icon-wrap">
+                    <i class="fas fa-chart-simple"></i>
+                </div> -->
+                <h1 class="hero-title">铭析校园 · 使用说明</h1>
+                <p class="hero-subtitle">寸分铭录，细析洞明</p>
+                <!-- <p class="hero-meta">版本 v2.0 · 2026 年 6 月</p> -->
+            </div>
+        </div>
+
+        <!-- ==================== 一、系统概述 ==================== -->
+        <div class="card">
+            <div class="section-title">
+                <div class="section-icon blue"><i class="fas fa-compass"></i></div>
+                系统概述
+            </div>
+            <p style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.8; margin-bottom: 1.2rem;">
+                铭析校园是一套<span class="highlight">多学校、多角色</span>的成绩管理与分析系统，支持学生查看个人成绩、教师管理任教班级成绩、管理员统筹全校数据。
+            </p>
+            <div class="role-grid">
+                <div class="role-card">
+                    <div class="role-icon student"><i class="fas fa-graduation-cap"></i></div>
+                    <h4><span class="tag tag-student">学生端</span></h4>
+                    <p>查看历次考试成绩<br>雷达图分析强弱科<br>班级 / 组合排名</p>
+                </div>
+                <div class="role-card">
+                    <div class="role-icon teacher"><i class="fas fa-chalkboard-user"></i></div>
+                    <h4><span class="tag tag-teacher">教师端</span></h4>
+                    <p>查看任教班级成绩<br>班主任可录入成绩<br>学生偏科雷达分析</p>
+                </div>
+                <div class="role-card">
+                    <div class="role-icon admin"><i class="fas fa-user-shield"></i></div>
+                    <h4><span class="tag tag-admin">管理端</span></h4>
+                    <p>用户账号管理<br>成绩录入与批量导入<br>全校数据统筹</p>
+                </div>
+            </div>
+            <!-- <div class="info-box">
+                <div class="box-title"><i class="fas fa-lightbulb" style="color: var(--primary);"></i> 提示</div>
+                <p>系统默认支持<strong>第一中学、实验高级中学、第二中学</strong>三所学校，超级管理员可新增更多学校。</p>
+            </div> -->
+        </div>
+
+        <!-- ==================== 二、重要提示 ==================== -->
+        <div class="card">
+            <div class="section-title">
+                <div class="section-icon amber"><i class="fas fa-exclamation-triangle"></i></div>
+                重要提示（必读）
+            </div>
+
+            <!-- <div class="warning-box"> --><div class="info-box">
+                <div class="box-title"><i class="fas fa-sync-alt"></i> 关于"切换学校"功能</div>
+                <p>
+                    <strong>当前版本暂不支持直接切换学校。</strong>如果您是一个账号关联了多个学校（一号多校），需要切换查看不同学校的数据时，请<strong style="color: var(--danger);">使用对应学校的学号重新登录</strong>。
+                </p>
+                <p style="margin-top: 0.4rem;">
+                    <strong>示例：</strong>李老师在第一中学的工号为 <code>T001</code>，在第二中学的工号为 <code>T001_2</code>。<br>
+                    查看第一中学数据 → 登录时选择 <strong>第一中学</strong>，输入工号 <code>T001</code><br>
+                    查看第二中学数据 → 重新登录，选择 <strong>第二中学</strong>，输入工号 <code>T001_2</code>
+                </p>
+            </div>
+
+            <!-- <div class="info-box">
+                <div class="box-title"><i class="fas fa-key"></i> 默认账号信息</div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>角色</th>
+                                <th>姓名</th>
+                                <th>学校</th>
+                                <th>工号 / 学号</th>
+                                <th>密码</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="tag tag-admin">超级管理员</span></td>
+                                <td></td>
+                                <td></td>
+                                <td><code></code></td>
+                                <td><code></code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div> -->
+        </div>
+
+        <!-- ==================== 三、各角色使用指南 ==================== -->
+        <div class="card">
+            <div class="section-title">
+                <div class="section-icon indigo"><i class="fas fa-book-open"></i></div>
+                各角色使用指南
+            </div>
+
+            <!-- 学生 -->
+            <div class="subsection-title">
+                <div class="subsection-dot blue"></div> 学生端
+            </div>
+            <ol class="step-list">
+                <li>
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <strong>登录系统</strong>
+                        <span>选择您的学校，输入姓名、学号、手机号和密码，点击登录。</span>
+                    </div>
+                </li>
+                <li>
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <strong>查看历次考试</strong>
+                        <span>左侧卡片展示所有考试记录，显示总分、班级和年级排名。点击任意考试查看详情。</span>
+                    </div>
+                </li>
+                <li>
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <strong>成绩雷达图</strong>
+                        <span>选中考试后，右侧自动生成雷达图，直观展示各科赋分情况。</span>
+                    </div>
+                </li>
+                <li>
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <strong>学习建议</strong>
+                        <span>系统自动分析优势科目和偏科情况：<br>
+                        <span style="color:var(--success);">●</span> 优势科目：高于平均分 8 分以上<br>
+                        <span style="color:var(--warning);">●</span> 偏科警告：低于平均分 8 分以上</span>
+                    </div>
+                </li>
+            </ol>
+
+            <!-- 教师 -->
+            <div class="subsection-title">
+                <div class="subsection-dot emerald"></div> 教师端
+            </div>
+            <div class="info-box">
+                <div class="box-title"><i class="fas fa-users"></i> 教师端分为两种身份</div>
+                <p><span class="tag tag-teacher">班主任</span> 可查看班级<strong>全部科目</strong>成绩，可在线录入 / 上传成绩</p>
+                <p><span class="tag tag-teacher">科任老师</span> 仅可查看所教<strong>单科目</strong>成绩，无法上传成绩</p>
+            </div>
+            <ol class="step-list">
+                <li>
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <strong>查看成绩明细</strong>
+                        <span>通过筛选考试和班级，查看任教班级的成绩列表。科任老师只能看到自己所教科目的数据。</span>
+                    </div>
+                </li>
+                <li>
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <strong>修改成绩</strong>
+                        <span>班主任可修改任意科目成绩；科任老师仅可修改自己所教科目的成绩。点击成绩行右侧的"修改"按钮。</span>
+                    </div>
+                </li>
+                <li>
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <strong>录入成绩（仅班主任）</strong>
+                        <span>点击 <strong>+ 添加一条</strong> 逐条录入，或使用 Excel 模板批量导入。先下载模板，按格式填写后上传。</span>
+                    </div>
+                </li>
+                <li>
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <strong>学生偏科分析</strong>
+                        <span>筛选后自动生成每位学生的科目雷达图，帮助识别偏科情况。</span>
+                    </div>
+                </li>
+            </ol>
+
+            <!-- 管理员 -->
+            <div class="subsection-title">
+                <div class="subsection-dot amber"></div> 管理端
+            </div>
+            <div class="info-box">
+                <div class="box-title"><i class="fas fa-layer-group"></i> 管理端三个子标签</div>
+                <p>用户管理 · 成绩管理 · 批量添加</p>
+            </div>
+            <p style="font-size:0.86rem; color: var(--text-secondary); margin: 1rem 0 0.5rem;">
+                <strong style="color: var(--text);"><i class="fas fa-users-gear" style="color: var(--primary); margin-right: 4px;"></i>用户管理</strong> — 查看所有账号，支持封禁 / 解封、删除、添加用户。可多学校设置学号和班级。
+            </p>
+            <p style="font-size:0.86rem; color: var(--text-secondary); margin: 0.5rem 0;">
+                <strong style="color: var(--text);"><i class="fas fa-chart-line" style="color: var(--success); margin-right: 4px;"></i>成绩管理</strong> — 按学校查看各次考试成绩，在线录入、Excel 导入、修改删除，自动生成班级综合分析。
+            </p>
+            <p style="font-size:0.86rem; color: var(--text-secondary); margin: 0.5rem 0;">
+                <strong style="color: var(--text);"><i class="fas fa-layer-group" style="color: var(--warning); margin-right: 4px;"></i>批量添加</strong> — 快速批量创建学生或教师账号，支持多学校多班级，一次保存。
+            </p>
+            <!-- <p style="font-size:0.86rem; color: var(--text-secondary); margin: 0.5rem 0;">
+                <strong style="color: var(--text);"><i class="fas fa-building" style="color: #6366f1; margin-right: 4px;"></i>学校管理</strong> — 新增或删除学校。删除学校会清除该校所有师生账号和成绩，操作不可逆。
+            </p> -->
+        </div>
+
+        <!-- ==================== 四、常见问题 ==================== -->
+        <div class="card">
+            <div class="section-title">
+                <div class="section-icon emerald"><i class="fas fa-comments"></i></div>
+                常见问题（FAQ）
+            </div>
+            <div class="faq-item">
+                <div class="faq-q"><i class="fas fa-chevron-right"></i> 忘记密码怎么办？</div>
+                <div class="faq-a">请联系学校管理员重置密码。超级管理员可在用户管理中重新设置密码（当前暂不支持自助找回）。</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-q"><i class="fas fa-chevron-right"></i> 为什么登录后看不到成绩？</div>
+                <div class="faq-a">请确认：① 学校选择是否正确；② 学号 / 工号是否匹配；③ 成绩是否已被录入。如仍无法查看，请联系管理员。</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-q"><i class="fas fa-chevron-right"></i> 如何添加新班级？</div>
+                <div class="faq-a">在"选择班级"弹窗底部输入框输入班级名称，点击 <strong>+</strong> 即可添加，新班级会自动出现在选择列表中。</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-q"><i class="fas fa-chevron-right"></i> Excel 导入失败怎么办？</div>
+                <div class="faq-a">请先下载模板，严格按列顺序填写，保存为 <code>.csv</code> 格式，编码选择 UTF-8。</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-q"><i class="fas fa-chevron-right"></i> 班主任和科任老师有什么区别？</div>
+                <div class="faq-a"><strong>班主任</strong>可查看全部科目成绩并上传成绩；<strong>科任老师</strong>仅可查看和修改自己所教科目的成绩。</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-q"><i class="fas fa-chevron-right"></i> 一个教师多校任教怎么办？</div>
+                <div class="faq-a">管理员可为教师添加多学校信息。教师需分别使用各校工号登录对应学校查看数据。</div>
+            </div>
+            <!-- <div class="faq-item">
+                <div class="faq-q"><i class="fas fa-chevron-right"></i> 数据存储安全吗？</div>
+                <div class="faq-a">系统使用 JSONBin 云端存储，API Key 加密传输。建议管理员定期备份重要数据。</div>
+            </div> -->
+        </div>
+
+        <!-- ==================== 五、操作速查表 ==================== -->
+        <div class="card">
+            <div class="section-title">
+                <div class="section-icon slate"><i class="fas fa-table"></i></div>
+                操作速查表
+            </div>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>操作</th>
+                            <th>适用角色</th>
+                            <th>操作路径</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>查看个人成绩</td>
+                            <td><span class="tag tag-student">学生</span></td>
+                            <td>登录 → 学生端 → 点击考试记录</td>
+                        </tr>
+                        <tr>
+                            <td>查看任教班级成绩</td>
+                            <td><span class="tag tag-teacher">教师</span></td>
+                            <td>登录 → 教师端 → 筛选班级 / 考试</td>
+                        </tr>
+                        <tr>
+                            <td>录入学生成绩</td>
+                            <td><span class="tag tag-teacher">班主任</span> <span class="tag tag-admin">管理员</span></td>
+                            <td>教师端成绩录入区 / 管理端成绩管理</td>
+                        </tr>
+                        <tr>
+                            <td>Excel 批量导入</td>
+                            <td><span class="tag tag-teacher">班主任</span> <span class="tag tag-admin">管理员</span></td>
+                            <td>下载模板 → 填写 → 选择文件上传</td>
+                        </tr>
+                        <tr>
+                            <td>修改 / 删除成绩</td>
+                            <td><span class="tag tag-teacher">教师</span> <span class="tag tag-admin">管理员</span></td>
+                            <td>成绩明细表格右侧操作按钮</td>
+                        </tr>
+                        <tr>
+                            <td>添加新用户</td>
+                            <td><span class="tag tag-admin">管理员</span></td>
+                            <td>管理端 → 用户管理 → + 添加用户</td>
+                        </tr>
+                        <tr>
+                            <td>批量添加用户</td>
+                            <td><span class="tag tag-admin">管理员</span></td>
+                            <td>管理端 → 批量添加 → 填写后保存</td>
+                        </tr>
+                        <tr>
+                            <td>封禁 / 解封用户</td>
+                            <td><span class="tag tag-admin">管理员</span></td>
+                            <td>管理端 → 用户管理 → 点击封禁按钮</td>
+                        </tr>
+                        <!-- <tr>
+                            <td>新建学校</td>
+                            <td><span class="tag tag-admin">超级管理员</span></td>
+                            <td>管理端 → 学校管理 → + 新建学校</td>
+                        </tr> -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ==================== 六、技术支持 ==================== -->
+        <div class="card">
+            <div class="section-title">
+                <div class="section-icon rose"><i class="fas fa-heart"></i></div>
+                技术支持
+            </div>
+            <div class="info-box" style="border-left-color: #6366f1; background: #f8faff;">
+                <div class="box-title" style="color: #6366f1;"><i class="fas fa-code"></i> 开发者信息</div>
+                <p><i class="fas fa-user" style="width: 18px;"></i> <strong>开发者：</strong>da0505</p>
+                <!-- <p><i class="fas fa-calendar" style="width: 18px;"></i> <strong>版本：</strong>2026 年 6 月 · v2.0</p> -->
+                <!-- <p><i class="fas fa-database" style="width: 18px;"></i> <strong>存储：</strong>JSONBin 云端</p> -->
+                <p style="margin-top: 0.4rem; color: #94a3b8; font-size: 0.8rem;">如遇到技术问题或功能建议，请联系系统管理员。</p>
+            </div>
+        </div>
+
+        <!-- 底部 -->
+        <div class="copyright-footer">
+            <p>Copyright © 2026 da0505 All Rights Reserved.</p>
+            <p style="font-size: 0.7rem; margin-top: 4px; letter-spacing: 0.3px;">铭析校园 · 寸分铭录，细析洞明</p>
+        </div>
+    </div>
+</body>
+</html>
